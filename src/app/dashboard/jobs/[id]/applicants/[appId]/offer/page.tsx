@@ -40,14 +40,14 @@ export default async function OfferLetterPage({
     .maybeSingle();
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-4xl">
       <Link
         href={`/dashboard/jobs/${id}/applicants`}
         className="text-sm text-brand-600 hover:underline"
       >
         ← Applicants
       </Link>
-      <h1 className="mb-1 mt-1 text-2xl font-semibold text-slate-900">
+      <h1 className="mb-1 mt-1 text-3xl font-bold text-slate-900">
         Offer letter: {candidate?.full_name || "Candidate"}
       </h1>
       <p className="mb-6 text-sm text-slate-500">{job.title}</p>

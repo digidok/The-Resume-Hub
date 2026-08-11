@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { BackLink } from "@/components/ui/back-link";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createBlogPost, setBlogPublished, deleteBlogPost } from "@/lib/blog/actions";
@@ -25,9 +26,10 @@ export default async function AdminBlogPage({
     .order("created_at", { ascending: false });
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
+    <div className="mx-auto max-w-5xl space-y-8">
+      <BackLink href="/dashboard" label="Dashboard" />
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Blog</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Blog</h1>
         <p className="text-sm text-slate-500">
           {posts?.length ?? 0} post{(posts?.length ?? 0) === 1 ? "" : "s"} — publish articles that
           appear on /blog.

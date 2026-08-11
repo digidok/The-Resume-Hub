@@ -25,7 +25,7 @@ export default async function CoverLetterEditPage({
   if (!coverLetter) notFound();
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-5xl">
       <div className="mb-6 flex items-center justify-between">
         <Link href="/dashboard/cover-letters" className="text-sm text-brand-600 hover:underline">
           ← All cover letters

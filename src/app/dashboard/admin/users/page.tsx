@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { setUserRole, grantCredits } from "@/lib/admin/actions";
 import { Card } from "@/components/ui/card";
@@ -41,8 +42,9 @@ export default async function AdminUsersPage({
   const { data: users } = await usersQuery;
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <h1 className="mb-1 text-2xl font-semibold text-slate-900">Users</h1>
+    <div className="mx-auto max-w-6xl">
+      <BackLink href="/dashboard" label="Dashboard" />
+      <h1 className="mb-1 text-3xl font-bold text-slate-900">Users</h1>
       <p className="mb-6 text-sm text-slate-500">{users?.length ?? 0} accounts.</p>
 
       <form method="get" className="mb-6 flex gap-2">

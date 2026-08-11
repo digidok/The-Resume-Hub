@@ -57,7 +57,7 @@ export default async function ResumeEditPage({
           <Link href="/dashboard/resumes" className="text-sm text-brand-600 hover:underline">
             ← All resumes
           </Link>
-          <h1 className="mt-1 text-2xl font-semibold text-slate-900">Edit resume</h1>
+          <h1 className="mt-1 text-3xl font-bold text-slate-900">Edit resume</h1>
         </div>
         <div className="flex gap-2">
           <Link href={`/dashboard/resumes/${resume.id}/print`}>

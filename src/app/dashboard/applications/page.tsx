@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BackLink } from "@/components/ui/back-link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
@@ -26,8 +27,9 @@ export default async function MyApplicationsPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900">My applications</h1>
+    <div className="mx-auto max-w-5xl">
+      <BackLink href="/dashboard" label="Dashboard" />
+      <h1 className="mb-6 text-3xl font-bold text-slate-900">My applications</h1>
 
       {(!applications || applications.length === 0) && (
         <Card className="p-8 text-center text-slate-500">

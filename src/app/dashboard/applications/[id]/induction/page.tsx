@@ -35,7 +35,7 @@ export default async function CandidateInductionPage({
 
   if (application.status !== "hired") {
     return (
-      <div className="mx-auto max-w-xl">
+      <div className="mx-auto max-w-3xl">
         <Link href="/dashboard/applications" className="text-sm text-brand-600 hover:underline">
           ← My applications
         </Link>
@@ -58,11 +58,11 @@ export default async function CandidateInductionPage({
     .order("completed_at", { ascending: false });
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-4xl">
       <Link href="/dashboard/applications" className="text-sm text-brand-600 hover:underline">
         ← My applications
       </Link>
-      <h1 className="mb-1 mt-1 text-2xl font-semibold text-slate-900">Onboarding</h1>
+      <h1 className="mb-1 mt-1 text-3xl font-bold text-slate-900">Onboarding</h1>
       <p className="mb-6 text-sm text-slate-500">
         {job?.title} at {job?.company}
       </p>

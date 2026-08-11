@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BackLink } from "@/components/ui/back-link";
 import { Input, Label, Textarea } from "@/components/ui/field";
 import { Card } from "@/components/ui/card";
 
@@ -133,8 +134,9 @@ export default function MockInterviewPage() {
 
   if (!questions) {
     return (
-      <div className="mx-auto max-w-xl">
-        <h1 className="mb-1 text-2xl font-semibold text-slate-900">Mock interview</h1>
+      <div className="mx-auto max-w-3xl">
+        <BackLink href="/dashboard" label="Dashboard" />
+        <h1 className="mb-1 text-3xl font-bold text-slate-900">Mock interview</h1>
         <p className="mb-6 text-sm text-slate-500">
           Get a set of real interview questions for a specific role, with instant AI feedback on
           your answers.
@@ -163,9 +165,10 @@ export default function MockInterviewPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
+      <BackLink href="/dashboard" label="Dashboard" />
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Mock interview</h1>
+          <h1 className="text-3xl font-bold text-slate-900">Mock interview</h1>
           <p className="text-sm text-slate-500">
             {role}
             {company ? ` at ${company}` : ""}

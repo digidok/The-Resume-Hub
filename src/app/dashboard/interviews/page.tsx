@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BackLink } from "@/components/ui/back-link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
@@ -65,8 +66,9 @@ export default async function InterviewsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <h1 className="mb-1 text-2xl font-semibold text-slate-900">Interviews</h1>
+    <div className="mx-auto max-w-5xl">
+      <BackLink href="/dashboard" label="Dashboard" />
+      <h1 className="mb-1 text-3xl font-bold text-slate-900">Interviews</h1>
       <p className="mb-6 text-sm text-slate-500">
         Scheduled interviews across all your job posts.
       </p>

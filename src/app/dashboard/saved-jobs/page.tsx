@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BackLink } from "@/components/ui/back-link";
 import { redirect } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -28,8 +29,9 @@ export default async function SavedJobsPage({
     .order("created_at", { ascending: false });
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900">Saved jobs</h1>
+    <div className="mx-auto max-w-5xl">
+      <BackLink href="/dashboard" label="Dashboard" />
+      <h1 className="mb-6 text-3xl font-bold text-slate-900">Saved jobs</h1>
 
       {captured === "1" && (
         <Card className="mb-4 border-0 border-l-[3px] border-emerald-400 bg-emerald-50/60 p-4 text-sm text-emerald-800">

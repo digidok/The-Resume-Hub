@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { setOpenToWork } from "@/lib/profile/actions";
 import { Card } from "@/components/ui/card";
@@ -28,8 +29,9 @@ export default async function ProfileSettingsPage() {
     .eq("is_public", true);
 
   return (
-    <div className="mx-auto max-w-xl">
-      <h1 className="mb-1 text-2xl font-semibold text-slate-900">Profile &amp; visibility</h1>
+    <div className="mx-auto max-w-3xl">
+      <BackLink href="/dashboard" label="Dashboard" />
+      <h1 className="mb-1 text-3xl font-bold text-slate-900">Profile &amp; visibility</h1>
       <p className="mb-6 text-sm text-slate-500">
         Control whether employers can find you in the Candidate Pool.
       </p>

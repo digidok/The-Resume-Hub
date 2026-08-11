@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { InductionEditor } from "@/components/induction/induction-editor";
 import type { InductionModule, InductionQuestion } from "@/types/database";
@@ -28,8 +29,9 @@ export default async function InductionPage() {
     : { data: [] };
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <h1 className="mb-1 text-2xl font-semibold text-slate-900">Induction &amp; onboarding</h1>
+    <div className="mx-auto max-w-5xl">
+      <BackLink href="/dashboard" label="Dashboard" />
+      <h1 className="mb-1 text-3xl font-bold text-slate-900">Induction &amp; onboarding</h1>
       <p className="mb-6 text-sm text-slate-500">
         Build a study module and quiz that new hires must pass after they accept an offer, before
         they&apos;re fully onboarded.

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { toggleFollowUp, deleteFollowUp } from "@/lib/followups/actions";
 import { CreateFollowUpForm } from "@/components/followups/create-followup-form";
@@ -33,8 +34,9 @@ export default async function FollowUpsPage() {
     .order("due_date", { ascending: true });
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <h1 className="text-2xl font-semibold text-slate-900">Follow-ups</h1>
+    <div className="mx-auto max-w-5xl space-y-6">
+      <BackLink href="/dashboard" label="Dashboard" />
+      <h1 className="text-3xl font-bold text-slate-900">Follow-ups</h1>
 
       <CreateFollowUpForm applications={applicationOptions} />
 

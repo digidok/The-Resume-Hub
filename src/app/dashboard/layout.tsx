@@ -160,7 +160,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
           </form>
         </div>
       </aside>
-      <main className="flex-1 p-6">{children}</main>
+      <main className="flex-1 p-6 lg:p-10">{children}</main>
     </div>
   );
 }

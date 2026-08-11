@@ -32,14 +32,14 @@ export default async function EmployerJobDetailPage({
   const toggleStatus = job.status === "open" ? "closed" : "open";
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-5xl">
       <Link href="/dashboard/jobs" className="text-sm text-brand-600 hover:underline">
         ← My job posts
       </Link>
 
       <div className="mt-1 mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">{job.title}</h1>
+          <h1 className="text-3xl font-bold text-slate-900">{job.title}</h1>
           <p className="text-slate-500">
             {job.company} {job.location ? `· ${job.location}` : ""}
           </p>

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { setJobStatus } from "@/lib/admin/actions";
 import { Card } from "@/components/ui/card";
@@ -28,8 +29,9 @@ export default async function AdminJobsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <h1 className="mb-1 text-2xl font-semibold text-slate-900">Jobs</h1>
+    <div className="mx-auto max-w-6xl">
+      <BackLink href="/dashboard" label="Dashboard" />
+      <h1 className="mb-1 text-3xl font-bold text-slate-900">Jobs</h1>
       <p className="mb-6 text-sm text-slate-500">{jobs?.length ?? 0} job posts across the platform.</p>
 
       <div className="space-y-3">

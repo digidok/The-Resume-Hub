@@ -12,9 +12,9 @@ import type { ApplicationStatus } from "@/types/database";
 
 function GetStartedChooser({ firstName }: { firstName: string }) {
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Welcome, {firstName}</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Welcome, {firstName}</h1>
         <p className="mt-1 text-sm text-slate-500">
           Let&apos;s get your resume set up — you can always add more later.
         </p>
@@ -155,7 +155,7 @@ export default async function DashboardPage() {
     return (
       <div className="mx-auto max-w-5xl space-y-6">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">
+          <h1 className="text-3xl font-bold text-slate-900">
             {greeting}, {firstName}
           </h1>
           <p className="text-sm text-slate-500">Platform-wide overview.</p>
@@ -217,7 +217,7 @@ export default async function DashboardPage() {
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">
+            <h1 className="text-3xl font-bold text-slate-900">
               {greeting}, {firstName}
             </h1>
             <p className="text-sm text-slate-500">
@@ -339,7 +339,7 @@ export default async function DashboardPage() {
     <div className="mx-auto max-w-5xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">
+          <h1 className="text-3xl font-bold text-slate-900">
             {greeting}, {firstName}
           </h1>
           <p className="text-sm text-slate-500">
