@@ -3,6 +3,12 @@ import { Check } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
+
+export const metadata = {
+  title: "Pricing — Resume Hub",
+  description:
+    "Simple, transparent pricing for candidates and employers on Resume Hub — free to start, pay only for the AI credits and job posts you need.",
+};
 import { Card } from "@/components/ui/card";
 import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGES } from "@/lib/payfast/config";
 

@@ -2,6 +2,10 @@ import Link from "next/link";
 import { SignupForm } from "@/components/auth/signup-form";
 import { Card } from "@/components/ui/card";
 
+export const metadata = {
+  title: "Sign Up — Resume Hub",
+};
+
 export default async function SignupPage({
   searchParams,
 }: PageProps<"/signup">) {

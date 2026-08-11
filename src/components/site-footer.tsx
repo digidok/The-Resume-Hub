@@ -15,6 +15,7 @@ const COMPANY_LINKS = [
   { href: "/blog", label: "Blog" },
   { href: "/student-discount", label: "Student discount" },
   { href: "/privacy", label: "Privacy policy" },
+  { href: "/terms", label: "Terms of service" },
 ];
 
 export function SiteFooter() {

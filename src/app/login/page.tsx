@@ -2,6 +2,10 @@ import Link from "next/link";
 import { LoginForm } from "@/components/auth/login-form";
 import { Card } from "@/components/ui/card";
 
+export const metadata = {
+  title: "Log In — Resume Hub",
+};
+
 export default async function LoginPage({
   searchParams,
 }: PageProps<"/login">) {

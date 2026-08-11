@@ -6,6 +6,11 @@ import { Button } from "@/components/ui/button";
 import { computeJobMatch } from "@/lib/matching/job-match";
 import type { CareerProfile, Job } from "@/types/database";
 
+export const metadata = {
+  title: "Find Jobs — Resume Hub",
+  description: "Search open roles from employers on Resume Hub, with AI-powered match scoring against your Career Passport.",
+};
+
 const EMPLOYMENT_LABELS: Record<string, string> = {
   full_time: "Full-time",
   part_time: "Part-time",
@@ -23,6 +28,10 @@ function daysAgo(iso: string) {
   if (days <= 0) return "Today";
   if (days === 1) return "1 day ago";
   return `${days} days ago`;
+}
+
+function isRecentlyPosted(iso: string) {
+  return Date.now() - new Date(iso).getTime() < 7 * 86400000;
 }
 
 export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">) {
@@ -197,7 +206,14 @@ export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">)
                     {job.salary_max ? `R${job.salary_max.toLocaleString()}` : ""}
                   </span>
                 )}
-                <span>{daysAgo(job.posted_at)}</span>
+                <span className="flex items-center gap-1.5">
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      isRecentlyPosted(job.posted_at) ? "bg-emerald-500" : "bg-slate-300"
+                    }`}
+                  />
+                  {daysAgo(job.posted_at)}
+                </span>
               </div>
             </Card>
           </Link>
