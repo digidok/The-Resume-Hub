@@ -25,6 +25,7 @@ import {
   ShieldCheck,
   CreditCard,
   MessageCircle,
+  GraduationCap,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/lib/auth/actions";
@@ -105,6 +106,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       items: [
         { href: "/dashboard/interviews", label: "Interviews", icon: CalendarClock },
         { href: "/dashboard/candidates", label: "Candidate pool", icon: Users },
+        { href: "/dashboard/induction", label: "Induction & onboarding", icon: GraduationCap },
         { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
       ],
     },

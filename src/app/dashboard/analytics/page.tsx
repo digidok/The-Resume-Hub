@@ -9,6 +9,7 @@ const STATUS_META: Record<ApplicationStatus, { label: string; colorClass: string
   submitted: { label: "Submitted", colorClass: "bg-slate-400", colorHex: "#94a3b8" },
   interviewing: { label: "Interviewing", colorClass: "bg-blue-500", colorHex: "#3b82f6" },
   offer: { label: "Offer", colorClass: "bg-emerald-500", colorHex: "#10b981" },
+  hired: { label: "Hired", colorClass: "bg-brand-600", colorHex: "#0d9488" },
   rejected: { label: "Rejected", colorClass: "bg-red-500", colorHex: "#ef4444" },
 };
 
@@ -86,6 +87,7 @@ export default async function AnalyticsPage() {
     submitted: 0,
     interviewing: 0,
     offer: 0,
+    hired: 0,
     rejected: 0,
   };
   for (const app of apps) {
@@ -102,7 +104,7 @@ export default async function AnalyticsPage() {
 
   const weeklyBuckets = buildWeeklyBuckets(apps);
 
-  const offerCount = statusCounts.offer;
+  const offerCount = statusCounts.offer + statusCounts.hired;
   const conversionRate = apps.length > 0 ? Math.round((offerCount / apps.length) * 100) : 0;
 
   const timesToInterview = apps

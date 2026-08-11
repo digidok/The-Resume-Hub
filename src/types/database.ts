@@ -90,7 +90,7 @@ export type Job = {
   updated_at: string;
 };
 
-export type ApplicationStatus = "submitted" | "interviewing" | "offer" | "rejected";
+export type ApplicationStatus = "submitted" | "interviewing" | "offer" | "hired" | "rejected";
 
 export type Application = {
   id: string;
@@ -117,7 +117,7 @@ export type InterviewScorecard = {
   updated_at: string;
 };
 
-export type OfferLetterStatus = "draft" | "sent";
+export type OfferLetterStatus = "draft" | "sent" | "accepted" | "declined";
 
 export type OfferLetter = {
   id: string;
@@ -127,6 +127,43 @@ export type OfferLetter = {
   status: OfferLetterStatus;
   created_at: string;
   updated_at: string;
+};
+
+export type InductionModule = {
+  id: string;
+  employer_id: string;
+  title: string;
+  content: string;
+  pass_threshold: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type InductionQuestion = {
+  id: string;
+  module_id: string;
+  question: string;
+  options: string[];
+  correct_option_index: number;
+  position: number;
+  created_at: string;
+};
+
+export type InductionQuestionPublic = {
+  id: string;
+  question: string;
+  options: string[];
+};
+
+export type InductionAttempt = {
+  id: string;
+  module_id: string;
+  application_id: string;
+  candidate_id: string;
+  score: number;
+  passed: boolean;
+  answers: Record<string, number>;
+  completed_at: string;
 };
 
 export type CoverLetter = {

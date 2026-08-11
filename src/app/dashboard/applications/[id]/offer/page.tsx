@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { OfferResponse } from "@/components/offers/offer-response";
 import { Card } from "@/components/ui/card";
+import type { OfferLetterStatus } from "@/types/database";
 
 export default async function CandidateOfferLetterPage({
   params,
@@ -25,9 +27,8 @@ export default async function CandidateOfferLetterPage({
 
   const { data: offer } = await supabase
     .from("offer_letters")
-    .select("content, status")
+    .select("id, content, status")
     .eq("application_id", id)
-    .eq("status", "sent")
     .maybeSingle();
 
   if (!offer) notFound();
@@ -43,6 +44,11 @@ export default async function CandidateOfferLetterPage({
       </p>
       <Card className="p-6">
         <p className="whitespace-pre-line text-sm text-slate-800">{offer.content}</p>
+        <OfferResponse
+          offerId={offer.id}
+          applicationId={id}
+          status={offer.status as OfferLetterStatus}
+        />
       </Card>
     </div>
   );

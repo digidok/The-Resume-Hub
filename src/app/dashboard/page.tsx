@@ -12,6 +12,7 @@ const STATUS_META: Record<ApplicationStatus, { label: string; colorClass: string
   submitted: { label: "Submitted", colorClass: "bg-slate-400", colorHex: "#94a3b8" },
   interviewing: { label: "Interviewing", colorClass: "bg-blue-500", colorHex: "#3b82f6" },
   offer: { label: "Offer", colorClass: "bg-emerald-500", colorHex: "#10b981" },
+  hired: { label: "Hired", colorClass: "bg-brand-600", colorHex: "#0d9488" },
   rejected: { label: "Rejected", colorClass: "bg-red-500", colorHex: "#ef4444" },
 };
 
@@ -19,6 +20,7 @@ const statusStyles: Record<ApplicationStatus, string> = {
   submitted: "bg-slate-100 text-slate-600",
   interviewing: "bg-blue-100 text-blue-700",
   offer: "bg-emerald-100 text-emerald-700",
+  hired: "bg-brand-100 text-brand-700",
   rejected: "bg-red-100 text-red-700",
 };
 
@@ -259,6 +261,7 @@ export default async function DashboardPage() {
     submitted: 0,
     interviewing: 0,
     offer: 0,
+    hired: 0,
     rejected: 0,
   };
   for (const app of apps) {
