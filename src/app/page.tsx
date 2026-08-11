@@ -19,6 +19,12 @@ import {
   ListChecks,
   Flag,
   Upload,
+  GraduationCap,
+  LayoutTemplate,
+  TrendingUp,
+  MessageSquare,
+  IdCard,
+  HelpCircle,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -130,6 +136,63 @@ const REVIEW_CHECKS = [
   "ATS keyword coverage against the job description",
   "Clear, quantified impact statements",
   "Formatting and structure that pass automated screens",
+];
+
+const CAREER_RESOURCES = [
+  {
+    icon: GraduationCap,
+    title: "Career Blog",
+    description: "Job search strategies, CV tips, and career advice from our team.",
+    href: "/blog",
+  },
+  {
+    icon: Briefcase,
+    title: "Job Board",
+    description: "Browse verified, scam-free job listings across South Africa.",
+    href: "/jobs",
+  },
+  {
+    icon: LayoutTemplate,
+    title: "Resume Templates",
+    description: "10+ professionally designed templates for every industry and role.",
+    href: "/signup",
+  },
+  {
+    icon: Mail,
+    title: "Cover Letter Builder",
+    description: "AI-tailored cover letters generated for the exact job you're applying to.",
+    href: "/signup",
+  },
+  {
+    icon: ScanSearch,
+    title: "ATS Score Checker",
+    description: "See exactly how applicant tracking systems read your CV before you apply.",
+    href: "/dashboard/ats-scanner",
+  },
+  {
+    icon: TrendingUp,
+    title: "Salary Insights",
+    description: "AI-estimated salary ranges by role, industry, and location.",
+    href: "/dashboard/salary-insights",
+  },
+  {
+    icon: MessageSquare,
+    title: "Mock Interview Practice",
+    description: "Practice real interview questions with an AI-driven mock interview.",
+    href: "/dashboard/mock-interview",
+  },
+  {
+    icon: IdCard,
+    title: "Career Passport",
+    description: "Build your career profile once — reuse it across every application.",
+    href: "/dashboard/career-passport",
+  },
+  {
+    icon: HelpCircle,
+    title: "Help Center",
+    description: "Answers to common questions about using Resume Hub.",
+    href: "/faq",
+  },
 ];
 
 export default function Home() {
@@ -292,6 +355,32 @@ export default function Home() {
                   <h3 className="mt-3 text-lg font-semibold text-slate-900">{feature.title}</h3>
                   <p className="mt-2 text-sm text-slate-600">{feature.description}</p>
                 </Card>
+              </MotionCard>
+            ))}
+          </ScrollStagger>
+        </section>
+
+        <section className="mx-auto max-w-5xl px-4 pb-20">
+          <ScrollReveal className="mx-auto max-w-2xl text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              Career Resources
+            </h2>
+            <p className="mt-2 text-slate-600">
+              Everything else you need for the job search, in one place.
+            </p>
+          </ScrollReveal>
+          <ScrollStagger className="mt-10 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+            {CAREER_RESOURCES.map((resource) => (
+              <MotionCard key={resource.title}>
+                <Link href={resource.href} className="group flex items-start gap-3">
+                  <resource.icon className="mt-0.5 h-5 w-5 shrink-0 text-brand-600" />
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-900 group-hover:text-brand-700">
+                      {resource.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-slate-600">{resource.description}</p>
+                  </div>
+                </Link>
               </MotionCard>
             ))}
           </ScrollStagger>
