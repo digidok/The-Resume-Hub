@@ -56,6 +56,7 @@ export type ResumeContent = {
   experience: ResumeExperience[];
   education: ResumeEducation[];
   skills: string[];
+  languages: string[];
   projects: ResumeProject[];
 };
 
@@ -180,5 +181,6 @@ export const emptyResumeContent = (): ResumeContent => ({
   experience: [],
   education: [],
   skills: [],
+  languages: [],
   projects: [],
 });

@@ -8,6 +8,7 @@ import { Input, Label, Select, Textarea } from "@/components/ui/field";
 import { Card } from "@/components/ui/card";
 import { ResumePreview, RESUME_TEMPLATES } from "@/components/resume/resume-preview";
 import { AiReviewPanel } from "@/components/resume/ai-review-panel";
+import { COMMON_LANGUAGES } from "@/lib/languages";
 import type {
   Resume,
   ResumeContent,
@@ -207,6 +208,10 @@ export function ResumeEditor({ resume, siteUrl }: { resume: Resume; siteUrl: str
           onChange={(items) => update("projects", items)}
         />
         <SkillsEditor skills={content.skills} onChange={(skills) => update("skills", skills)} />
+        <LanguagesEditor
+          languages={content.languages}
+          onChange={(languages) => update("languages", languages)}
+        />
 
         <AiReviewPanel resumeId={resume.id} />
       </div>
@@ -503,6 +508,106 @@ function SkillsEditor({
             </button>
           </span>
         ))}
+      </div>
+    </Card>
+  );
+}
+
+function LanguagesEditor({
+  languages,
+  onChange,
+}: {
+  languages: string[];
+  onChange: (languages: string[]) => void;
+}) {
+  const [draft, setDraft] = useState("");
+  const allSelected = COMMON_LANGUAGES.every((lang) => languages.includes(lang));
+
+  function toggleLanguage(lang: string) {
+    if (languages.includes(lang)) {
+      onChange(languages.filter((l) => l !== lang));
+    } else {
+      onChange([...languages, lang]);
+    }
+  }
+
+  function toggleAll() {
+    if (allSelected) {
+      onChange(languages.filter((l) => !(COMMON_LANGUAGES as readonly string[]).includes(l)));
+    } else {
+      const merged = new Set([...languages, ...COMMON_LANGUAGES]);
+      onChange([...merged]);
+    }
+  }
+
+  function addCustom() {
+    const value = draft.trim();
+    if (value && !languages.includes(value)) {
+      onChange([...languages, value]);
+    }
+    setDraft("");
+  }
+
+  return (
+    <Card className="space-y-3 p-5">
+      <h2 className="text-lg font-semibold text-slate-900">Languages</h2>
+      <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+        <input
+          type="checkbox"
+          checked={allSelected}
+          onChange={toggleAll}
+          className="h-4 w-4 rounded border-slate-300 text-indigo-600"
+        />
+        Select all
+      </label>
+      <div className="flex flex-wrap gap-3">
+        {COMMON_LANGUAGES.map((lang) => (
+          <label key={lang} className="flex items-center gap-1.5 text-sm text-slate-600">
+            <input
+              type="checkbox"
+              checked={languages.includes(lang)}
+              onChange={() => toggleLanguage(lang)}
+              className="h-4 w-4 rounded border-slate-300 text-indigo-600"
+            />
+            {lang}
+          </label>
+        ))}
+      </div>
+      <div className="flex gap-2">
+        <Input
+          placeholder="Add another language and press Enter"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addCustom();
+            }
+          }}
+        />
+        <Button type="button" variant="outline" size="sm" onClick={addCustom}>
+          Add
+        </Button>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {languages
+          .filter((lang) => !(COMMON_LANGUAGES as readonly string[]).includes(lang))
+          .map((lang) => (
+            <span
+              key={lang}
+              className="flex items-center gap-1 rounded-full bg-indigo-50 px-3 py-1 text-sm text-indigo-700"
+            >
+              {lang}
+              <button
+                type="button"
+                onClick={() => onChange(languages.filter((l) => l !== lang))}
+                className="text-indigo-400 hover:text-indigo-700"
+                aria-label={`Remove ${lang}`}
+              >
+                ×
+              </button>
+            </span>
+          ))}
       </div>
     </Card>
   );

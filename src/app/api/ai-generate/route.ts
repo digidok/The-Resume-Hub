@@ -27,6 +27,9 @@ function contentToPlainText(content: ResumeContent): string {
   if (content.skills.length) {
     lines.push(`Skills: ${content.skills.join(", ")}`);
   }
+  if (content.languages.length) {
+    lines.push(`Languages: ${content.languages.join(", ")}`);
+  }
   return lines.join("\n");
 }
 

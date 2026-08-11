@@ -46,6 +46,7 @@ const PARSED_SCHEMA = {
       },
     },
     skills: { type: "array" as const, items: { type: "string" as const } },
+    languages: { type: "array" as const, items: { type: "string" as const } },
     projects: {
       type: "array" as const,
       items: {
@@ -60,7 +61,7 @@ const PARSED_SCHEMA = {
       },
     },
   },
-  required: ["full_name", "experience", "education", "skills", "projects"],
+  required: ["full_name", "experience", "education", "skills", "languages", "projects"],
   additionalProperties: false,
 };
 
@@ -153,6 +154,7 @@ export async function POST(request: Request) {
         ...edu,
       })),
       skills: parsed.skills ?? [],
+      languages: parsed.languages ?? [],
       projects: (parsed.projects ?? []).map((project: Record<string, unknown>) => ({
         id: crypto.randomUUID(),
         ...project,

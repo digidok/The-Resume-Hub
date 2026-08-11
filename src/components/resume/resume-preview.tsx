@@ -148,6 +148,13 @@ export function ResumePreview({
           <p className="mt-2 text-sm text-slate-700">{content.skills.join(" · ")}</p>
         </section>
       )}
+
+      {content.languages.length > 0 && (
+        <section className="mt-5">
+          <h2 className={style.heading}>Languages</h2>
+          <p className="mt-2 text-sm text-slate-700">{content.languages.join(" · ")}</p>
+        </section>
+      )}
     </div>
   );
 }
