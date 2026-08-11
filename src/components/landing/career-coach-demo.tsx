@@ -65,10 +65,10 @@ export function CareerCoachDemo() {
             key={action.label}
             type="button"
             onClick={() => setActive(action)}
-            className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+            className={`rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
               active.label === action.label
-                ? "bg-brand-600 text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                ? "border-brand-600 text-brand-700"
+                : "border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700"
             }`}
           >
             {action.label}

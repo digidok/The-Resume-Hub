@@ -53,10 +53,8 @@ export function EmployerShowcase() {
         </p>
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {EMPLOYER_BENEFITS.map((benefit) => (
-            <div key={benefit.title} className="flex items-start gap-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-                <benefit.icon className="h-4 w-4" />
-              </span>
+            <div key={benefit.title} className="flex items-start gap-2.5">
+              <benefit.icon className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
               <div>
                 <p className="text-sm font-semibold text-slate-900">{benefit.title}</p>
                 <p className="text-xs text-slate-500">{benefit.description}</p>

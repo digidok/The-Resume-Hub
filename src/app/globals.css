@@ -18,9 +18,11 @@
   --color-brand-950: #062825;
 
   /* Accent: warm coral — pairs with the turquoise for a fun, warm energy */
+  --color-accent-50: #fff3ee;
   --color-accent-400: #ff9466;
   --color-accent-500: #ff7a45;
   --color-accent-600: #f2602c;
+  --color-accent-700: #d94f1f;
 }
 
 @theme inline {
@@ -41,9 +43,11 @@
   --color-brand-900: var(--color-brand-900);
   --color-brand-950: var(--color-brand-950);
 
+  --color-accent-50: var(--color-accent-50);
   --color-accent-400: var(--color-accent-400);
   --color-accent-500: var(--color-accent-500);
   --color-accent-600: var(--color-accent-600);
+  --color-accent-700: var(--color-accent-700);
 }
 
 body {
