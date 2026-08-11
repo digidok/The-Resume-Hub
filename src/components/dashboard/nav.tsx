@@ -25,6 +25,7 @@ import {
   Users,
   GraduationCap,
   BarChart3,
+  IdCard,
   CreditCard,
   Newspaper,
 } from "lucide-react";
@@ -56,6 +57,7 @@ const ICONS = {
   Users,
   GraduationCap,
   BarChart3,
+  IdCard,
   CreditCard,
   Newspaper,
 } as const;

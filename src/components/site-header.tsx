@@ -15,10 +15,21 @@ export async function SiteHeader() {
         <Link href="/">
           <Logo />
         </Link>
-        <nav className="flex items-center gap-6 text-sm font-medium text-slate-600">
-          <Link href="/jobs" className="hover:text-brand-700">
-            Job board
+        <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
+          <Link href="/#features" className="hover:text-brand-700">
+            Features
           </Link>
+          <Link href="/signup" className="hover:text-brand-700">
+            CV Builder
+          </Link>
+          <Link href="/jobs" className="hover:text-brand-700">
+            Find Jobs
+          </Link>
+          <Link href="/signup" className="hover:text-brand-700">
+            For Employers
+          </Link>
+        </nav>
+        <div className="flex items-center gap-4 text-sm font-medium text-slate-600">
           {user ? (
             <Link href="/dashboard">
               <Button size="sm">Dashboard</Button>
@@ -29,11 +40,11 @@ export async function SiteHeader() {
                 Sign in
               </Link>
               <Link href="/signup">
-                <Button size="sm">Get started</Button>
+                <Button size="sm">Get Started</Button>
               </Link>
             </>
           )}
-        </nav>
+        </div>
       </div>
     </header>
   );
