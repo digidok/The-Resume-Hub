@@ -108,6 +108,31 @@ export function CreateJobForm() {
           />
           {assistError && <p className="mt-1 text-sm text-red-600">{assistError}</p>}
         </div>
+        <div className="border-t border-slate-100 pt-4">
+          <p className="text-sm font-medium text-slate-900">Hiring contact (optional)</p>
+          <p className="mt-0.5 text-xs text-slate-500">
+            Shown to candidates on the job listing so they know who they&apos;re applying to.
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="hiring_manager_name">Name</Label>
+              <Input id="hiring_manager_name" name="hiring_manager_name" placeholder="Thandi Nkosi" />
+            </div>
+            <div>
+              <Label htmlFor="hiring_manager_title">Title</Label>
+              <Input id="hiring_manager_title" name="hiring_manager_title" placeholder="Talent Acquisition Lead" />
+            </div>
+            <div className="col-span-2">
+              <Label htmlFor="hiring_manager_email">Email</Label>
+              <Input
+                id="hiring_manager_email"
+                name="hiring_manager_email"
+                type="email"
+                placeholder="hiring@company.com"
+              />
+            </div>
+          </div>
+        </div>
         {state.error && <p className="text-sm text-red-600">{state.error}</p>}
         <Button type="submit" disabled={pending}>
           {pending ? "Posting…" : "Post job"}

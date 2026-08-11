@@ -100,6 +100,9 @@ export type Job = {
   skills: string[];
   application_url: string | null;
   source: string | null;
+  hiring_manager_name: string | null;
+  hiring_manager_title: string | null;
+  hiring_manager_email: string | null;
   status: JobStatus;
   posted_at: string;
   closing_date: string | null;
@@ -218,7 +221,11 @@ export type CoverLetter = {
 export type SavedJob = {
   id: string;
   user_id: string;
-  job_id: string;
+  job_id: string | null;
+  external_title: string | null;
+  external_company: string | null;
+  external_location: string | null;
+  external_url: string | null;
   created_at: string;
 };
 

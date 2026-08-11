@@ -122,6 +122,28 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
         </p>
       </Card>
 
+      {job.hiring_manager_name && (
+        <Card className="mb-6 border-0 border-l-[3px] border-brand-400 p-5">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Hiring contact
+          </p>
+          <p className="mt-1 text-sm font-semibold text-slate-900">
+            {job.hiring_manager_name}
+            {job.hiring_manager_title ? (
+              <span className="font-normal text-slate-500"> · {job.hiring_manager_title}</span>
+            ) : null}
+          </p>
+          {job.hiring_manager_email && (
+            <a
+              href={`mailto:${job.hiring_manager_email}`}
+              className="mt-1 inline-block text-sm text-brand-600 hover:underline"
+            >
+              {job.hiring_manager_email}
+            </a>
+          )}
+        </Card>
+      )}
+
       {match && (
         <Card className="mb-6 p-6">
           <div className="flex items-center justify-between">
