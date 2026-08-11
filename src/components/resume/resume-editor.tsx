@@ -35,6 +35,18 @@ export function ResumeEditor({ resume, siteUrl }: { resume: Resume; siteUrl: str
   const [fillGapsPending, setFillGapsPending] = useState(false);
   const [fillGapsStatus, setFillGapsStatus] = useState<string | null>(null);
   const [fillGapsError, setFillGapsError] = useState<string | null>(null);
+  const [jobDescription, setJobDescription] = useState("");
+  const [alignPending, setAlignPending] = useState(false);
+  const [alignError, setAlignError] = useState<string | null>(null);
+  const [alignResult, setAlignResult] = useState<{
+    tailored_summary: string;
+    suggested_skills: string[];
+    keyword_gaps: string[];
+  } | null>(null);
+  const [selectedAlignSkills, setSelectedAlignSkills] = useState<string[]>([]);
+  const [targetLanguage, setTargetLanguage] = useState("Arabic");
+  const [translatePending, setTranslatePending] = useState(false);
+  const [translateError, setTranslateError] = useState<string | null>(null);
 
   function update<K extends keyof ResumeContent>(key: K, value: ResumeContent[K]) {
     setContent((prev) => ({ ...prev, [key]: value }));
@@ -82,6 +94,71 @@ export function ResumeEditor({ resume, siteUrl }: { resume: Resume; siteUrl: str
       setFillGapsError("Could not fill gaps. Please try again.");
     } finally {
       setFillGapsPending(false);
+    }
+  }
+
+  async function handleAlignToJob() {
+    if (!jobDescription.trim()) return;
+    setAlignError(null);
+    setAlignResult(null);
+    setSelectedAlignSkills([]);
+    setAlignPending(true);
+    try {
+      const res = await fetch("/api/resume/align-to-job", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, jobDescription }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setAlignError(data.error || "Could not align resume.");
+        return;
+      }
+      setAlignResult(data);
+    } catch {
+      setAlignError("Could not align resume. Please try again.");
+    } finally {
+      setAlignPending(false);
+    }
+  }
+
+  function toggleAlignSkill(skill: string) {
+    setSelectedAlignSkills((prev) =>
+      prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]
+    );
+  }
+
+  function applyAlignedSummary() {
+    if (!alignResult) return;
+    update("summary", alignResult.tailored_summary);
+  }
+
+  function applySelectedAlignSkills() {
+    if (selectedAlignSkills.length === 0) return;
+    const merged = Array.from(new Set([...content.skills, ...selectedAlignSkills]));
+    update("skills", merged);
+    setSelectedAlignSkills([]);
+  }
+
+  async function handleTranslate() {
+    setTranslateError(null);
+    setTranslatePending(true);
+    try {
+      const res = await fetch("/api/resume/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resumeId: resume.id, targetLanguage }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setTranslateError(data.error || "Could not translate resume.");
+        return;
+      }
+      router.push(`/dashboard/resumes/${data.resumeId}`);
+    } catch {
+      setTranslateError("Could not translate resume. Please try again.");
+    } finally {
+      setTranslatePending(false);
     }
   }
 
@@ -269,6 +346,52 @@ export function ResumeEditor({ resume, siteUrl }: { resume: Resume; siteUrl: str
               onChange={(e) => update("summary", e.target.value)}
             />
           </div>
+
+          <details className="rounded-lg border border-slate-200 p-3">
+            <summary className="cursor-pointer text-sm font-medium text-slate-700">
+              International CV details (optional)
+            </summary>
+            <p className="mt-2 text-xs text-slate-500">
+              Common on CVs for the UAE, the wider Middle East, and Asia. Leave blank if you&apos;re
+              applying mainly in South Africa.
+            </p>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="nationality">Nationality</Label>
+                <Input
+                  id="nationality"
+                  value={content.nationality ?? ""}
+                  onChange={(e) => update("nationality", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="visa_status">Visa status</Label>
+                <Input
+                  id="visa_status"
+                  placeholder="e.g. Employment visa"
+                  value={content.visa_status ?? ""}
+                  onChange={(e) => update("visa_status", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="date_of_birth">Date of birth</Label>
+                <Input
+                  id="date_of_birth"
+                  placeholder="e.g. 12 Jan 1998"
+                  value={content.date_of_birth ?? ""}
+                  onChange={(e) => update("date_of_birth", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="marital_status">Marital status</Label>
+                <Input
+                  id="marital_status"
+                  value={content.marital_status ?? ""}
+                  onChange={(e) => update("marital_status", e.target.value)}
+                />
+              </div>
+            </div>
+          </details>
         </Card>
 
         <ExperienceEditor
@@ -288,6 +411,123 @@ export function ResumeEditor({ resume, siteUrl }: { resume: Resume; siteUrl: str
           languages={content.languages}
           onChange={(languages) => update("languages", languages)}
         />
+
+        <Card className="space-y-3 p-5">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">Align my CV to a job</h2>
+            <p className="text-sm text-slate-500">
+              Paste a job description and get a tailored summary and skill suggestions based on your
+              real experience — nothing is applied automatically.
+            </p>
+          </div>
+          <Textarea
+            rows={5}
+            placeholder="Paste the job description here…"
+            value={jobDescription}
+            onChange={(e) => setJobDescription(e.target.value)}
+          />
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={alignPending || !jobDescription.trim()}
+            onClick={handleAlignToJob}
+          >
+            {alignPending ? "Aligning…" : "Align my CV"}
+          </Button>
+          {alignError && <p className="text-sm text-red-600">{alignError}</p>}
+
+          {alignResult && (
+            <div className="space-y-4 rounded-lg border border-slate-200 p-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Tailored summary
+                </p>
+                <p className="mt-1 text-sm text-slate-700">{alignResult.tailored_summary}</p>
+                <Button type="button" size="sm" variant="outline" className="mt-2" onClick={applyAlignedSummary}>
+                  Use this summary
+                </Button>
+              </div>
+
+              {alignResult.suggested_skills.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Skills worth adding
+                  </p>
+                  <div className="mt-2 space-y-1">
+                    {alignResult.suggested_skills.map((skill) => (
+                      <label key={skill} className="flex items-center gap-2 text-sm text-slate-700">
+                        <input
+                          type="checkbox"
+                          className="h-3.5 w-3.5 rounded border-slate-300 text-brand-600"
+                          checked={selectedAlignSkills.includes(skill)}
+                          onChange={() => toggleAlignSkill(skill)}
+                        />
+                        {skill}
+                      </label>
+                    ))}
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="mt-2"
+                    disabled={selectedAlignSkills.length === 0}
+                    onClick={applySelectedAlignSkills}
+                  >
+                    Add selected skills
+                  </Button>
+                </div>
+              )}
+
+              {alignResult.keyword_gaps.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Missing from your resume
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {alignResult.keyword_gaps.map((gap) => (
+                      <span
+                        key={gap}
+                        className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-800"
+                      >
+                        {gap}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </Card>
+
+        <Card className="space-y-3 p-5">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">Translate this resume</h2>
+            <p className="text-sm text-slate-500">
+              Creates a new resume with your summary, skills, and experience translated — handy for
+              applying across Africa, the Middle East, and Asia. Save any pending edits first.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Select
+              value={targetLanguage}
+              onChange={(e) => setTargetLanguage(e.target.value)}
+              className="w-auto"
+            >
+              {["Arabic", "French", "Portuguese", "Swahili", "Mandarin Chinese", "Hindi", "Amharic", "Zulu"].map(
+                (lang) => (
+                  <option key={lang} value={lang}>
+                    {lang}
+                  </option>
+                )
+              )}
+            </Select>
+            <Button type="button" variant="outline" disabled={translatePending} onClick={handleTranslate}>
+              {translatePending ? "Translating…" : "Translate"}
+            </Button>
+          </div>
+          {translateError && <p className="text-sm text-red-600">{translateError}</p>}
+        </Card>
 
         <AiReviewPanel resumeId={resume.id} />
       </div>

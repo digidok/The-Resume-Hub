@@ -26,6 +26,7 @@ import {
   CreditCard,
   MessageCircle,
   GraduationCap,
+  Newspaper,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/lib/auth/actions";
@@ -120,6 +121,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
         { href: "/dashboard/admin/users", label: "Users", icon: Users },
         { href: "/dashboard/admin/jobs", label: "Jobs", icon: Briefcase },
         { href: "/dashboard/admin/payments", label: "Payments", icon: CreditCard },
+        { href: "/dashboard/admin/blog", label: "Blog", icon: Newspaper },
       ],
     },
   ];

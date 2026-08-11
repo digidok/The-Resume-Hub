@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signUp, type AuthActionState } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/field";
+import { OAuthButtons } from "@/components/auth/oauth-buttons";
 import type { ProfileRole } from "@/types/database";
 
 const initialState: AuthActionState = {};
@@ -40,6 +41,9 @@ export function SignupForm({ redirectTo }: { redirectTo: string }) {
         </div>
         <input type="hidden" name="role" value={role} />
       </div>
+
+      <OAuthButtons redirectTo={redirectTo} role={role as "candidate" | "employer"} />
+
       <div>
         <Label htmlFor="full_name">Full name</Label>
         <Input id="full_name" name="full_name" autoComplete="name" required />

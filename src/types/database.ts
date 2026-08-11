@@ -54,6 +54,10 @@ export type ResumeContent = {
   website?: string;
   summary?: string;
   photo_url?: string;
+  nationality?: string;
+  visa_status?: string;
+  date_of_birth?: string;
+  marital_status?: string;
   experience: ResumeExperience[];
   education: ResumeEducation[];
   skills: string[];
@@ -240,6 +244,20 @@ export type AiReview = {
     keyword_gaps?: string[];
   };
   created_at: string;
+};
+
+export type BlogPost = {
+  id: string;
+  author_id: string | null;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  published: boolean;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 export const emptyResumeContent = (): ResumeContent => ({

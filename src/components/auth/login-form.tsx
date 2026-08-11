@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signIn, type AuthActionState } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/field";
+import { OAuthButtons } from "@/components/auth/oauth-buttons";
 
 const initialState: AuthActionState = {};
 
@@ -13,6 +14,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
 
   return (
     <form action={formAction} className="space-y-4">
+      <OAuthButtons redirectTo={redirectTo} />
       <input type="hidden" name="redirect" value={redirectTo} />
       <div>
         <Label htmlFor="email">Email</Label>

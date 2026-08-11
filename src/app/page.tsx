@@ -12,10 +12,17 @@ import {
   Zap,
   BellRing,
   Mail,
-  MapPin,
   MessageCircle,
+  ShieldCheck,
+  Ban,
+  Clock,
+  Target,
+  ListChecks,
+  Flag,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { MatchShowcase } from "@/components/landing/match-showcase";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -71,6 +78,39 @@ const STEPS = [
     icon: Briefcase,
     title: "Apply and get hired",
     description: "Share your profile or apply straight to open roles on the job board.",
+  },
+];
+
+const TRUST_POINTS = [
+  {
+    icon: ShieldCheck,
+    title: "We avoid scams and junk",
+    description: "We verify 100% of the job listings on our board before candidates ever see them.",
+  },
+  {
+    icon: Ban,
+    title: "High-quality listings, no ads",
+    description: "No sponsored clutter or filler posts — just real, verified roles worth applying to.",
+  },
+  {
+    icon: Clock,
+    title: "Save time and hassle",
+    description: "Auto-apply handles the repetitive searching and applying so you don't have to.",
+  },
+  {
+    icon: Target,
+    title: "Jobs that actually align",
+    description: "Matching is based on your real skills and experience, not just keyword stuffing.",
+  },
+  {
+    icon: ListChecks,
+    title: "Personalised application tracking",
+    description: "See exactly where every application stands, from submitted to hired.",
+  },
+  {
+    icon: Flag,
+    title: "The first of its kind in Africa",
+    description: "Resume Hub is the first scheduled auto-apply service built for the African job market.",
   },
 ];
 
@@ -203,6 +243,28 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="mx-auto max-w-5xl px-4 py-16">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+              Why job seekers trust Resume Hub
+            </h2>
+            <p className="mt-2 text-slate-600">
+              Built to save you time and protect you from the scams and noise on other job boards.
+            </p>
+          </div>
+          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {TRUST_POINTS.map((point) => (
+              <Card key={point.title} className="p-6">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+                  <point.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-4 text-base font-semibold text-slate-900">{point.title}</h3>
+                <p className="mt-2 text-sm text-slate-600">{point.description}</p>
+              </Card>
+            ))}
+          </div>
+        </section>
+
         <section className="bg-brand-50 py-14">
           <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-4 text-center">
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-600 text-white">
@@ -326,6 +388,22 @@ export default function Home() {
                 </div>
               </div>
             </Card>
+          </div>
+        </section>
+
+        <section className="bg-slate-900 py-20">
+          <div className="mx-auto max-w-5xl px-4">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                See it in action
+              </h2>
+              <p className="mt-2 text-slate-300">
+                From match score to interview to offer — click through what candidates actually see.
+              </p>
+            </div>
+            <div className="mt-12">
+              <MatchShowcase />
+            </div>
           </div>
         </section>
 
@@ -455,35 +533,7 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="bg-brand-950 py-10 text-slate-400">
-        <div className="mx-auto max-w-5xl px-4">
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm">
-            <span className="flex items-center gap-1.5">
-              <MapPin className="h-4 w-4 text-brand-300" />
-              Sandton, Johannesburg
-            </span>
-            <a
-              href="mailto:info@resumehub.co.za"
-              className="flex items-center gap-1.5 hover:text-white"
-            >
-              <Mail className="h-4 w-4 text-brand-300" />
-              info@resumehub.co.za
-            </a>
-            <a
-              href="https://wa.me/27693391915"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-1.5 hover:text-white"
-            >
-              <MessageCircle className="h-4 w-4 text-brand-300" />
-              WhatsApp: 069 339 1915
-            </a>
-          </div>
-          <p className="mt-6 text-center text-sm text-slate-500">
-            © {new Date().getFullYear()} Resume Hub
-          </p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

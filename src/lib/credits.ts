@@ -9,6 +9,8 @@ export const CREDIT_COSTS = {
   follow_up_draft: 1,
   resume_fill_gaps: 1,
   suggest_duties: 1,
+  align_to_job: 1,
+  resume_translate: 1,
 } as const;
 
 export type CreditAction = keyof typeof CREDIT_COSTS;

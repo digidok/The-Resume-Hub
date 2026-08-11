@@ -65,6 +65,26 @@ function ContactLine({ content }: { content: ResumeContent }) {
   );
 }
 
+function InternationalDetails({ content }: { content: ResumeContent }) {
+  const rows = [
+    content.nationality && ["Nationality", content.nationality],
+    content.visa_status && ["Visa status", content.visa_status],
+    content.date_of_birth && ["Date of birth", content.date_of_birth],
+    content.marital_status && ["Marital status", content.marital_status],
+  ].filter(Boolean) as [string, string][];
+
+  if (rows.length === 0) return null;
+  return (
+    <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500">
+      {rows.map(([label, value], i) => (
+        <span key={i}>
+          {label}: {value}
+        </span>
+      ))}
+    </p>
+  );
+}
+
 function Sections({
   content,
   accent,
@@ -171,6 +191,7 @@ function SingleLayout({ content, config }: { content: ResumeContent; config: Tem
         <div>
           <h1 className="text-3xl font-bold">{content.full_name || "Your Name"}</h1>
           <ContactLine content={content} />
+          <InternationalDetails content={content} />
         </div>
         {config.photo && <Photo url={content.photo_url} />}
       </header>
@@ -213,6 +234,18 @@ function SidebarLayout({ content, config }: { content: ResumeContent; config: Te
             .filter(Boolean)
             .map((item, i) => (
               <p key={i} className="break-words">
+                {item}
+              </p>
+            ))}
+          {[
+            content.nationality && `Nationality: ${content.nationality}`,
+            content.visa_status && `Visa: ${content.visa_status}`,
+            content.date_of_birth && `DOB: ${content.date_of_birth}`,
+            content.marital_status && `Marital status: ${content.marital_status}`,
+          ]
+            .filter(Boolean)
+            .map((item, i) => (
+              <p key={i} className="break-words text-slate-500">
                 {item}
               </p>
             ))}

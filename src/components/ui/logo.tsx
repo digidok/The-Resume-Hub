@@ -14,11 +14,23 @@ export function LogoMark({ className = "h-8 w-8" }: { className?: string }) {
   );
 }
 
-export function Logo({ className = "" }: { className?: string }) {
+export function Logo({
+  className = "",
+  variant = "default",
+}: {
+  className?: string;
+  variant?: "default" | "inverse";
+}) {
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
       <LogoMark />
-      <span className="text-lg font-bold tracking-tight text-slate-900">Resume Hub</span>
+      <span
+        className={`text-lg font-bold tracking-tight ${
+          variant === "inverse" ? "text-white" : "text-slate-900"
+        }`}
+      >
+        Resume Hub
+      </span>
     </span>
   );
 }
