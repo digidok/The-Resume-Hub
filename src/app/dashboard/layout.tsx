@@ -46,7 +46,8 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
     {
       label: "Documents",
       items: [
-        { href: "/dashboard/resumes", label: "Resumes", icon: "FileText" },
+        { href: "/dashboard/career-passport", label: "Career Passport", icon: "IdCard" },
+        { href: "/dashboard/resumes", label: "My CV", icon: "FileText" },
         { href: "/dashboard/cover-letters", label: "Cover letters", icon: "Mail" },
         { href: "/dashboard/ats-scanner", label: "ATS scanner", icon: "ScanSearch" },
         { href: "/dashboard/saved-jobs", label: "Saved jobs", icon: "Bookmark" },
@@ -55,7 +56,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
     {
       label: "Prep & tools",
       items: [
-        { href: "/dashboard/mock-interview", label: "Mock interview", icon: "MessageSquare" },
+        { href: "/dashboard/mock-interview", label: "Interview Coach", icon: "MessageSquare" },
         { href: "/dashboard/follow-ups", label: "Follow-ups", icon: "Bell" },
         { href: "/dashboard/salary-insights", label: "Salary insights", icon: "DollarSign" },
         { href: "/dashboard/auto-apply", label: "Auto-apply", icon: "Zap" },

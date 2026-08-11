@@ -120,53 +120,39 @@ const REVIEW_CHECKS = [
   "Formatting and structure that pass automated screens",
 ];
 
-function HeroMockup() {
+const HERO_STATS = [
+  { label: "CV Score", value: "92/100" },
+  { label: "Jobs Matched", value: "24" },
+  { label: "Applications", value: "12" },
+  { label: "Interviews", value: "2" },
+];
+
+function DashboardPreview() {
   return (
-    <div className="relative mx-auto w-full max-w-sm py-4 sm:py-8">
-      <div className="-rotate-2 rounded-2xl bg-white p-5 shadow-xl shadow-black/20">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-700 text-sm font-semibold text-white">
-            JM
+    <div className="mx-auto w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl shadow-black/20">
+      <div className="grid grid-cols-2 gap-3">
+        {HERO_STATS.map((stat) => (
+          <div key={stat.label} className="rounded-xl bg-slate-50 p-3">
+            <p className="text-xs text-slate-500">{stat.label}</p>
+            <p className="mt-0.5 text-xl font-bold text-slate-900">{stat.value}</p>
           </div>
-          <div>
-            <p className="text-sm font-semibold text-slate-900">Jordan Mensah</p>
-            <p className="text-xs text-slate-500">Product Designer</p>
-          </div>
-        </div>
-        <div className="mt-4 space-y-1.5">
-          <div className="h-2 w-full rounded-full bg-slate-100" />
-          <div className="h-2 w-5/6 rounded-full bg-slate-100" />
-          <div className="h-2 w-4/6 rounded-full bg-slate-100" />
-        </div>
-        <div className="mt-4 flex flex-wrap gap-1.5">
-          {["Figma", "UX Research", "Prototyping"].map((skill) => (
-            <span
-              key={skill}
-              className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700"
-            >
-              {skill}
-            </span>
-          ))}
-        </div>
+        ))}
       </div>
 
-      <div className="absolute -bottom-6 -right-4 rotate-3 rounded-xl bg-white p-4 shadow-xl shadow-black/20 sm:-right-8">
-        <div className="flex items-center gap-3">
-          <div
-            className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full"
-            style={{
-              background: "conic-gradient(#ff7a45 0deg 331deg, #e2e8f0 331deg 360deg)",
-            }}
-          >
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-900">
-              92
-            </div>
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-slate-900">ATS Score</p>
-            <p className="text-xs text-emerald-600">Strong match</p>
-          </div>
+      <div className="mt-4 rounded-xl border border-slate-200 p-4">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Recommended job
+          </p>
+          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+            94% Match
+          </span>
         </div>
+        <p className="mt-2 text-sm font-semibold text-slate-900">Senior HR Manager</p>
+        <p className="text-xs text-slate-500">ABC Mining · Johannesburg</p>
+        <span className="mt-3 inline-block rounded-full bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white">
+          View Job
+        </span>
       </div>
     </div>
   );
@@ -190,39 +176,42 @@ export default function Home() {
             <div className="text-center lg:text-left">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-medium text-white">
                 <Sparkles className="h-3.5 w-3.5" />
-                AI-assisted resume review
+                Your complete job search platform
               </span>
               <h1 className="mx-auto mt-5 max-w-xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:mx-0">
-                Build your resume. Get discovered. Land the job.
+                Your CV is only the beginning. Get job-ready. Get matched. Get hired.
               </h1>
               <p className="mx-auto mt-4 max-w-xl text-lg text-white/90 lg:mx-0">
-                Resume Hub is a platform to build, share, and improve your resume — and apply to
-                real jobs from employers using AI-assisted feedback along the way.
+                Resume Hub brings your CV, job matching, ATS optimisation, applications and career
+                tools into one platform — built for the way job seekers actually find work.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
                 <Link href="/signup">
                   <Button size="lg" variant="solidInverse">
-                    Create your resume
+                    Build My CV Free
                   </Button>
                 </Link>
                 <Link href="/jobs">
                   <Button size="lg" variant="outlineInverse">
-                    Browse jobs
+                    Find Jobs
                   </Button>
                 </Link>
               </div>
               <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/90 lg:justify-start">
-                {["Free to get started", "No recruiter middleman", "AI feedback in seconds"].map(
-                  (item) => (
-                    <span key={item} className="flex items-center gap-1.5">
-                      <Check className="h-4 w-4 text-white" />
-                      {item}
-                    </span>
-                  )
-                )}
+                {[
+                  "AI-powered CV optimisation",
+                  "Real job matching",
+                  "Application tracking",
+                  "Human support",
+                ].map((item) => (
+                  <span key={item} className="flex items-center gap-1.5">
+                    <Check className="h-4 w-4 text-white" />
+                    {item}
+                  </span>
+                ))}
               </div>
             </div>
-            <HeroMockup />
+            <DashboardPreview />
           </div>
         </section>
 
@@ -287,10 +276,10 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-5xl px-4 py-20">
+        <section id="features" className="mx-auto max-w-5xl px-4 py-20">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-              Everything you need to get hired
+              Everything you need to move from job seeker to job offer.
             </h2>
             <p className="mt-2 text-slate-600">
               One place to build your resume, share it, and put it in front of real employers.

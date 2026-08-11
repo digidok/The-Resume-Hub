@@ -246,6 +246,29 @@ export type AiReview = {
   created_at: string;
 };
 
+export type CareerProfile = {
+  id: string;
+  user_id: string;
+  professional_title: string | null;
+  years_experience: number | null;
+  career_level: string | null;
+  industry: string | null;
+  target_roles: string[];
+  preferred_locations: string[];
+  salary_min: number | null;
+  salary_max: number | null;
+  employment_type: string | null;
+  work_preference: string | null;
+  skills: string[];
+  qualifications: string[];
+  certifications: string[];
+  languages: string[];
+  linkedin_url: string | null;
+  portfolio_url: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type BlogPost = {
   id: string;
   author_id: string | null;
