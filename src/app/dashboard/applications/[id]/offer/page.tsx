@@ -1,0 +1,49 @@
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { Card } from "@/components/ui/card";
+
+export default async function CandidateOfferLetterPage({
+  params,
+}: PageProps<"/dashboard/applications/[id]/offer">) {
+  const { id } = await params;
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: application } = await supabase
+    .from("applications")
+    .select("id, jobs:job_id(title, company)")
+    .eq("id", id)
+    .eq("candidate_id", user.id)
+    .single();
+  if (!application) notFound();
+
+  const job = Array.isArray(application.jobs) ? application.jobs[0] : application.jobs;
+
+  const { data: offer } = await supabase
+    .from("offer_letters")
+    .select("content, status")
+    .eq("application_id", id)
+    .eq("status", "sent")
+    .maybeSingle();
+
+  if (!offer) notFound();
+
+  return (
+    <div className="mx-auto max-w-xl">
+      <Link href="/dashboard/applications" className="text-sm text-indigo-600 hover:underline">
+        ← My applications
+      </Link>
+      <h1 className="mb-1 mt-1 text-2xl font-semibold text-slate-900">Offer letter</h1>
+      <p className="mb-6 text-sm text-slate-500">
+        {job?.title} at {job?.company}
+      </p>
+      <Card className="p-6">
+        <p className="whitespace-pre-line text-sm text-slate-800">{offer.content}</p>
+      </Card>
+    </div>
+  );
+}
