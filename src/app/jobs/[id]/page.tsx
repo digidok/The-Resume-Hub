@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Check, AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ApplyForm } from "@/components/jobs/apply-form";
+import { QualificationCheck } from "@/components/jobs/qualification-check";
 import { toggleSavedJob } from "@/lib/savedjobs/actions";
+import { computeJobMatch } from "@/lib/matching/job-match";
+import type { CareerProfile, Job } from "@/types/database";
 
 const EMPLOYMENT_LABELS: Record<string, string> = {
   full_time: "Full-time",
@@ -33,6 +37,7 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
   let alreadyApplied = false;
   let isEmployer = false;
   let isSaved = false;
+  let careerProfile: CareerProfile | null = null;
 
   if (user) {
     const { data: profile } = await supabase
@@ -65,8 +70,17 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
         .eq("user_id", user.id)
         .maybeSingle();
       isSaved = Boolean(saved);
+
+      const { data: careerProfileData } = await supabase
+        .from("career_profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      careerProfile = (careerProfileData as CareerProfile) ?? null;
     }
   }
+
+  const match = careerProfile ? computeJobMatch(careerProfile, job as Job) : null;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
@@ -90,9 +104,9 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
         </p>
         {(job.salary_min || job.salary_max) && (
           <p className="mt-1 text-sm text-slate-500">
-            {job.salary_min ? `$${job.salary_min.toLocaleString()}` : ""}
+            {job.salary_min ? `R${job.salary_min.toLocaleString()}` : ""}
             {job.salary_min && job.salary_max ? " – " : ""}
-            {job.salary_max ? `$${job.salary_max.toLocaleString()}` : ""}
+            {job.salary_max ? `R${job.salary_max.toLocaleString()}` : ""}
           </p>
         )}
         {job.status !== "open" && (
@@ -107,6 +121,94 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
           {job.description}
         </p>
       </Card>
+
+      {match && (
+        <Card className="mb-6 p-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-slate-900">Your Match</h2>
+            <span
+              className={`rounded-full px-3 py-1 text-sm font-bold ${
+                match.overallScore >= 85
+                  ? "bg-emerald-50 text-emerald-700"
+                  : match.overallScore >= 60
+                    ? "bg-amber-50 text-amber-700"
+                    : "bg-slate-100 text-slate-600"
+              }`}
+            >
+              {match.overallScore}%
+            </span>
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
+            {[
+              ["Experience", match.experienceScore],
+              ["Skills", match.skillsScore],
+              ["Qualification", match.qualificationScore],
+              ["Industry", match.industryScore],
+              ["Location", match.locationScore],
+            ].map(([label, score]) => (
+              <div key={label as string} className="rounded-lg bg-slate-50 p-2 text-center">
+                <p className="text-xs text-slate-500">{label}</p>
+                <p className="text-sm font-semibold text-slate-900">{score}%</p>
+              </div>
+            ))}
+          </div>
+
+          {match.strengths.length > 0 && (
+            <div className="mt-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Why you match
+              </p>
+              <ul className="mt-1.5 space-y-1">
+                {match.strengths.map((s) => (
+                  <li key={s} className="flex items-start gap-2 text-sm text-slate-700">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {match.gaps.length > 0 && (
+            <div className="mt-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                What you may be missing
+              </p>
+              <ul className="mt-1.5 space-y-1">
+                {match.gaps.map((g) => (
+                  <li key={g} className="flex items-start gap-2 text-sm text-slate-700">
+                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+                    {g}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <p className="mt-4 rounded-lg bg-brand-50 p-3 text-sm text-slate-700">
+            {match.recommendation}
+          </p>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link href="/dashboard/resumes">
+              <Button type="button" variant="outline" size="sm">
+                Tailor My CV
+              </Button>
+            </Link>
+            <QualificationCheck match={match} />
+          </div>
+        </Card>
+      )}
+
+      {user && !isEmployer && !careerProfile && (
+        <Card className="mb-6 border-brand-200 bg-brand-50 p-4 text-sm text-slate-700">
+          <Link href="/dashboard/career-passport" className="font-medium text-brand-700 hover:underline">
+            Complete your Career Passport
+          </Link>{" "}
+          to see your match score for this role.
+        </Card>
+      )}
 
       {job.status === "open" && !isEmployer && (
         <Card className="p-6">
