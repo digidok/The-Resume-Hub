@@ -86,13 +86,37 @@ export type Job = {
   title: string;
   company: string;
   location: string | null;
+  province: string | null;
+  country: string;
   employment_type: EmploymentType;
   description: string;
   salary_min: number | null;
   salary_max: number | null;
+  industry: string | null;
+  experience_min: number | null;
+  experience_max: number | null;
+  qualification_requirements: string | null;
+  skills: string[];
+  application_url: string | null;
+  source: string | null;
   status: JobStatus;
+  posted_at: string;
+  closing_date: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type JobMatch = {
+  jobId: string;
+  overallScore: number;
+  experienceScore: number;
+  skillsScore: number;
+  qualificationScore: number;
+  industryScore: number;
+  locationScore: number;
+  strengths: string[];
+  gaps: string[];
+  recommendation: string;
 };
 
 export type ApplicationStatus = "submitted" | "interviewing" | "offer" | "hired" | "rejected";
