@@ -29,6 +29,7 @@ import {
   BarChart3,
   PenLine,
   Wand2,
+  RefreshCw,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -42,6 +43,7 @@ import { CareerPassportPreview } from "@/components/landing/career-passport-prev
 import { CareerCoachDemo } from "@/components/landing/career-coach-demo";
 import { HumanSupport } from "@/components/landing/human-support";
 import { EmployerShowcase } from "@/components/landing/employer-showcase";
+import { EmployerFeaturesGrid } from "@/components/landing/employer-features-grid";
 import { SaveJobBookmarklet } from "@/components/landing/save-job-bookmarklet";
 import { JobTrackerTable } from "@/components/landing/job-tracker-table";
 import { ScrollReveal, ScrollStagger } from "@/components/motion/scroll-reveal";
@@ -135,6 +137,29 @@ const TRUST_POINTS = [
     icon: Flag,
     title: "The first of its kind in Africa",
     description: "Resume Hub is the first scheduled auto-apply service built for the African job market.",
+  },
+];
+
+const CAREER_PASSPORT_POINTS = [
+  {
+    icon: IdCard,
+    title: "One profile, every application",
+    description: "Skills, target roles, qualifications, and links — captured once.",
+  },
+  {
+    icon: Target,
+    title: "Powers your real match score",
+    description: "Job matching and \"Am I qualified?\" checks are based on your actual profile.",
+  },
+  {
+    icon: FileText,
+    title: "Auto-fills your CV and cover letters",
+    description: "Start every new document from your Career Passport instead of a blank page.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Update once, stay in sync",
+    description: "Change your profile and every document that references it stays current.",
   },
 ];
 
@@ -354,15 +379,36 @@ export default function Home() {
         <section className="border-y border-slate-200 bg-slate-50 py-20">
           <div className="mx-auto max-w-5xl px-4">
             <ScrollReveal className="mx-auto max-w-2xl text-center">
-              <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              <span className="inline-block rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+                Career Passport
+              </span>
+              <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
                 Your career should never start from zero.
               </h2>
               <p className="mt-2 text-slate-600">
                 Build your Career Passport once — Resume Hub uses it everywhere else.
               </p>
             </ScrollReveal>
-            <div className="mt-12">
-              <CareerPassportPreview />
+            <div className="mt-12 grid grid-cols-1 gap-10 lg:grid-cols-5 lg:items-center">
+              <div className="lg:col-span-2">
+                <ul className="space-y-5">
+                  {CAREER_PASSPORT_POINTS.map((point) => (
+                    <li key={point.title} className="flex items-start gap-3">
+                      <point.icon className="mt-0.5 h-5 w-5 shrink-0 text-brand-600" />
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">{point.title}</p>
+                        <p className="mt-0.5 text-sm text-slate-600">{point.description}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/dashboard/career-passport">
+                  <Button className="mt-6">Build your Career Passport</Button>
+                </Link>
+              </div>
+              <div className="lg:col-span-3">
+                <CareerPassportPreview />
+              </div>
             </div>
           </div>
         </section>
@@ -671,6 +717,9 @@ export default function Home() {
         <section className="border-y border-slate-200 bg-brand-50/40 py-20">
           <div className="mx-auto max-w-5xl px-4">
             <EmployerShowcase />
+            <div className="mt-16">
+              <EmployerFeaturesGrid />
+            </div>
           </div>
         </section>
 
