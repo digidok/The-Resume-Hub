@@ -24,6 +24,7 @@ import {
   BarChart3,
   ShieldCheck,
   CreditCard,
+  MessageCircle,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/lib/auth/actions";
@@ -158,6 +159,17 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
               <ShieldCheck className="h-4 w-4" />
               <span className="font-medium">Admin access</span>
             </div>
+          )}
+          {role === "candidate" && (
+            <a
+              href="https://wa.me/27693391915"
+              target="_blank"
+              rel="noreferrer"
+              className="mb-3 flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-brand-700"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+              Need help? Chat on WhatsApp
+            </a>
           )}
           <p className="truncate text-sm font-medium text-slate-900">
             {profile?.full_name || user.email}

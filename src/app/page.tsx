@@ -186,6 +186,45 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="border-b border-slate-200 bg-white py-10">
+          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 px-4 text-center sm:grid-cols-3">
+            <div>
+              <p className="text-3xl font-bold text-brand-700">5+ yrs</p>
+              <p className="mt-1 text-sm text-slate-500">Writing CVs professionally</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-brand-700">66,788+</p>
+              <p className="mt-1 text-sm text-slate-500">CVs written by our team since we started</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-brand-700">100%</p>
+              <p className="mt-1 text-sm text-slate-500">Real human support, whenever you need it</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-brand-50 py-14">
+          <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-4 text-center">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-600 text-white">
+              <MessageCircle className="h-6 w-6" />
+            </span>
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+              Prefer to talk to a real person?
+            </h2>
+            <p className="max-w-xl text-slate-600">
+              Send your CV straight to our team on WhatsApp for a free review, or message us to
+              get help building your resume. Follow us there for job-search tips and promos too.
+            </p>
+            <a href="https://wa.me/27693391915" target="_blank" rel="noreferrer">
+              <Button size="lg" className="mt-2">
+                <MessageCircle className="h-4 w-4" />
+                Chat with us on WhatsApp
+              </Button>
+            </a>
+            <p className="text-sm text-slate-500">069 339 1915</p>
+          </div>
+        </section>
+
         <section className="mx-auto max-w-5xl px-4 py-20">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900">
