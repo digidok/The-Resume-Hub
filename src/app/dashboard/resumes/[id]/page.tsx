@@ -40,7 +40,7 @@ export default async function ResumeEditPage({
     <div className="mx-auto max-w-6xl">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <Link href="/dashboard/resumes" className="text-sm text-indigo-600 hover:underline">
+          <Link href="/dashboard/resumes" className="text-sm text-brand-600 hover:underline">
             ← All resumes
           </Link>
           <h1 className="mt-1 text-2xl font-semibold text-slate-900">Edit resume</h1>

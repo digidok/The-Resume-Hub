@@ -43,7 +43,7 @@ export default async function OfferLetterPage({
     <div className="mx-auto max-w-2xl">
       <Link
         href={`/dashboard/jobs/${id}/applicants`}
-        className="text-sm text-indigo-600 hover:underline"
+        className="text-sm text-brand-600 hover:underline"
       >
         ← Applicants
       </Link>

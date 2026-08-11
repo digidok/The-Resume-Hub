@@ -62,14 +62,14 @@ export function AiReviewPanel({ resumeId }: { resumeId: string }) {
         <div className="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
           {typeof review.score === "number" && (
             <div className="flex items-center gap-3">
-              <span className="text-2xl font-bold text-indigo-600">{review.score}/100</span>
+              <span className="text-2xl font-bold text-brand-600">{review.score}/100</span>
               <span className="text-sm text-slate-500">ATS match score</span>
             </div>
           )}
           {review.summary && <p className="text-sm text-slate-700">{review.summary}</p>}
           <ReviewList title="Strengths" items={review.strengths} tone="text-emerald-700" />
           <ReviewList title="Weaknesses" items={review.weaknesses} tone="text-amber-700" />
-          <ReviewList title="Suggestions" items={review.suggestions} tone="text-indigo-700" />
+          <ReviewList title="Suggestions" items={review.suggestions} tone="text-brand-700" />
           <ReviewList title="Missing keywords" items={review.keyword_gaps} tone="text-red-700" />
         </div>
       )}

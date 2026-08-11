@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/ui/logo";
 
 export async function SiteHeader() {
   const supabase = await createClient();
@@ -11,11 +12,11 @@ export async function SiteHeader() {
   return (
     <header className="border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-        <Link href="/" className="text-xl font-bold text-slate-900">
-          Resume Hub
+        <Link href="/">
+          <Logo />
         </Link>
         <nav className="flex items-center gap-6 text-sm font-medium text-slate-600">
-          <Link href="/jobs" className="hover:text-slate-900">
+          <Link href="/jobs" className="hover:text-brand-700">
             Job board
           </Link>
           {user ? (
@@ -24,7 +25,7 @@ export async function SiteHeader() {
             </Link>
           ) : (
             <>
-              <Link href="/login" className="hover:text-slate-900">
+              <Link href="/login" className="hover:text-brand-700">
                 Sign in
               </Link>
               <Link href="/signup">

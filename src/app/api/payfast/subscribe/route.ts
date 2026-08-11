@@ -25,9 +25,22 @@ export async function POST(request: Request) {
 
   const formData = await request.formData();
   const packageId = String(formData.get("package_id") ?? "");
+  const promoCode = String(formData.get("promo_code") ?? "").trim();
   const pkg = SUBSCRIPTION_PACKAGES.find((p) => p.id === packageId);
   if (!pkg) {
     return NextResponse.json({ error: "Unknown package." }, { status: 400 });
+  }
+
+  let amountZar = pkg.amountZar;
+  if (promoCode) {
+    const { data: discountPercent } = await supabase.rpc("get_promo_discount", {
+      p_code: promoCode,
+      p_plan: pkg.id,
+    });
+    if (!discountPercent) {
+      return NextResponse.json({ error: "That promo code isn't valid." }, { status: 400 });
+    }
+    amountZar = Math.round(pkg.amountZar * (1 - discountPercent / 100) * 100) / 100;
   }
 
   const { data: profile } = await supabase
@@ -53,12 +66,14 @@ export async function POST(request: Request) {
   const siteUrl = `${protocol}://${host}`;
 
   const mPaymentId = crypto.randomUUID();
-  const itemName = `Resume Hub — ${pkg.label} (recurring)`;
+  const itemName = promoCode
+    ? `Resume Hub — ${pkg.label} (recurring, promo ${promoCode.toUpperCase()})`
+    : `Resume Hub — ${pkg.label} (recurring)`;
 
   const { error: insertError } = await supabase.from("payments").insert({
     user_id: user.id,
     m_payment_id: mPaymentId,
-    amount: pkg.amountZar,
+    amount: amountZar,
     item_name: itemName,
     credits_granted: 0,
     grants_pro: false,
@@ -85,11 +100,11 @@ export async function POST(request: Request) {
     name_last: rest.join(" ") || "Hub",
     email_address: user.email ?? "",
     m_payment_id: mPaymentId,
-    amount: pkg.amountZar.toFixed(2),
+    amount: amountZar.toFixed(2),
     item_name: itemName,
     subscription_type: "1",
     billing_date: today,
-    recurring_amount: pkg.amountZar.toFixed(2),
+    recurring_amount: amountZar.toFixed(2),
     frequency: "3",
     cycles: "0",
   };

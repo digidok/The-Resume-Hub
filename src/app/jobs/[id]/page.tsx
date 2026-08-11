@@ -71,7 +71,7 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <div className="flex items-center justify-between">
-        <Link href="/jobs" className="text-sm text-indigo-600 hover:underline">
+        <Link href="/jobs" className="text-sm text-brand-600 hover:underline">
           ← All jobs
         </Link>
         {user && !isEmployer && (
@@ -115,7 +115,7 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
             <ApplyForm jobId={job.id} resumes={resumes} alreadyApplied={alreadyApplied} />
           ) : (
             <p className="text-sm text-slate-600">
-              <Link href={`/login?redirect=/jobs/${job.id}`} className="text-indigo-600 hover:underline">
+              <Link href={`/login?redirect=/jobs/${job.id}`} className="text-brand-600 hover:underline">
                 Sign in
               </Link>{" "}
               to apply for this job.

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signUp, type AuthActionState } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/field";
+import { OAuthButtons } from "@/components/auth/oauth-buttons";
 import type { ProfileRole } from "@/types/database";
 
 const initialState: AuthActionState = {};
@@ -30,7 +31,7 @@ export function SignupForm({ redirectTo }: { redirectTo: string }) {
               onClick={() => setRole(option)}
               className={`rounded-lg border px-3 py-2 text-sm font-medium capitalize transition-colors ${
                 role === option
-                  ? "border-indigo-600 bg-indigo-50 text-indigo-700"
+                  ? "border-brand-600 bg-brand-50 text-brand-700"
                   : "border-slate-300 bg-white text-slate-600 hover:bg-slate-50"
               }`}
             >
@@ -40,6 +41,9 @@ export function SignupForm({ redirectTo }: { redirectTo: string }) {
         </div>
         <input type="hidden" name="role" value={role} />
       </div>
+
+      <OAuthButtons redirectTo={redirectTo} role={role as "candidate" | "employer"} />
+
       <div>
         <Label htmlFor="full_name">Full name</Label>
         <Input id="full_name" name="full_name" autoComplete="name" required />
@@ -66,7 +70,7 @@ export function SignupForm({ redirectTo }: { redirectTo: string }) {
       </Button>
       <p className="text-center text-sm text-slate-600">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+        <Link href="/login" className="font-medium text-brand-600 hover:text-brand-500">
           Sign in
         </Link>
       </p>

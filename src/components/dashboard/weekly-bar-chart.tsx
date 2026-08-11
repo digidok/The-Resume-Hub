@@ -15,7 +15,7 @@ export function WeeklyBarChart({ title, weeks }: { title: string; weeks: WeekBuc
         <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
         <div className="flex items-center gap-3 text-xs text-slate-500">
           <span className="flex items-center gap-1">
-            <span className="h-2.5 w-2.5 rounded-full bg-indigo-600" /> Submitted
+            <span className="h-2.5 w-2.5 rounded-full bg-brand-600" /> Submitted
           </span>
           <span className="flex items-center gap-1">
             <span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> Interviews
@@ -27,7 +27,7 @@ export function WeeklyBarChart({ title, weeks }: { title: string; weeks: WeekBuc
           <div key={week.label} className="flex flex-1 flex-col items-center gap-1">
             <div className="flex h-32 items-end gap-1">
               <div
-                className="w-2.5 rounded-t bg-indigo-600"
+                className="w-2.5 rounded-t bg-brand-600"
                 style={{ height: `${(week.submitted / max) * 100}%` }}
                 title={`${week.submitted} submitted`}
               />

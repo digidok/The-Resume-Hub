@@ -39,7 +39,7 @@ export default async function CoverLettersPage() {
           const job = Array.isArray(cl.jobs) ? cl.jobs[0] : cl.jobs;
           return (
             <Link key={cl.id} href={`/dashboard/cover-letters/${cl.id}`}>
-              <Card className="p-5 transition hover:border-indigo-300 hover:shadow-md">
+              <Card className="p-5 transition hover:border-brand-300 hover:shadow-md">
                 <h2 className="font-semibold text-slate-900">{cl.title}</h2>
                 {job && (
                   <p className="mt-1 text-sm text-slate-500">

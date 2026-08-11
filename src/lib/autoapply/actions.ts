@@ -74,3 +74,42 @@ export async function runAutoApply(input: {
   revalidatePath("/dashboard/applications");
   return { matched: matches.length, applied: inserted?.length ?? 0 };
 }
+
+export async function saveAutoApplySettings(input: {
+  resumeId: string;
+  keywords: string;
+  location: string;
+  enabled: boolean;
+}): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  if (!input.resumeId) {
+    return { error: "Choose a resume first." };
+  }
+  if (input.enabled && !input.keywords.trim()) {
+    return { error: "Enter at least one keyword to enable scheduled auto-apply." };
+  }
+
+  const { error } = await supabase.from("auto_apply_settings").upsert(
+    {
+      user_id: user.id,
+      resume_id: input.resumeId,
+      keywords: input.keywords.trim(),
+      location: input.location.trim() || null,
+      enabled: input.enabled,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id" }
+  );
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard/auto-apply");
+  return {};
+}

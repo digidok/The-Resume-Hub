@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/field";
 import type { ApplicationStatus, ResumeContent } from "@/types/database";
 
-const STATUS_OPTIONS: Exclude<ApplicationStatus, "submitted">[] = [
+const STATUS_OPTIONS: Exclude<ApplicationStatus, "submitted" | "hired">[] = [
   "interviewing",
   "offer",
   "rejected",
@@ -18,6 +18,7 @@ const FILTER_TABS: { value: "all" | ApplicationStatus; label: string }[] = [
   { value: "submitted", label: "Submitted" },
   { value: "interviewing", label: "Interviewing" },
   { value: "offer", label: "Offer" },
+  { value: "hired", label: "Hired" },
   { value: "rejected", label: "Rejected" },
 ];
 
@@ -25,6 +26,7 @@ const statusStyles: Record<ApplicationStatus, string> = {
   submitted: "bg-slate-100 text-slate-600",
   interviewing: "bg-blue-100 text-blue-700",
   offer: "bg-emerald-100 text-emerald-700",
+  hired: "bg-brand-100 text-brand-700",
   rejected: "bg-red-100 text-red-700",
 };
 
@@ -72,6 +74,21 @@ export default async function ApplicantsPage({
     .eq("job_id", id)
     .order("created_at", { ascending: false });
 
+  const hiredIds = (applications ?? []).filter((a) => a.status === "hired").map((a) => a.id);
+  const { data: attempts } = hiredIds.length
+    ? await supabase
+        .from("induction_attempts")
+        .select("application_id, score, passed, completed_at")
+        .in("application_id", hiredIds)
+        .order("completed_at", { ascending: false })
+    : { data: [] };
+  const latestAttemptByApplication = new Map<string, { score: number; passed: boolean }>();
+  for (const attempt of attempts ?? []) {
+    if (!latestAttemptByApplication.has(attempt.application_id)) {
+      latestAttemptByApplication.set(attempt.application_id, attempt);
+    }
+  }
+
   const rows = (applications ?? []).map((app) => {
     const candidate = Array.isArray(app.profiles) ? app.profiles[0] : app.profiles;
     const resume = Array.isArray(app.resumes) ? app.resumes[0] : app.resumes;
@@ -83,6 +100,7 @@ export default async function ApplicantsPage({
       resume,
       skills,
       match: matchPercent(skills, job.description),
+      induction: latestAttemptByApplication.get(app.id) ?? null,
     };
   });
 
@@ -96,7 +114,7 @@ export default async function ApplicantsPage({
 
   return (
     <div className="mx-auto max-w-4xl">
-      <Link href={`/dashboard/jobs/${id}`} className="text-sm text-indigo-600 hover:underline">
+      <Link href={`/dashboard/jobs/${id}`} className="text-sm text-brand-600 hover:underline">
         ← {job.title}
       </Link>
       <h1 className="mb-4 mt-1 text-2xl font-semibold text-slate-900">Applicants</h1>
@@ -121,7 +139,7 @@ export default async function ApplicantsPage({
             href={`/dashboard/jobs/${id}/applicants?status=${tab.value}${query ? `&q=${encodeURIComponent(query)}` : ""}`}
             className={`rounded-full px-3 py-1 text-sm font-medium ${
               statusFilter === tab.value
-                ? "bg-indigo-600 text-white"
+                ? "bg-brand-600 text-white"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
           >
@@ -163,6 +181,23 @@ export default async function ApplicantsPage({
                   >
                     {status}
                   </span>
+                  {status === "hired" && (
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        app.induction === null
+                          ? "bg-slate-100 text-slate-500"
+                          : app.induction.passed
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-amber-100 text-amber-700"
+                      }`}
+                    >
+                      {app.induction === null
+                        ? "Induction not started"
+                        : app.induction.passed
+                          ? `Induction passed (${app.induction.score}%)`
+                          : `Induction failed (${app.induction.score}%)`}
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -195,7 +230,7 @@ export default async function ApplicantsPage({
                     href={`/r/${app.resume.slug}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-sm font-medium text-indigo-600 hover:underline"
+                    className="text-sm font-medium text-brand-600 hover:underline"
                   >
                     View resume: {app.resume.title} →
                   </a>
@@ -210,51 +245,59 @@ export default async function ApplicantsPage({
                     {app.shortlisted ? "Remove from shortlist" : "Shortlist"}
                   </Button>
                 </form>
-                <form
-                  action={async (formData: FormData) => {
-                    "use server";
-                    const newStatus = formData.get("status") as "interviewing" | "offer" | "rejected";
-                    const interviewDate = String(formData.get("interview_date") ?? "") || undefined;
-                    await updateApplicationStatus(id, app.id, newStatus, interviewDate);
-                  }}
-                  className="flex flex-wrap items-center gap-2"
-                >
-                  <select
-                    name="status"
-                    defaultValue={status === "submitted" ? "interviewing" : status}
-                    className="rounded-lg border border-slate-300 px-2 py-1 text-sm"
+                {status !== "hired" && (
+                  <form
+                    action={async (formData: FormData) => {
+                      "use server";
+                      const newStatus = formData.get("status") as "interviewing" | "offer" | "rejected";
+                      const interviewDate = String(formData.get("interview_date") ?? "") || undefined;
+                      await updateApplicationStatus(id, app.id, newStatus, interviewDate);
+                    }}
+                    className="flex flex-wrap items-center gap-2"
                   >
-                    {STATUS_OPTIONS.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    type="date"
-                    name="interview_date"
-                    defaultValue={toDateInputValue(app.interview_scheduled_at)}
-                    className="rounded-lg border border-slate-300 px-2 py-1 text-sm text-slate-600"
-                    title="Interview date (only used when status is set to interviewing)"
-                  />
-                  <Button type="submit" size="sm" variant="outline">
-                    Update
-                  </Button>
-                </form>
+                    <select
+                      name="status"
+                      defaultValue={status === "submitted" ? "interviewing" : status}
+                      className="rounded-lg border border-slate-300 px-2 py-1 text-sm"
+                    >
+                      {STATUS_OPTIONS.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="date"
+                      name="interview_date"
+                      defaultValue={toDateInputValue(app.interview_scheduled_at)}
+                      className="rounded-lg border border-slate-300 px-2 py-1 text-sm text-slate-600"
+                      title="Interview date (only used when status is set to interviewing)"
+                    />
+                    <Button type="submit" size="sm" variant="outline">
+                      Update
+                    </Button>
+                  </form>
+                )}
               </div>
 
               <div className="mt-3 flex flex-wrap gap-3 border-t border-slate-100 pt-3 text-sm">
                 <Link
                   href={`/dashboard/jobs/${id}/applicants/${app.id}/scorecard`}
-                  className="font-medium text-indigo-600 hover:underline"
+                  className="font-medium text-brand-600 hover:underline"
                 >
                   Scorecard
                 </Link>
                 <Link
                   href={`/dashboard/jobs/${id}/applicants/${app.id}/offer`}
-                  className="font-medium text-indigo-600 hover:underline"
+                  className="font-medium text-brand-600 hover:underline"
                 >
                   Offer letter
+                </Link>
+                <Link
+                  href={`/dashboard/jobs/${id}/applicants/${app.id}/notes`}
+                  className="font-medium text-brand-600 hover:underline"
+                >
+                  Interview notes
                 </Link>
               </div>
             </Card>

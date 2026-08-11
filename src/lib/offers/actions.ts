@@ -65,3 +65,31 @@ export async function sendOffer(jobId: string, applicationId: string, content: s
   revalidatePath(`/dashboard/jobs/${jobId}/applicants/${applicationId}/offer`);
   revalidatePath(`/dashboard/jobs/${jobId}/applicants`);
 }
+
+export async function acceptOffer(offerId: string, applicationId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { error } = await supabase.rpc("accept_offer", { p_offer_id: offerId });
+
+  revalidatePath(`/dashboard/applications/${applicationId}/offer`);
+  revalidatePath("/dashboard/applications");
+  return { error: error?.message };
+}
+
+export async function declineOffer(offerId: string, applicationId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { error } = await supabase.rpc("decline_offer", { p_offer_id: offerId });
+
+  revalidatePath(`/dashboard/applications/${applicationId}/offer`);
+  revalidatePath("/dashboard/applications");
+  return { error: error?.message };
+}

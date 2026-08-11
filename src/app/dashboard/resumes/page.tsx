@@ -36,7 +36,7 @@ export default async function ResumesPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {resumes?.map((resume) => (
           <Link key={resume.id} href={`/dashboard/resumes/${resume.id}`}>
-            <Card className="p-5 transition hover:border-indigo-300 hover:shadow-md">
+            <Card className="p-5 transition hover:border-brand-300 hover:shadow-md">
               <h2 className="font-semibold text-slate-900">{resume.title}</h2>
               <p className="mt-1 text-sm capitalize text-slate-500">
                 {resume.template} template

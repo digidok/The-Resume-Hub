@@ -53,6 +53,11 @@ export type ResumeContent = {
   location?: string;
   website?: string;
   summary?: string;
+  photo_url?: string;
+  nationality?: string;
+  visa_status?: string;
+  date_of_birth?: string;
+  marital_status?: string;
   experience: ResumeExperience[];
   education: ResumeEducation[];
   skills: string[];
@@ -90,7 +95,7 @@ export type Job = {
   updated_at: string;
 };
 
-export type ApplicationStatus = "submitted" | "interviewing" | "offer" | "rejected";
+export type ApplicationStatus = "submitted" | "interviewing" | "offer" | "hired" | "rejected";
 
 export type Application = {
   id: string;
@@ -117,7 +122,7 @@ export type InterviewScorecard = {
   updated_at: string;
 };
 
-export type OfferLetterStatus = "draft" | "sent";
+export type OfferLetterStatus = "draft" | "sent" | "accepted" | "declined";
 
 export type OfferLetter = {
   id: string;
@@ -127,6 +132,52 @@ export type OfferLetter = {
   status: OfferLetterStatus;
   created_at: string;
   updated_at: string;
+};
+
+export type InductionModule = {
+  id: string;
+  employer_id: string;
+  title: string;
+  content: string;
+  pass_threshold: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type InductionQuestion = {
+  id: string;
+  module_id: string;
+  question: string;
+  options: string[];
+  correct_option_index: number;
+  position: number;
+  created_at: string;
+};
+
+export type InductionQuestionPublic = {
+  id: string;
+  question: string;
+  options: string[];
+};
+
+export type InterviewNoteFile = {
+  id: string;
+  application_id: string;
+  employer_id: string;
+  file_name: string;
+  storage_path: string;
+  uploaded_at: string;
+};
+
+export type InductionAttempt = {
+  id: string;
+  module_id: string;
+  application_id: string;
+  candidate_id: string;
+  score: number;
+  passed: boolean;
+  answers: Record<string, number>;
+  completed_at: string;
 };
 
 export type CoverLetter = {
@@ -153,6 +204,30 @@ export type FollowUp = {
   due_date: string;
   note: string | null;
   completed: boolean;
+  draft_subject: string | null;
+  draft_body: string | null;
+  sent: boolean;
+  created_at: string;
+};
+
+export type AutoApplySettings = {
+  user_id: string;
+  resume_id: string;
+  keywords: string;
+  location: string | null;
+  enabled: boolean;
+  last_run_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Notification = {
+  id: string;
+  user_id: string;
+  type: string;
+  title: string;
+  body: string | null;
+  read: boolean;
   created_at: string;
 };
 
@@ -169,6 +244,20 @@ export type AiReview = {
     keyword_gaps?: string[];
   };
   created_at: string;
+};
+
+export type BlogPost = {
+  id: string;
+  author_id: string | null;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  published: boolean;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 export const emptyResumeContent = (): ResumeContent => ({

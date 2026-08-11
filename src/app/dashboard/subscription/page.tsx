@@ -76,16 +76,35 @@ export default async function SubscriptionPage() {
                 </p>
               )}
             </div>
-            <div className="flex items-center gap-3">
+            <form
+              action="/api/payfast/subscribe"
+              method="POST"
+              className="flex flex-wrap items-center gap-3"
+            >
               <span className="text-2xl font-bold text-slate-900">R{subscriptionPkg.amountZar}</span>
-              <form action="/api/payfast/subscribe" method="POST">
-                <input type="hidden" name="package_id" value={subscriptionPkg.id} />
-                <Button type="submit" disabled={!config.configured || Boolean(isSubscribed)}>
-                  {isSubscribed ? "Subscribed" : "Subscribe"}
-                </Button>
-              </form>
-            </div>
+              <input type="hidden" name="package_id" value={subscriptionPkg.id} />
+              {!isSubscribed && (
+                <input
+                  type="text"
+                  name="promo_code"
+                  placeholder="Promo code (optional)"
+                  className="w-40 rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm placeholder:text-slate-400"
+                />
+              )}
+              <Button type="submit" disabled={!config.configured || Boolean(isSubscribed)}>
+                {isSubscribed ? "Subscribed" : "Subscribe"}
+              </Button>
+            </form>
           </Card>
+          {!isSubscribed && role === "candidate" && (
+            <p className="mt-2 text-xs text-slate-400">
+              Studying? Get a{" "}
+              <a href="/student-discount" className="font-medium text-brand-600 hover:underline">
+                student discount code
+              </a>{" "}
+              and enter it above before subscribing.
+            </p>
+          )}
           {isSubscribed && (
             <p className="mt-2 text-xs text-slate-400">
               To cancel, contact us or manage the subscription directly from your Payfast account —
@@ -105,7 +124,7 @@ export default async function SubscriptionPage() {
                 <p className="mt-1 text-3xl font-bold text-slate-900">R{pkg.amountZar}</p>
                 <p className="mt-1 text-sm text-slate-500">{pkg.credits} AI credits</p>
                 {pkg.grantsPro && (
-                  <p className="mt-1 text-xs font-medium text-indigo-600">Includes Pro plan</p>
+                  <p className="mt-1 text-xs font-medium text-brand-600">Includes Pro plan</p>
                 )}
                 <form action="/api/payfast/checkout" method="POST" className="mt-4">
                   <input type="hidden" name="package_id" value={pkg.id} />

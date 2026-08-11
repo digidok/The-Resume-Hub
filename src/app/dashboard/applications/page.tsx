@@ -8,6 +8,7 @@ const statusStyles: Record<ApplicationStatus, string> = {
   submitted: "bg-slate-100 text-slate-600",
   interviewing: "bg-blue-100 text-blue-700",
   offer: "bg-emerald-100 text-emerald-700",
+  hired: "bg-brand-100 text-brand-700",
   rejected: "bg-red-100 text-red-700",
 };
 
@@ -31,7 +32,7 @@ export default async function MyApplicationsPage() {
       {(!applications || applications.length === 0) && (
         <Card className="p-8 text-center text-slate-500">
           You haven&apos;t applied to any jobs yet.{" "}
-          <Link href="/jobs" className="text-indigo-600 hover:underline">
+          <Link href="/jobs" className="text-brand-600 hover:underline">
             Browse open roles →
           </Link>
         </Card>
@@ -45,7 +46,7 @@ export default async function MyApplicationsPage() {
               <div>
                 <Link
                   href={job ? `/jobs/${job.id}` : "#"}
-                  className="font-semibold text-slate-900 hover:text-indigo-600"
+                  className="font-semibold text-slate-900 hover:text-brand-600"
                 >
                   {job?.title ?? "Job"}
                 </Link>
@@ -65,12 +66,20 @@ export default async function MyApplicationsPage() {
                 >
                   {app.status}
                 </span>
-                {app.status === "offer" && (
+                {(app.status === "offer" || app.status === "hired") && (
                   <Link
                     href={`/dashboard/applications/${app.id}/offer`}
-                    className="text-xs font-medium text-indigo-600 hover:underline"
+                    className="text-xs font-medium text-brand-600 hover:underline"
                   >
                     View offer letter
+                  </Link>
+                )}
+                {app.status === "hired" && (
+                  <Link
+                    href={`/dashboard/applications/${app.id}/induction`}
+                    className="text-xs font-medium text-brand-600 hover:underline"
+                  >
+                    Start onboarding
                   </Link>
                 )}
               </div>

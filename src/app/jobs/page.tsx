@@ -29,7 +29,7 @@ export default async function JobBoardPage() {
       <div className="space-y-4">
         {jobs?.map((job) => (
           <Link key={job.id} href={`/jobs/${job.id}`}>
-            <Card className="p-5 transition hover:border-indigo-300 hover:shadow-md">
+            <Card className="p-5 transition hover:border-brand-300 hover:shadow-md">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
                   <h2 className="font-semibold text-slate-900">{job.title}</h2>

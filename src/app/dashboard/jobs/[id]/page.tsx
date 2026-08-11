@@ -33,7 +33,7 @@ export default async function EmployerJobDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href="/dashboard/jobs" className="text-sm text-indigo-600 hover:underline">
+      <Link href="/dashboard/jobs" className="text-sm text-brand-600 hover:underline">
         ← My job posts
       </Link>
 
