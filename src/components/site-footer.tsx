@@ -7,6 +7,7 @@ const PRODUCT_LINKS = [
   { href: "/dashboard/ats-scanner", label: "AI resume review" },
   { href: "/dashboard/auto-apply", label: "Auto-apply" },
   { href: "/jobs", label: "Job board" },
+  { href: "/pricing", label: "Pricing" },
 ];
 
 const COMPANY_LINKS = [

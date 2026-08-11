@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: "/jobs", label: "Jobs" },
   { href: "/#job-match", label: "Matching" },
   { href: "/#career-coach", label: "Career Coach" },
+  { href: "/pricing", label: "Pricing" },
   { href: "/signup", label: "For Employers" },
 ];
 
