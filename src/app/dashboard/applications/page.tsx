@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { BackLink } from "@/components/ui/back-link";
 import { redirect } from "next/navigation";
+import { ClipboardList } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { StatCard } from "@/components/dashboard/stat-card";
 import type { ApplicationStatus } from "@/types/database";
 
 const statusStyles: Record<ApplicationStatus, string> = {
@@ -26,32 +29,54 @@ export default async function MyApplicationsPage() {
     .eq("candidate_id", user.id)
     .order("created_at", { ascending: false });
 
+  const list = applications ?? [];
+  const interviewingCount = list.filter((a) => a.status === "interviewing").length;
+  const offerCount = list.filter((a) => a.status === "offer" || a.status === "hired").length;
+
   return (
     <div className="mx-auto max-w-5xl">
       <BackLink href="/dashboard" label="Dashboard" />
       <h1 className="mb-6 text-3xl font-bold text-slate-900">My applications</h1>
 
-      {(!applications || applications.length === 0) && (
-        <Card className="p-8 text-center text-slate-500">
-          You haven&apos;t applied to any jobs yet.{" "}
-          <Link href="/jobs" className="text-brand-600 hover:underline">
-            Browse open roles →
+      <div className="mb-6 grid grid-cols-3 gap-4">
+        <StatCard label="Total applications" value={list.length} />
+        <StatCard label="Interviewing" value={interviewingCount} />
+        <StatCard label="Offers" value={offerCount} />
+      </div>
+
+      {list.length === 0 && (
+        <Card className="flex flex-col items-center gap-3 p-10 text-center">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-600">
+            <ClipboardList className="h-6 w-6" />
+          </span>
+          <div>
+            <p className="font-semibold text-slate-900">You haven&apos;t applied to any jobs yet</p>
+            <p className="mt-1 text-sm text-slate-500">
+              Browse open roles and apply directly from your Resume Hub CV.
+            </p>
+          </div>
+          <Link href="/jobs">
+            <Button size="sm">Browse open roles</Button>
           </Link>
         </Card>
       )}
 
-      <div className="space-y-3">
-        {applications?.map((app) => {
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {list.map((app) => {
           const job = Array.isArray(app.jobs) ? app.jobs[0] : app.jobs;
           return (
             <Card key={app.id} className="flex items-center justify-between p-5">
               <div>
-                <Link
-                  href={job ? `/jobs/${job.id}` : "#"}
-                  className="font-semibold text-slate-900 hover:text-brand-600"
-                >
-                  {job?.title ?? "Job"}
-                </Link>
+                {job ? (
+                  <Link
+                    href={`/jobs/${job.id}`}
+                    className="font-semibold text-slate-900 hover:text-brand-600"
+                  >
+                    {job.title}
+                  </Link>
+                ) : (
+                  <p className="font-semibold text-slate-900">Job listing removed</p>
+                )}
                 <p className="text-sm text-slate-500">{job?.company}</p>
                 <p className="mt-1 text-xs text-slate-400">
                   Applied {new Date(app.created_at).toLocaleDateString()}

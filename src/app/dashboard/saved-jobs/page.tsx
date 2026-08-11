@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { BackLink } from "@/components/ui/back-link";
 import { redirect } from "next/navigation";
-import { ExternalLink } from "lucide-react";
+import { Bookmark, ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { toggleSavedJob, removeSavedJobById } from "@/lib/savedjobs/actions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { StatCard } from "@/components/dashboard/stat-card";
 
 export default async function SavedJobsPage({
   searchParams,
@@ -28,6 +29,14 @@ export default async function SavedJobsPage({
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
+  const list = savedJobs ?? [];
+  const onPlatformCount = list.filter((s) => s.job_id).length;
+  const bookmarkletCount = list.filter((s) => !s.job_id).length;
+  const openCount = list.filter((s) => {
+    const job = Array.isArray(s.jobs) ? s.jobs[0] : s.jobs;
+    return job?.status === "open";
+  }).length;
+
   return (
     <div className="mx-auto max-w-5xl">
       <BackLink href="/dashboard" label="Dashboard" />
@@ -39,22 +48,38 @@ export default async function SavedJobsPage({
         </Card>
       )}
 
-      {(!savedJobs || savedJobs.length === 0) && (
-        <Card className="p-8 text-center text-slate-500">
-          No saved jobs yet.{" "}
-          <Link href="/jobs" className="text-brand-600 hover:underline">
-            Browse open roles →
+      <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <StatCard label="Total saved" value={list.length} />
+        <StatCard label="Still open" value={openCount} />
+        <StatCard label="From Resume Hub" value={onPlatformCount} />
+        <StatCard label="From bookmarklet" value={bookmarkletCount} />
+      </div>
+
+      {list.length === 0 && (
+        <Card className="flex flex-col items-center gap-3 p-10 text-center">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand-600">
+            <Bookmark className="h-6 w-6" />
+          </span>
+          <div>
+            <p className="font-semibold text-slate-900">No saved jobs yet</p>
+            <p className="mt-1 text-sm text-slate-500">
+              Browse the job board, or use the Save to Resume Hub bookmarklet on any job listing
+              across the web.
+            </p>
+          </div>
+          <Link href="/jobs">
+            <Button size="sm">Browse open roles</Button>
           </Link>
         </Card>
       )}
 
-      <div className="space-y-3">
-        {savedJobs?.map((saved) => {
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {list.map((saved) => {
           const job = Array.isArray(saved.jobs) ? saved.jobs[0] : saved.jobs;
 
           if (job) {
             return (
-              <Card key={saved.id} className="flex items-center justify-between p-5">
+              <Card key={saved.id} className="flex flex-col justify-between p-5">
                 <div>
                   <Link
                     href={`/jobs/${job.id}`}
@@ -69,7 +94,7 @@ export default async function SavedJobsPage({
                     <p className="mt-1 text-xs text-slate-400">No longer accepting applications</p>
                   )}
                 </div>
-                <form action={toggleSavedJob.bind(null, job.id, false)}>
+                <form action={toggleSavedJob.bind(null, job.id, false)} className="mt-3">
                   <Button type="submit" size="sm" variant="ghost">
                     Remove
                   </Button>
@@ -81,7 +106,7 @@ export default async function SavedJobsPage({
           if (!saved.external_title) return null;
 
           return (
-            <Card key={saved.id} className="flex items-center justify-between p-5">
+            <Card key={saved.id} className="flex flex-col justify-between p-5">
               <div>
                 <a
                   href={saved.external_url ?? "#"}
@@ -98,7 +123,7 @@ export default async function SavedJobsPage({
                 </p>
                 <p className="mt-1 text-xs text-slate-400">Saved from another site via bookmarklet</p>
               </div>
-              <form action={removeSavedJobById.bind(null, saved.id)}>
+              <form action={removeSavedJobById.bind(null, saved.id)} className="mt-3">
                 <Button type="submit" size="sm" variant="ghost">
                   Remove
                 </Button>
