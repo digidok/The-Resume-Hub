@@ -15,6 +15,8 @@ export type Profile = {
   subscription_plan: SubscriptionPlan | null;
   subscription_expires_at: string | null;
   job_posting_credits: number;
+  phone_number: string | null;
+  source: string;
   created_at: string;
   updated_at: string;
 };
