@@ -73,6 +73,85 @@ button {
   }
 }
 
+/* Ambient hero background — very slow, GPU-friendly (transform + opacity only). */
+@keyframes drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(4%, 6%, 0) scale(1.08);
+  }
+}
+
+@keyframes drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-5%, -4%, 0) scale(1.05);
+  }
+}
+
+.animate-drift-a {
+  animation: drift-a 22s ease-in-out infinite;
+}
+
+.animate-drift-b {
+  animation: drift-b 26s ease-in-out infinite;
+}
+
+@keyframes scan-sweep {
+  0% {
+    top: 2%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    top: 96%;
+    opacity: 0;
+  }
+}
+
+.animate-scan-sweep {
+  animation: scan-sweep 1.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-drift-a,
+  .animate-drift-b,
+  .animate-scan-sweep {
+    animation: none !important;
+  }
+}
+
+@keyframes tour-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(20, 184, 168, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 24px rgba(20, 184, 168, 0);
+  }
+}
+
+.tour-highlight {
+  border-radius: 1rem;
+  animation: tour-pulse 1.8s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-highlight {
+    animation: none;
+    box-shadow: 0 0 0 4px rgba(20, 184, 168, 0.4);
+  }
+}
+
 @media print {
   @page {
     margin: 0.5in;

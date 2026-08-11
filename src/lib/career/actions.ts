@@ -39,14 +39,21 @@ function union(existing: string[], incoming: string[]): string[] {
   return [...existing, ...added];
 }
 
+export type CareerExtras = {
+  professionalTitle?: string;
+  certifications?: string[];
+  linkedinUrl?: string;
+};
+
 /**
- * Non-destructive sync: unions array fields (skills, languages), and only
- * fills scalar fields (title, industry) if they're currently blank. Never
- * overwrites anything the candidate already entered in their Career
- * Passport.
+ * Non-destructive sync: unions array fields (skills, languages,
+ * certifications), and only fills scalar fields (title, LinkedIn URL) if
+ * they're currently blank. Never overwrites anything the candidate already
+ * entered in their Career Passport.
  */
 export async function syncResumeToCareerPassport(
-  content: ResumeContent
+  content: ResumeContent,
+  extras?: CareerExtras
 ): Promise<{ error?: string; addedSkills?: number; addedLanguages?: number }> {
   const supabase = await createClient();
   const {
@@ -63,15 +70,17 @@ export async function syncResumeToCareerPassport(
   const current = existing as CareerProfile | null;
   const existingSkills = current?.skills ?? [];
   const existingLanguages = current?.languages ?? [];
+  const existingCertifications = current?.certifications ?? [];
   const mergedSkills = union(existingSkills, content.skills);
   const mergedLanguages = union(existingLanguages, content.languages);
+  const mergedCertifications = union(existingCertifications, extras?.certifications ?? []);
 
   const mostRecentTitle = content.experience.find((exp) => exp.current)?.title || content.experience[0]?.title;
 
   const { error } = await supabase.from("career_profiles").upsert(
     {
       user_id: user.id,
-      professional_title: current?.professional_title || mostRecentTitle || null,
+      professional_title: current?.professional_title || extras?.professionalTitle || mostRecentTitle || null,
       career_level: current?.career_level ?? null,
       industry: current?.industry ?? null,
       years_experience: current?.years_experience ?? null,
@@ -82,8 +91,8 @@ export async function syncResumeToCareerPassport(
       employment_type: current?.employment_type ?? null,
       work_preference: current?.work_preference ?? null,
       qualifications: current?.qualifications ?? [],
-      certifications: current?.certifications ?? [],
-      linkedin_url: current?.linkedin_url ?? null,
+      certifications: mergedCertifications,
+      linkedin_url: current?.linkedin_url || extras?.linkedinUrl || null,
       portfolio_url: current?.portfolio_url ?? null,
       skills: mergedSkills,
       languages: mergedLanguages,

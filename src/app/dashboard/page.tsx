@@ -27,8 +27,8 @@ function GetStartedChooser({ firstName }: { firstName: string }) {
             </div>
             <h2 className="mt-4 text-lg font-semibold text-slate-900">Upload your CV</h2>
             <p className="mt-2 flex-1 text-sm text-slate-600">
-              Already have a CV? Upload a PDF (or paste your LinkedIn profile) and we&apos;ll fill
-              in your resume automatically.
+              Already have a CV? Upload a PDF, Word doc, or photo/scan (or paste your LinkedIn
+              profile) and we&apos;ll fill in your resume automatically.
             </p>
             <span className="mt-4 flex items-center gap-1.5 text-sm font-medium text-brand-700">
               Upload a CV <ArrowRight className="h-4 w-4" />
