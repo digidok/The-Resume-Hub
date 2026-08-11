@@ -73,25 +73,27 @@ export default async function InterviewsPage() {
         Scheduled interviews across all your job posts.
       </p>
 
-      <Card className="mb-4 p-5">
-        <h2 className="mb-3 text-sm font-semibold text-slate-900">Upcoming</h2>
-        {upcoming.length === 0 && <p className="text-sm text-slate-500">No upcoming interviews.</p>}
-        <div className="space-y-1">
-          {upcoming.map((app) => (
-            <InterviewRow key={app.id} app={app} />
-          ))}
-        </div>
-      </Card>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card className="p-5">
+          <h2 className="mb-3 text-sm font-semibold text-slate-900">Upcoming</h2>
+          {upcoming.length === 0 && <p className="text-sm text-slate-500">No upcoming interviews.</p>}
+          <div className="space-y-1">
+            {upcoming.map((app) => (
+              <InterviewRow key={app.id} app={app} />
+            ))}
+          </div>
+        </Card>
 
-      <Card className="p-5">
-        <h2 className="mb-3 text-sm font-semibold text-slate-900">Past</h2>
-        {past.length === 0 && <p className="text-sm text-slate-500">No past interviews.</p>}
-        <div className="space-y-1">
-          {past.map((app) => (
-            <InterviewRow key={app.id} app={app} />
-          ))}
-        </div>
-      </Card>
+        <Card className="p-5">
+          <h2 className="mb-3 text-sm font-semibold text-slate-900">Past</h2>
+          {past.length === 0 && <p className="text-sm text-slate-500">No past interviews.</p>}
+          <div className="space-y-1">
+            {past.map((app) => (
+              <InterviewRow key={app.id} app={app} />
+            ))}
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }

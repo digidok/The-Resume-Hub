@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BackLink } from "@/components/ui/back-link";
 import { Input, Label, Textarea } from "@/components/ui/field";
@@ -134,29 +134,41 @@ export default function MockInterviewPage() {
 
   if (!questions) {
     return (
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-5xl">
         <BackLink href="/dashboard" label="Dashboard" />
         <h1 className="mb-1 text-3xl font-bold text-slate-900">Mock interview</h1>
         <p className="mb-6 text-sm text-slate-500">
           Get a set of real interview questions for a specific role, with instant AI feedback on
           your answers.
         </p>
-        <Card className="space-y-4 p-6">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label htmlFor="role">Role</Label>
-              <Input id="role" value={role} onChange={(e) => setRole(e.target.value)} placeholder="Product Manager" />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <Card className="space-y-4 p-6 lg:col-span-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="role">Role</Label>
+                <Input id="role" value={role} onChange={(e) => setRole(e.target.value)} placeholder="Product Manager" />
+              </div>
+              <div>
+                <Label htmlFor="company">Company (optional)</Label>
+                <Input id="company" value={company} onChange={(e) => setCompany(e.target.value)} />
+              </div>
             </div>
-            <div>
-              <Label htmlFor="company">Company (optional)</Label>
-              <Input id="company" value={company} onChange={(e) => setCompany(e.target.value)} />
+            {error && <p className="text-sm text-red-600">{error}</p>}
+            <Button onClick={generate} disabled={loading}>
+              {loading ? "Generating…" : "Generate questions (2 credits)"}
+            </Button>
+          </Card>
+          <Card className="p-5">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4 text-brand-600" />
+              <p className="text-sm font-semibold text-slate-900">What you&apos;ll get</p>
             </div>
-          </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <Button onClick={generate} disabled={loading}>
-            {loading ? "Generating…" : "Generate questions (2 credits)"}
-          </Button>
-        </Card>
+            <p className="mt-3 text-sm text-slate-600">
+              A mix of behavioural, technical, situational, culture-fit, and motivation questions
+              for the role — write your answer to each and get instant AI feedback.
+            </p>
+          </Card>
+        </div>
       </div>
     );
   }

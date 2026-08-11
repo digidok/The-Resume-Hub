@@ -2,6 +2,7 @@
 import { BackLink } from "@/components/ui/back-link";
 
 import { useMemo, useState } from "react";
+import { TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/field";
 import { Card } from "@/components/ui/card";
@@ -82,46 +83,48 @@ export default function SalaryInsightsPage() {
     : -1;
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto max-w-5xl">
       <BackLink href="/dashboard" label="Dashboard" />
       <h1 className="mb-1 text-3xl font-bold text-slate-900">Salary insights</h1>
       <p className="mb-6 text-sm text-slate-500">
         An AI-estimated salary range — a rough guide, not verified market data.
       </p>
-      <Card className="space-y-4 p-6">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label htmlFor="role">Role</Label>
-            <Input id="role" value={role} onChange={(e) => setRole(e.target.value)} placeholder="Software Engineer" />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card className="space-y-4 p-6">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="role">Role</Label>
+              <Input id="role" value={role} onChange={(e) => setRole(e.target.value)} placeholder="Software Engineer" />
+            </div>
+            <div>
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Cape Town, South Africa"
+              />
+            </div>
           </div>
           <div>
-            <Label htmlFor="location">Location</Label>
+            <Label htmlFor="target">Your target salary (optional)</Label>
             <Input
-              id="location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Cape Town, South Africa"
+              id="target"
+              type="number"
+              min={0}
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+              placeholder="e.g. 650000"
             />
           </div>
-        </div>
-        <div>
-          <Label htmlFor="target">Your target salary (optional)</Label>
-          <Input
-            id="target"
-            type="number"
-            min={0}
-            value={target}
-            onChange={(e) => setTarget(e.target.value)}
-            placeholder="e.g. 650000"
-          />
-        </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <Button onClick={estimate} disabled={loading}>
-          {loading ? "Estimating…" : "Estimate salary (1 credit)"}
-        </Button>
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          <Button onClick={estimate} disabled={loading}>
+            {loading ? "Estimating…" : "Estimate salary (1 credit)"}
+          </Button>
+        </Card>
 
-        {result && (
-          <div className="space-y-5 rounded-lg border border-slate-200 bg-slate-50 p-4">
+        {result ? (
+          <Card className="space-y-5 p-6">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <span className="text-2xl font-bold text-brand-600">
@@ -192,9 +195,20 @@ export default function SalaryInsightsPage() {
                 </ul>
               </div>
             )}
-          </div>
+          </Card>
+        ) : (
+          <Card className="p-5">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-brand-600" />
+              <p className="text-sm font-semibold text-slate-900">What you&apos;ll get</p>
+            </div>
+            <p className="mt-3 text-sm text-slate-600">
+              Enter a role and location to see an estimated salary range, how your target compares
+              to the median, and the factors that move pay up or down.
+            </p>
+          </Card>
         )}
-      </Card>
+      </div>
     </div>
   );
 }
