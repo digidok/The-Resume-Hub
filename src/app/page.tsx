@@ -18,6 +18,7 @@ import {
   Target,
   ListChecks,
   Flag,
+  Upload,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -30,7 +31,7 @@ import { ApplicationPipeline } from "@/components/landing/application-pipeline";
 import { CareerPassportPreview } from "@/components/landing/career-passport-preview";
 import { CareerCoachDemo } from "@/components/landing/career-coach-demo";
 import { HumanSupport } from "@/components/landing/human-support";
-import { AnimatedCounter } from "@/components/motion/animated-counter";
+import { EmployerShowcase } from "@/components/landing/employer-showcase";
 import { ScrollReveal, ScrollStagger } from "@/components/motion/scroll-reveal";
 import { MotionCard } from "@/components/motion/motion-card";
 import { fadeUp } from "@/components/motion/variants";
@@ -76,19 +77,19 @@ const AUTO_APPLY_POINTS = [
 
 const STEPS = [
   {
-    icon: FileText,
-    title: "Build your resume",
-    description: "Fill in your experience once — pick a template and see it update live.",
+    icon: Upload,
+    title: "Upload or build your CV",
+    description: "Import an existing CV or build one from scratch with our AI-powered editor.",
   },
   {
-    icon: Sparkles,
-    title: "Get AI feedback",
-    description: "Run an ATS-style review and tighten it up before you apply.",
+    icon: Target,
+    title: "Match with jobs",
+    description: "Our AI scores your fit for every open role — real percentages, not guesswork.",
   },
   {
-    icon: Briefcase,
-    title: "Apply and get hired",
-    description: "Share your profile or apply straight to open roles on the job board.",
+    icon: Zap,
+    title: "Auto-apply for you",
+    description: "Turn on scheduled auto-apply and let Resume Hub keep applying on your behalf.",
   },
 ];
 
@@ -138,30 +139,7 @@ export default function Home() {
       <main className="flex-1">
         <AnimatedHero />
 
-        <section className="border-b border-slate-200 bg-white py-10">
-          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 px-4 text-center sm:grid-cols-3">
-            <ScrollReveal>
-              <p className="text-3xl font-bold text-brand-700">
-                <AnimatedCounter value={5} suffix="+ yrs" />
-              </p>
-              <p className="mt-1 text-sm text-slate-500">Writing CVs professionally</p>
-            </ScrollReveal>
-            <ScrollReveal delay={0.1}>
-              <p className="text-3xl font-bold text-brand-700">
-                <AnimatedCounter value={66788} duration={1.4} suffix="+" />
-              </p>
-              <p className="mt-1 text-sm text-slate-500">CVs written by our team since we started</p>
-            </ScrollReveal>
-            <ScrollReveal delay={0.2}>
-              <p className="text-3xl font-bold text-brand-700">
-                <AnimatedCounter value={100} suffix="%" />
-              </p>
-              <p className="mt-1 text-sm text-slate-500">Real human support, whenever you need it</p>
-            </ScrollReveal>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-5xl px-4 py-20">
+        <section className="mx-auto max-w-5xl px-4 pb-20 pt-24 sm:pt-28">
           <ScrollReveal className="mx-auto max-w-2xl text-center">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
               Why job seekers trust Resume Hub
@@ -185,7 +163,7 @@ export default function Home() {
           </ScrollStagger>
         </section>
 
-        <section className="border-y border-slate-200 bg-slate-50 py-20">
+        <section id="cv-scanner" className="border-y border-slate-200 bg-slate-50 py-20">
           <div className="mx-auto max-w-5xl px-4">
             <ScrollReveal className="mx-auto max-w-2xl text-center">
               <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
@@ -213,7 +191,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-brand-950 py-20">
+        <section id="application-kit" className="bg-brand-950 py-20">
           <div className="mx-auto max-w-5xl px-4">
             <ScrollReveal className="mx-auto max-w-2xl text-center">
               <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
@@ -231,7 +209,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-5xl px-4 py-20">
+        <section id="pipeline" className="mx-auto max-w-5xl px-4 py-20">
           <ScrollReveal className="mx-auto max-w-2xl text-center">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
               Never lose track of an opportunity.
@@ -295,8 +273,12 @@ export default function Home() {
 
         <section id="features" className="mx-auto max-w-5xl px-4 py-20">
           <ScrollReveal className="mx-auto max-w-2xl text-center">
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-              Everything you need to move from job seeker to job offer.
+            <span className="inline-block rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+              Powerful Features
+            </span>
+            <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              Everything you need to{" "}
+              <span className="text-brand-600">move from job seeker to job offer</span>.
             </h2>
             <p className="mt-2 text-slate-600">
               One place to build your resume, share it, and put it in front of real employers.
@@ -317,30 +299,27 @@ export default function Home() {
           </ScrollStagger>
         </section>
 
-        <section className="border-y border-slate-200 bg-slate-50 py-20">
+        <section className="border-y border-slate-200 bg-white py-20">
           <div className="mx-auto max-w-5xl px-4">
             <ScrollReveal className="mx-auto max-w-2xl text-center">
-              <h2 className="text-2xl font-bold tracking-tight text-slate-900">How it works</h2>
-              <p className="mt-2 text-slate-600">Three steps from blank page to job offer.</p>
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">How It Works</h2>
+              <p className="mt-2 text-slate-600">
+                Three simple steps to revolutionise your job search.
+              </p>
             </ScrollReveal>
-            <div className="relative mt-12 grid grid-cols-1 gap-10 sm:grid-cols-3">
-              <div
-                className="absolute left-0 right-0 top-6 hidden h-px bg-slate-200 sm:block"
-                aria-hidden="true"
-              />
-              {STEPS.map((step, i) => (
-                <ScrollReveal key={step.title} delay={i * 0.1} className="relative text-center">
-                  <div className="relative mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-700 text-white shadow-sm">
-                    <step.icon className="h-5 w-5" />
-                    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent-500 text-[10px] font-bold text-white">
-                      {i + 1}
+            <ScrollStagger className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
+              {STEPS.map((step) => (
+                <MotionCard key={step.title}>
+                  <div className="h-full rounded-2xl bg-brand-50/60 p-8 text-center">
+                    <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white text-brand-700 shadow-sm">
+                      <step.icon className="h-6 w-6" />
                     </span>
+                    <h3 className="mt-5 text-base font-semibold text-slate-900">{step.title}</h3>
+                    <p className="mt-1.5 text-sm text-slate-600">{step.description}</p>
                   </div>
-                  <h3 className="mt-4 text-base font-semibold text-slate-900">{step.title}</h3>
-                  <p className="mt-1.5 text-sm text-slate-600">{step.description}</p>
-                </ScrollReveal>
+                </MotionCard>
               ))}
-            </div>
+            </ScrollStagger>
           </div>
         </section>
 
@@ -522,6 +501,29 @@ export default function Home() {
                 </Card>
               </MotionCard>
             </ScrollStagger>
+          </div>
+        </section>
+
+        <section className="border-y border-slate-200 bg-brand-50/40 py-20">
+          <div className="mx-auto max-w-5xl px-4">
+            <EmployerShowcase />
+          </div>
+        </section>
+
+        <section className="bg-white py-16">
+          <div className="mx-auto max-w-3xl px-4">
+            <ScrollReveal className="rounded-3xl bg-brand-50 p-8 text-center shadow-sm sm:p-10">
+              <h2 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+                Ready to find your next great hire?
+              </h2>
+              <p className="mx-auto mt-2 max-w-xl text-sm text-slate-600">
+                Post your first job and start connecting with candidates actively building their
+                careers on Resume Hub.
+              </p>
+              <Link href="/signup">
+                <Button className="mt-5">Post Your First Job — Free</Button>
+              </Link>
+            </ScrollReveal>
           </div>
         </section>
 

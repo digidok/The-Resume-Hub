@@ -131,6 +131,27 @@ button {
   }
 }
 
+@keyframes tour-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(20, 184, 168, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 24px rgba(20, 184, 168, 0);
+  }
+}
+
+.tour-highlight {
+  border-radius: 1rem;
+  animation: tour-pulse 1.8s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-highlight {
+    animation: none;
+    box-shadow: 0 0 0 4px rgba(20, 184, 168, 0.4);
+  }
+}
+
 @media print {
   @page {
     margin: 0.5in;

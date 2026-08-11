@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check, Sparkles } from "lucide-react";
+import { Check, Clock, FileText, HeartHandshake, LayoutTemplate, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AnimatedCounter } from "@/components/motion/animated-counter";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { EASE } from "@/components/motion/variants";
 import { DashboardPreview } from "@/components/landing/dashboard-preview";
+import { ProductTour } from "@/components/landing/product-tour";
 
 const TRUST_ITEMS = [
   "AI-powered CV optimisation",
@@ -14,46 +17,49 @@ const TRUST_ITEMS = [
   "Human support",
 ];
 
+const HERO_STATS = [
+  { icon: Clock, value: 5, suffix: "+ yrs", label: "Writing CVs professionally" },
+  { icon: FileText, value: 66788, suffix: "+", label: "CVs written by our team" },
+  { icon: LayoutTemplate, value: 10, suffix: "+", label: "Resume templates" },
+  { icon: HeartHandshake, value: 100, suffix: "%", label: "Real human support" },
+];
+
 export function AnimatedHero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-brand-950 via-brand-900 to-brand-700">
+    <>
+    <section className="relative overflow-hidden bg-gradient-to-b from-brand-50 via-white to-white">
       {/* Ambient background: slow drifting light fields + faint grid. Transform/opacity only. */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="animate-drift-a absolute -left-32 top-0 h-[32rem] w-[32rem] rounded-full bg-brand-200/40 blur-3xl" />
+        <div className="animate-drift-b absolute -right-24 top-1/3 h-[28rem] w-[28rem] rounded-full bg-accent-300/25 blur-3xl" />
         <div
-          className="animate-drift-a absolute -left-32 top-0 h-[32rem] w-[32rem] rounded-full bg-brand-400/25 blur-3xl"
-        />
-        <div
-          className="animate-drift-b absolute -right-24 top-1/3 h-[28rem] w-[28rem] rounded-full bg-accent-500/20 blur-3xl"
-        />
-        <div
-          className="absolute inset-0 opacity-[0.07]"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage:
-              "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
+              "linear-gradient(to right, #0f766e 1px, transparent 1px), linear-gradient(to bottom, #0f766e 1px, transparent 1px)",
             backgroundSize: "56px 56px",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-950/60 via-transparent to-transparent" />
       </div>
 
-      <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 py-24 sm:py-28 lg:grid-cols-2 lg:gap-16">
+      <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 pb-28 pt-20 sm:pb-32 sm:pt-24 lg:grid-cols-2 lg:gap-16">
         <div className="text-center lg:text-left">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: EASE }}
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white/80"
+            className="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brand-700"
           >
-            <Sparkles className="h-3.5 w-3.5 text-brand-300" />
-            Your career. One platform.
+            <Sparkles className="h-3.5 w-3.5" />
+            Africa&apos;s first scheduled auto-apply platform
           </motion.span>
 
-          <h1 className="mx-auto mt-6 max-w-xl text-5xl font-bold tracking-tight text-white sm:text-6xl lg:mx-0">
+          <h1 className="mx-auto mt-6 max-w-xl text-5xl font-bold tracking-tight sm:text-6xl lg:mx-0">
             <motion.span
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: EASE, delay: 0.1 }}
-              className="block"
+              className="block text-slate-900"
             >
               Your next job
             </motion.span>
@@ -61,7 +67,7 @@ export function AnimatedHero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: EASE, delay: 0.25 }}
-              className="block bg-gradient-to-r from-brand-200 via-white to-accent-300 bg-clip-text text-transparent"
+              className="block bg-gradient-to-r from-brand-600 to-brand-500 bg-clip-text text-transparent"
             >
               starts here.
             </motion.span>
@@ -71,7 +77,7 @@ export function AnimatedHero() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE, delay: 0.4 }}
-            className="mx-auto mt-5 max-w-xl text-lg text-white/80 lg:mx-0"
+            className="mx-auto mt-5 max-w-xl text-lg text-slate-600 lg:mx-0"
           >
             Build a stronger CV, discover jobs that fit your experience, create better
             applications and manage your entire job search from one place.
@@ -84,13 +90,11 @@ export function AnimatedHero() {
             className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start"
           >
             <Link href="/signup">
-              <Button size="lg" variant="solidInverse">
-                Build My CV Free
-              </Button>
+              <Button size="lg">Build My CV Free</Button>
             </Link>
             <Link href="/jobs">
-              <Button size="lg" variant="outlineInverse">
-                Explore Jobs
+              <Button size="lg" variant="outline">
+                Browse Jobs
               </Button>
             </Link>
           </motion.div>
@@ -98,12 +102,21 @@ export function AnimatedHero() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, ease: EASE, delay: 0.7 }}
-            className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/70 lg:justify-start"
+            transition={{ duration: 0.6, ease: EASE, delay: 0.65 }}
+            className="mt-5 flex justify-center lg:justify-start"
+          >
+            <ProductTour />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, ease: EASE, delay: 0.8 }}
+            className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-500 lg:justify-start"
           >
             {TRUST_ITEMS.map((item) => (
               <span key={item} className="flex items-center gap-1.5">
-                <Check className="h-4 w-4 text-brand-300" />
+                <Check className="h-4 w-4 text-brand-500" />
                 {item}
               </span>
             ))}
@@ -113,5 +126,24 @@ export function AnimatedHero() {
         <DashboardPreview />
       </div>
     </section>
+
+    <div className="relative z-10 mx-auto -mt-12 max-w-5xl px-4 sm:-mt-16">
+      <ScrollReveal className="rounded-3xl bg-white p-6 shadow-xl shadow-slate-900/10 sm:p-8">
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+          {HERO_STATS.map((stat) => (
+            <div key={stat.label} className="text-center">
+              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-brand-50 text-brand-700">
+                <stat.icon className="h-5 w-5" />
+              </span>
+              <p className="mt-2.5 text-2xl font-bold text-slate-900">
+                <AnimatedCounter value={stat.value} suffix={stat.suffix} duration={1.2} />
+              </p>
+              <p className="mt-0.5 text-xs text-slate-500">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </ScrollReveal>
+    </div>
+    </>
   );
 }

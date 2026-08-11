@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
-import { CheckCircle2, TrendingUp } from "lucide-react";
+import { CheckCircle2, Sparkles, TrendingUp } from "lucide-react";
 import { AnimatedCounter } from "@/components/motion/animated-counter";
 import { EASE } from "@/components/motion/variants";
 
@@ -111,6 +111,16 @@ export function DashboardPreview() {
             View Job
           </span>
         </motion.div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: -8, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: EASE, delay: 0.9 }}
+        className="absolute -right-4 -top-4 flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-brand-700 shadow-lg shadow-black/10 sm:-right-6"
+      >
+        <Sparkles className="h-3.5 w-3.5 text-brand-500" />
+        CV enhanced by AI
       </motion.div>
 
       <motion.div
