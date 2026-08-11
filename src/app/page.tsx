@@ -714,7 +714,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-y border-slate-200 bg-brand-50/40 py-20">
+        <section id="employers" className="border-y border-slate-200 bg-brand-50/40 py-20">
           <div className="mx-auto max-w-5xl px-4">
             <EmployerShowcase />
             <div className="mt-16">
