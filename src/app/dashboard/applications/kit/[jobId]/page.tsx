@@ -38,7 +38,7 @@ export default async function ApplicationKitPage({
   const match = careerProfile ? computeJobMatch(careerProfile, job as Job) : null;
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-5xl">
       <Link href={`/jobs/${job.id}`} className="text-sm text-brand-600 hover:underline">
         ← Back to job
       </Link>

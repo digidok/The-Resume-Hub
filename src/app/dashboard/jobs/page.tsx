@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BackLink } from "@/components/ui/back-link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
@@ -18,9 +19,10 @@ export default async function EmployerJobsPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto max-w-6xl">
+      <BackLink href="/dashboard" label="Dashboard" />
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">My job posts</h1>
+        <h1 className="text-3xl font-bold text-slate-900">My job posts</h1>
         <Link href="/dashboard/jobs/new">
           <Button>+ Post a job</Button>
         </Link>

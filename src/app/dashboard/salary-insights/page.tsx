@@ -1,4 +1,5 @@
 "use client";
+import { BackLink } from "@/components/ui/back-link";
 
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -81,8 +82,9 @@ export default function SalaryInsightsPage() {
     : -1;
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <h1 className="mb-1 text-2xl font-semibold text-slate-900">Salary insights</h1>
+    <div className="mx-auto max-w-4xl">
+      <BackLink href="/dashboard" label="Dashboard" />
+      <h1 className="mb-1 text-3xl font-bold text-slate-900">Salary insights</h1>
       <p className="mb-6 text-sm text-slate-500">
         An AI-estimated salary range — a rough guide, not verified market data.
       </p>

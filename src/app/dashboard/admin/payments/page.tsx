@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { Card } from "@/components/ui/card";
@@ -31,8 +32,9 @@ export default async function AdminPaymentsPage() {
   const completedCount = rows.filter((p) => p.status === "complete").length;
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <h1 className="mb-6 text-2xl font-semibold text-slate-900">Payments</h1>
+    <div className="mx-auto max-w-6xl">
+      <BackLink href="/dashboard" label="Dashboard" />
+      <h1 className="mb-6 text-3xl font-bold text-slate-900">Payments</h1>
 
       <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
         <StatCard label="Total revenue" value={`R${totalRevenue.toFixed(2)}`} />

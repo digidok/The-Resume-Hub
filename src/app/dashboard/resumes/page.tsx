@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BackLink } from "@/components/ui/back-link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createResume } from "@/lib/resumes/actions";
@@ -19,9 +20,10 @@ export default async function ResumesPage() {
     .order("updated_at", { ascending: false });
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto max-w-6xl">
+      <BackLink href="/dashboard" label="Dashboard" />
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">My resumes</h1>
+        <h1 className="text-3xl font-bold text-slate-900">My resumes</h1>
         <form action={createResume}>
           <Button type="submit">+ New resume</Button>
         </form>

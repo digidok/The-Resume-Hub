@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { DonutChart } from "@/components/dashboard/donut-chart";
@@ -121,7 +122,8 @@ export default async function AnalyticsPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <h1 className="text-2xl font-semibold text-slate-900">Analytics</h1>
+      <BackLink href="/dashboard" label="Dashboard" />
+      <h1 className="text-3xl font-bold text-slate-900">Analytics</h1>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <StatCard label="Total applicants" value={apps.length} />

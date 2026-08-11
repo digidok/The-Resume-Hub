@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BackLink } from "@/components/ui/back-link";
 import { Textarea } from "@/components/ui/field";
 import { Card } from "@/components/ui/card";
 import { CvImportReview } from "@/components/resume/cv-import-review";
@@ -147,7 +148,7 @@ export default function ImportProfilePage() {
 
   if (stage === "review" && draft) {
     return (
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-5xl">
         <CvImportReview draft={draft} onConfirm={confirm} onStartOver={startOver} confirming={confirming} />
       </div>
     );
@@ -155,7 +156,7 @@ export default function ImportProfilePage() {
 
   if (stage === "error") {
     return (
-      <div className="mx-auto max-w-xl">
+      <div className="mx-auto max-w-3xl">
         <Card className="space-y-4 p-6 text-center">
           <AlertTriangle className="mx-auto h-8 w-8 text-amber-500" />
           <div>
@@ -182,7 +183,7 @@ export default function ImportProfilePage() {
 
   if (stage === "loading") {
     return (
-      <div className="mx-auto max-w-xl">
+      <div className="mx-auto max-w-3xl">
         <Card className="space-y-4 p-8 text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-brand-200 border-t-brand-600" />
           <p className="text-sm font-medium text-slate-700">{progressLabel}</p>
@@ -193,8 +194,9 @@ export default function ImportProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-xl">
-      <h1 className="mb-1 text-2xl font-semibold text-slate-900">Import your CV</h1>
+    <div className="mx-auto max-w-3xl">
+      <BackLink href="/dashboard" label="Dashboard" />
+      <h1 className="mb-1 text-3xl font-bold text-slate-900">Import your CV</h1>
       <p className="mb-6 text-sm text-slate-500">
         Upload your CV as a PDF, Word document, or photo/scan — including LinkedIn&apos;s PDF export
         (Profile → Resources → Save to PDF) — and we&apos;ll turn it into an editable Resume Hub CV.
