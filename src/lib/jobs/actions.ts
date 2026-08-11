@@ -40,6 +40,9 @@ export async function createJob(
   const description = String(formData.get("description") ?? "").trim();
   const salaryMinRaw = String(formData.get("salary_min") ?? "").trim();
   const salaryMaxRaw = String(formData.get("salary_max") ?? "").trim();
+  const hiringManagerName = String(formData.get("hiring_manager_name") ?? "").trim();
+  const hiringManagerTitle = String(formData.get("hiring_manager_title") ?? "").trim();
+  const hiringManagerEmail = String(formData.get("hiring_manager_email") ?? "").trim();
 
   if (!title || !company || !description) {
     return { error: "Title, company, and description are required." };
@@ -56,6 +59,9 @@ export async function createJob(
       description,
       salary_min: salaryMinRaw ? Number(salaryMinRaw) : null,
       salary_max: salaryMaxRaw ? Number(salaryMaxRaw) : null,
+      hiring_manager_name: hiringManagerName || null,
+      hiring_manager_title: hiringManagerTitle || null,
+      hiring_manager_email: hiringManagerEmail || null,
     })
     .select("id")
     .single();

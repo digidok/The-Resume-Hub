@@ -25,6 +25,10 @@ import {
   MessageSquare,
   IdCard,
   HelpCircle,
+  Crosshair,
+  BarChart3,
+  PenLine,
+  Wand2,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -38,6 +42,8 @@ import { CareerPassportPreview } from "@/components/landing/career-passport-prev
 import { CareerCoachDemo } from "@/components/landing/career-coach-demo";
 import { HumanSupport } from "@/components/landing/human-support";
 import { EmployerShowcase } from "@/components/landing/employer-showcase";
+import { SaveJobBookmarklet } from "@/components/landing/save-job-bookmarklet";
+import { JobTrackerTable } from "@/components/landing/job-tracker-table";
 import { ScrollReveal, ScrollStagger } from "@/components/motion/scroll-reveal";
 import { MotionCard } from "@/components/motion/motion-card";
 import { fadeUp } from "@/components/motion/variants";
@@ -130,6 +136,40 @@ const TRUST_POINTS = [
     title: "The first of its kind in Africa",
     description: "Resume Hub is the first scheduled auto-apply service built for the African job market.",
   },
+];
+
+const AI_TOOLS = [
+  {
+    icon: Crosshair,
+    title: "Tailor CV to the Job",
+    description: "Quickly match and align your existing CV to any job description.",
+    href: "/dashboard/resumes",
+  },
+  {
+    icon: BarChart3,
+    title: "ATS & Keyword Checker",
+    description: "Check your CV score and keyword coverage against the job you want.",
+    href: "/dashboard/ats-scanner",
+  },
+  {
+    icon: PenLine,
+    title: "AI Bullet Point Generator",
+    description: "Generate metric-focused bullet points for your biggest achievements.",
+    href: "/dashboard/resumes",
+  },
+  {
+    icon: Wand2,
+    title: "AI Summary Generator",
+    description: "Turn your experience into a tailored, attention-grabbing summary.",
+    href: "/dashboard/resumes",
+  },
+];
+
+const APPLYING_STEPS = [
+  "Get a referral if you can — it's the fastest way to stand out",
+  "Customize your CV for this specific role",
+  "Write a tailored cover letter — Resume Hub drafts one for you",
+  "Prep for the interview with AI-suggested talking points",
 ];
 
 const REVIEW_CHECKS = [
@@ -242,6 +282,10 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="mx-auto max-w-5xl px-4 py-20">
+          <SaveJobBookmarklet />
+        </section>
+
         <section id="job-match" className="mx-auto max-w-5xl px-4 py-20">
           <ScrollReveal className="mx-auto max-w-2xl text-center">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
@@ -269,6 +313,19 @@ export default function Home() {
             <div className="mt-12">
               <ApplicationKitDemo />
             </div>
+            <ScrollReveal className="mx-auto mt-14 max-w-2xl">
+              <p className="text-center text-xs font-semibold uppercase tracking-wide text-white/50">
+                Applying steps
+              </p>
+              <ul className="mt-4 space-y-2.5">
+                {APPLYING_STEPS.map((step) => (
+                  <li key={step} className="flex items-start gap-2.5 text-sm text-white/80">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-400" />
+                    {step}
+                  </li>
+                ))}
+              </ul>
+            </ScrollReveal>
           </div>
         </section>
 
@@ -284,6 +341,14 @@ export default function Home() {
           <div className="mt-14">
             <ApplicationPipeline />
           </div>
+          <ScrollReveal delay={0.15} className="mt-14">
+            <p className="mx-auto max-w-2xl text-center text-sm text-slate-600">
+              What that looks like on your dashboard — organised, with reminders built in.
+            </p>
+            <div className="mt-8">
+              <JobTrackerTable />
+            </div>
+          </ScrollReveal>
         </section>
 
         <section className="border-y border-slate-200 bg-slate-50 py-20">
@@ -314,6 +379,21 @@ export default function Home() {
           <div className="mt-12">
             <CareerCoachDemo />
           </div>
+          <ScrollStagger className="mx-auto mt-14 grid max-w-3xl grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+            {AI_TOOLS.map((tool) => (
+              <MotionCard key={tool.title}>
+                <Link href={tool.href} className="group flex items-start gap-3">
+                  <tool.icon className="mt-0.5 h-5 w-5 shrink-0 text-brand-600" />
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-900 group-hover:text-brand-700">
+                      {tool.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-slate-600">{tool.description}</p>
+                  </div>
+                </Link>
+              </MotionCard>
+            ))}
+          </ScrollStagger>
         </section>
 
         <section className="border-y border-slate-200 bg-brand-50 py-20">

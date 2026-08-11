@@ -21,3 +21,15 @@ export async function toggleSavedJob(jobId: string, save: boolean) {
   revalidatePath("/jobs");
   revalidatePath("/dashboard/saved-jobs");
 }
+
+export async function removeSavedJobById(id: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  await supabase.from("saved_jobs").delete().eq("id", id).eq("user_id", user.id);
+
+  revalidatePath("/dashboard/saved-jobs");
+}
