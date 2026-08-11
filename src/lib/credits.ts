@@ -17,8 +17,27 @@ export const CREDIT_COSTS = {
 export type CreditAction = keyof typeof CREDIT_COSTS;
 
 /**
+ * Pro status grants unlimited AI credits — either permanently (a one-time
+ * Growth/Power credit top-up sets plan='pro' with no expiry) or for as long
+ * as an active Candidate Pro subscription is paid up (subscription_expires_at
+ * in the future). A lapsed subscription falls back to metered credits.
+ */
+export function hasUnlimitedCredits(profile: {
+  plan: string;
+  subscription_plan: string | null;
+  subscription_expires_at: string | null;
+}): boolean {
+  if (profile.plan !== "pro") return false;
+  if (profile.subscription_plan !== "candidate_pro") return true;
+  return Boolean(
+    profile.subscription_expires_at && new Date(profile.subscription_expires_at) > new Date()
+  );
+}
+
+/**
  * Deducts credits with a compare-and-swap write (WHERE matches the balance
  * just read) so a concurrent spend can't double-deduct the same credits.
+ * Pro users (see hasUnlimitedCredits) skip deduction entirely.
  */
 export async function spendCredits(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,12 +49,16 @@ export async function spendCredits(
 
   const { data: profile, error: readError } = await supabase
     .from("profiles")
-    .select("credits_remaining")
+    .select("credits_remaining, plan, subscription_plan, subscription_expires_at")
     .eq("id", userId)
     .single();
 
   if (readError || !profile) {
     return { ok: false, error: "Could not read credit balance." };
+  }
+
+  if (hasUnlimitedCredits(profile)) {
+    return { ok: true, remaining: profile.credits_remaining };
   }
 
   if (profile.credits_remaining < cost) {
