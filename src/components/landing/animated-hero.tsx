@@ -132,10 +132,8 @@ export function AnimatedHero() {
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
           {HERO_STATS.map((stat) => (
             <div key={stat.label} className="text-center">
-              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-brand-50 text-brand-700">
-                <stat.icon className="h-5 w-5" />
-              </span>
-              <p className="mt-2.5 text-2xl font-bold text-slate-900">
+              <stat.icon className="mx-auto h-5 w-5 text-brand-500" />
+              <p className="mt-2 text-2xl font-bold text-slate-900">
                 <AnimatedCounter value={stat.value} suffix={stat.suffix} duration={1.2} />
               </p>
               <p className="mt-0.5 text-xs text-slate-500">{stat.label}</p>

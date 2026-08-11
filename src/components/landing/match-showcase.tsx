@@ -133,17 +133,20 @@ export function MatchShowcase() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <div className="mx-auto flex w-full max-w-md flex-wrap justify-center gap-2 rounded-full bg-slate-100 p-1">
+      <div className="mx-auto flex w-full max-w-md flex-wrap justify-center gap-8 border-b border-white/10">
         {TABS.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors sm:text-sm ${
-              tab === t.id ? "bg-white text-brand-700 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            className={`relative pb-3 text-xs font-medium transition-colors sm:text-sm ${
+              tab === t.id ? "text-white" : "text-slate-400 hover:text-slate-200"
             }`}
           >
             {t.label}
+            {tab === t.id && (
+              <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-brand-400" />
+            )}
           </button>
         ))}
       </div>
