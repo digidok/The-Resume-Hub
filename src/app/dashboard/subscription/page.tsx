@@ -105,7 +105,7 @@ export default async function SubscriptionPage() {
                 <p className="mt-1 text-3xl font-bold text-slate-900">R{pkg.amountZar}</p>
                 <p className="mt-1 text-sm text-slate-500">{pkg.credits} AI credits</p>
                 {pkg.grantsPro && (
-                  <p className="mt-1 text-xs font-medium text-indigo-600">Includes Pro plan</p>
+                  <p className="mt-1 text-xs font-medium text-brand-600">Includes Pro plan</p>
                 )}
                 <form action="/api/payfast/checkout" method="POST" className="mt-4">
                   <input type="hidden" name="package_id" value={pkg.id} />

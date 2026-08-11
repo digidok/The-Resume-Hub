@@ -25,7 +25,7 @@ export default async function SavedJobsPage() {
       {(!savedJobs || savedJobs.length === 0) && (
         <Card className="p-8 text-center text-slate-500">
           No saved jobs yet.{" "}
-          <Link href="/jobs" className="text-indigo-600 hover:underline">
+          <Link href="/jobs" className="text-brand-600 hover:underline">
             Browse open roles →
           </Link>
         </Card>
@@ -40,7 +40,7 @@ export default async function SavedJobsPage() {
               <div>
                 <Link
                   href={`/jobs/${job.id}`}
-                  className="font-semibold text-slate-900 hover:text-indigo-600"
+                  className="font-semibold text-slate-900 hover:text-brand-600"
                 >
                   {job.title}
                 </Link>

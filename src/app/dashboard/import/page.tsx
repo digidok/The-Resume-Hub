@@ -56,7 +56,7 @@ export default function ImportProfilePage() {
               setFile(e.target.files?.[0] ?? null);
               if (e.target.files?.[0]) setText("");
             }}
-            className="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-indigo-700"
+            className="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-700"
           />
         </div>
         <div className="text-center text-xs text-slate-400">— or —</div>

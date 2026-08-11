@@ -89,7 +89,7 @@ export default async function CandidatePoolPage() {
                 href={`/r/${resume.slug}`}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-4 inline-block text-sm font-medium text-indigo-600 hover:underline"
+                className="mt-4 inline-block text-sm font-medium text-brand-600 hover:underline"
               >
                 View resume: {resume.title} →
               </a>

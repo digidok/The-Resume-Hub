@@ -96,7 +96,7 @@ export default async function ApplicantsPage({
 
   return (
     <div className="mx-auto max-w-4xl">
-      <Link href={`/dashboard/jobs/${id}`} className="text-sm text-indigo-600 hover:underline">
+      <Link href={`/dashboard/jobs/${id}`} className="text-sm text-brand-600 hover:underline">
         ← {job.title}
       </Link>
       <h1 className="mb-4 mt-1 text-2xl font-semibold text-slate-900">Applicants</h1>
@@ -121,7 +121,7 @@ export default async function ApplicantsPage({
             href={`/dashboard/jobs/${id}/applicants?status=${tab.value}${query ? `&q=${encodeURIComponent(query)}` : ""}`}
             className={`rounded-full px-3 py-1 text-sm font-medium ${
               statusFilter === tab.value
-                ? "bg-indigo-600 text-white"
+                ? "bg-brand-600 text-white"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
           >
@@ -195,7 +195,7 @@ export default async function ApplicantsPage({
                     href={`/r/${app.resume.slug}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-sm font-medium text-indigo-600 hover:underline"
+                    className="text-sm font-medium text-brand-600 hover:underline"
                   >
                     View resume: {app.resume.title} →
                   </a>
@@ -246,13 +246,13 @@ export default async function ApplicantsPage({
               <div className="mt-3 flex flex-wrap gap-3 border-t border-slate-100 pt-3 text-sm">
                 <Link
                   href={`/dashboard/jobs/${id}/applicants/${app.id}/scorecard`}
-                  className="font-medium text-indigo-600 hover:underline"
+                  className="font-medium text-brand-600 hover:underline"
                 >
                   Scorecard
                 </Link>
                 <Link
                   href={`/dashboard/jobs/${id}/applicants/${app.id}/offer`}
-                  className="font-medium text-indigo-600 hover:underline"
+                  className="font-medium text-brand-600 hover:underline"
                 >
                   Offer letter
                 </Link>

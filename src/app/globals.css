@@ -2,7 +2,25 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0f172a;
+
+  /* Brand: deep navy — primary actions, headers, dark surfaces */
+  --color-brand-50: #eef2f8;
+  --color-brand-100: #d8e2f0;
+  --color-brand-200: #b2c5e0;
+  --color-brand-300: #82a1cb;
+  --color-brand-400: #5679ad;
+  --color-brand-500: #375a8c;
+  --color-brand-600: #26436d;
+  --color-brand-700: #1c3355;
+  --color-brand-800: #142640;
+  --color-brand-900: #0c1a2c;
+  --color-brand-950: #060f1b;
+
+  /* Accent: muted gold — reserved for highlights, badges, pro/premium markers */
+  --color-accent-400: #e0b568;
+  --color-accent-500: #cc9a45;
+  --color-accent-600: #ab7d31;
 }
 
 @theme inline {
@@ -10,19 +28,38 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-brand-50: var(--color-brand-50);
+  --color-brand-100: var(--color-brand-100);
+  --color-brand-200: var(--color-brand-200);
+  --color-brand-300: var(--color-brand-300);
+  --color-brand-400: var(--color-brand-400);
+  --color-brand-500: var(--color-brand-500);
+  --color-brand-600: var(--color-brand-600);
+  --color-brand-700: var(--color-brand-700);
+  --color-brand-800: var(--color-brand-800);
+  --color-brand-900: var(--color-brand-900);
+  --color-brand-950: var(--color-brand-950);
+
+  --color-accent-400: var(--color-accent-400);
+  --color-accent-500: var(--color-accent-500);
+  --color-accent-600: var(--color-accent-600);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+a,
+button {
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
 }
 
 @media print {

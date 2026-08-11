@@ -78,7 +78,7 @@ export default function SalaryInsightsPage() {
         {result && (
           <div className="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-indigo-600">
+              <span className="text-2xl font-bold text-brand-600">
                 {result.currency} {result.median.toLocaleString()}
               </span>
               <span className="text-sm text-slate-500">median / {result.period}</span>

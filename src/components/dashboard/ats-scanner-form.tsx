@@ -75,7 +75,7 @@ export function AtsScannerForm({ resumes }: { resumes: { id: string; title: stri
         <div className="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
           {typeof review.score === "number" && (
             <div className="flex items-center gap-3">
-              <span className="text-2xl font-bold text-indigo-600">{review.score}/100</span>
+              <span className="text-2xl font-bold text-brand-600">{review.score}/100</span>
               <span className="text-sm text-slate-500">ATS match score</span>
             </div>
           )}
@@ -84,7 +84,7 @@ export function AtsScannerForm({ resumes }: { resumes: { id: string; title: stri
             [
               ["strengths", "Strengths", "text-emerald-700"],
               ["weaknesses", "Weaknesses", "text-amber-700"],
-              ["suggestions", "Suggestions", "text-indigo-700"],
+              ["suggestions", "Suggestions", "text-brand-700"],
               ["keyword_gaps", "Missing keywords", "text-red-700"],
             ] as const
           ).map(([key, label, tone]) => {

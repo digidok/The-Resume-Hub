@@ -44,7 +44,7 @@ export default async function ScorecardPage({
     <div className="mx-auto max-w-xl">
       <Link
         href={`/dashboard/jobs/${id}/applicants`}
-        className="text-sm text-indigo-600 hover:underline"
+        className="text-sm text-brand-600 hover:underline"
       >
         ← Applicants
       </Link>

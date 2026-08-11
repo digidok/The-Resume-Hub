@@ -107,7 +107,7 @@ export function ResumeEditor({ resume, siteUrl }: { resume: Resume; siteUrl: str
               type="checkbox"
               checked={isPublic}
               onChange={(e) => setIsPublic(e.target.checked)}
-              className="h-5 w-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+              className="h-5 w-5 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
             />
           </div>
 
@@ -132,7 +132,7 @@ export function ResumeEditor({ resume, siteUrl }: { resume: Resume; siteUrl: str
                 href={`/r/${slug}`}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-1 inline-block text-xs text-indigo-600 hover:underline"
+                className="mt-1 inline-block text-xs text-brand-600 hover:underline"
               >
                 View public page →
               </a>
@@ -304,7 +304,7 @@ function ExperienceEditor({
                   type="checkbox"
                   checked={item.current ?? false}
                   onChange={(e) => update(item.id, { current: e.target.checked })}
-                  className="h-4 w-4 rounded border-slate-300 text-indigo-600"
+                  className="h-4 w-4 rounded border-slate-300 text-brand-600"
                 />
                 Current
               </label>
@@ -495,13 +495,13 @@ function SkillsEditor({
         {skills.map((skill) => (
           <span
             key={skill}
-            className="flex items-center gap-1 rounded-full bg-indigo-50 px-3 py-1 text-sm text-indigo-700"
+            className="flex items-center gap-1 rounded-full bg-brand-50 px-3 py-1 text-sm text-brand-700"
           >
             {skill}
             <button
               type="button"
               onClick={() => onChange(skills.filter((s) => s !== skill))}
-              className="text-indigo-400 hover:text-indigo-700"
+              className="text-brand-400 hover:text-brand-700"
               aria-label={`Remove ${skill}`}
             >
               ×
@@ -556,7 +556,7 @@ function LanguagesEditor({
           type="checkbox"
           checked={allSelected}
           onChange={toggleAll}
-          className="h-4 w-4 rounded border-slate-300 text-indigo-600"
+          className="h-4 w-4 rounded border-slate-300 text-brand-600"
         />
         Select all
       </label>
@@ -567,7 +567,7 @@ function LanguagesEditor({
               type="checkbox"
               checked={languages.includes(lang)}
               onChange={() => toggleLanguage(lang)}
-              className="h-4 w-4 rounded border-slate-300 text-indigo-600"
+              className="h-4 w-4 rounded border-slate-300 text-brand-600"
             />
             {lang}
           </label>
@@ -595,13 +595,13 @@ function LanguagesEditor({
           .map((lang) => (
             <span
               key={lang}
-              className="flex items-center gap-1 rounded-full bg-indigo-50 px-3 py-1 text-sm text-indigo-700"
+              className="flex items-center gap-1 rounded-full bg-brand-50 px-3 py-1 text-sm text-brand-700"
             >
               {lang}
               <button
                 type="button"
                 onClick={() => onChange(languages.filter((l) => l !== lang))}
-                className="text-indigo-400 hover:text-indigo-700"
+                className="text-brand-400 hover:text-brand-700"
                 aria-label={`Remove ${lang}`}
               >
                 ×

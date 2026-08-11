@@ -79,7 +79,7 @@ export function BulkApplyForm({
               type="checkbox"
               checked={selected.has(job.id)}
               onChange={() => toggle(job.id)}
-              className="h-4 w-4 rounded border-slate-300 text-indigo-600"
+              className="h-4 w-4 rounded border-slate-300 text-brand-600"
             />
             <div>
               <p className="text-sm font-medium text-slate-900">{job.title}</p>

@@ -103,7 +103,7 @@ export default function MockInterviewPage() {
                 className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
                   m.role === "assistant"
                     ? "self-start bg-white text-slate-800 shadow-sm"
-                    : "self-end bg-indigo-600 text-white"
+                    : "self-end bg-brand-600 text-white"
                 }`}
               >
                 {m.content}

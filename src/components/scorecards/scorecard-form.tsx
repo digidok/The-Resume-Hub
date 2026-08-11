@@ -47,7 +47,7 @@ export function ScorecardForm({
                 {[1, 2, 3, 4, 5].map((score) => (
                   <label
                     key={score}
-                    className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-slate-300 text-sm has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-600 has-[:checked]:text-white"
+                    className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-slate-300 text-sm has-[:checked]:border-brand-600 has-[:checked]:bg-brand-600 has-[:checked]:text-white"
                   >
                     <input
                       type="radio"

@@ -35,7 +35,7 @@ export default async function EmployerJobsPage() {
       <div className="space-y-3">
         {jobs?.map((job) => (
           <Link key={job.id} href={`/dashboard/jobs/${job.id}`}>
-            <Card className="flex items-center justify-between p-5 transition hover:border-indigo-300 hover:shadow-md">
+            <Card className="flex items-center justify-between p-5 transition hover:border-brand-300 hover:shadow-md">
               <div>
                 <h2 className="font-semibold text-slate-900">{job.title}</h2>
                 <p className="text-sm text-slate-500">{job.company}</p>

@@ -31,7 +31,7 @@ export default async function MyApplicationsPage() {
       {(!applications || applications.length === 0) && (
         <Card className="p-8 text-center text-slate-500">
           You haven&apos;t applied to any jobs yet.{" "}
-          <Link href="/jobs" className="text-indigo-600 hover:underline">
+          <Link href="/jobs" className="text-brand-600 hover:underline">
             Browse open roles →
           </Link>
         </Card>
@@ -45,7 +45,7 @@ export default async function MyApplicationsPage() {
               <div>
                 <Link
                   href={job ? `/jobs/${job.id}` : "#"}
-                  className="font-semibold text-slate-900 hover:text-indigo-600"
+                  className="font-semibold text-slate-900 hover:text-brand-600"
                 >
                   {job?.title ?? "Job"}
                 </Link>
@@ -68,7 +68,7 @@ export default async function MyApplicationsPage() {
                 {app.status === "offer" && (
                   <Link
                     href={`/dashboard/applications/${app.id}/offer`}
-                    className="text-xs font-medium text-indigo-600 hover:underline"
+                    className="text-xs font-medium text-brand-600 hover:underline"
                   >
                     View offer letter
                   </Link>

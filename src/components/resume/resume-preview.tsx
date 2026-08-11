@@ -17,8 +17,8 @@ const templateStyles: Record<
   },
   modern: {
     font: "font-sans",
-    accent: "text-indigo-600 border-indigo-600",
-    heading: "uppercase tracking-wide text-sm font-bold text-indigo-600 pb-1",
+    accent: "text-brand-600 border-brand-600",
+    heading: "uppercase tracking-wide text-sm font-bold text-brand-600 pb-1",
   },
   minimal: {
     font: "font-sans",
