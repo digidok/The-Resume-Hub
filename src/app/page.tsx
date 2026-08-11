@@ -98,7 +98,7 @@ function HeroMockup() {
           <div
             className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full"
             style={{
-              background: "conic-gradient(#cc9a45 0deg 331deg, #e2e8f0 331deg 360deg)",
+              background: "conic-gradient(#ff7a45 0deg 331deg, #e2e8f0 331deg 360deg)",
             }}
           >
             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-900">
@@ -120,31 +120,33 @@ export default function Home() {
     <div className="flex flex-1 flex-col bg-white">
       <SiteHeader />
       <main className="flex-1">
-        <section className="relative overflow-hidden bg-gradient-to-b from-brand-950 via-brand-900 to-brand-800">
+        <section className="relative overflow-hidden bg-gradient-to-br from-brand-400 via-brand-500 to-accent-500">
           <div
-            className="absolute inset-0 opacity-[0.07]"
-            style={{
-              backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
-              backgroundSize: "28px 28px",
-            }}
+            className="absolute -left-24 -top-24 h-80 w-80 rounded-full bg-white/20 blur-3xl"
+            aria-hidden="true"
+          />
+          <div
+            className="absolute -bottom-32 -right-16 h-96 w-96 rounded-full bg-accent-300/30 blur-3xl"
             aria-hidden="true"
           />
           <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-20 sm:py-24 lg:grid-cols-2 lg:gap-16">
             <div className="text-center lg:text-left">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-accent-400">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-medium text-white">
                 <Sparkles className="h-3.5 w-3.5" />
                 AI-assisted resume review
               </span>
               <h1 className="mx-auto mt-5 max-w-xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:mx-0">
                 Build your resume. Get discovered. Land the job.
               </h1>
-              <p className="mx-auto mt-4 max-w-xl text-lg text-slate-300 lg:mx-0">
+              <p className="mx-auto mt-4 max-w-xl text-lg text-white/90 lg:mx-0">
                 Resume Hub is a platform to build, share, and improve your resume — and apply to
                 real jobs from employers using AI-assisted feedback along the way.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
                 <Link href="/signup">
-                  <Button size="lg">Create your resume</Button>
+                  <Button size="lg" variant="solidInverse">
+                    Create your resume
+                  </Button>
                 </Link>
                 <Link href="/jobs">
                   <Button size="lg" variant="outlineInverse">
@@ -152,11 +154,11 @@ export default function Home() {
                   </Button>
                 </Link>
               </div>
-              <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-300 lg:justify-start">
+              <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/90 lg:justify-start">
                 {["Free to get started", "No recruiter middleman", "AI feedback in seconds"].map(
                   (item) => (
                     <span key={item} className="flex items-center gap-1.5">
-                      <Check className="h-4 w-4 text-accent-400" />
+                      <Check className="h-4 w-4 text-white" />
                       {item}
                     </span>
                   )
@@ -310,16 +312,20 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="relative overflow-hidden bg-gradient-to-br from-brand-800 via-brand-900 to-brand-950 py-16">
+        <section className="relative overflow-hidden bg-gradient-to-br from-brand-500 via-brand-600 to-accent-500 py-16">
+          <div
+            className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-white/15 blur-3xl"
+            aria-hidden="true"
+          />
           <div className="relative mx-auto max-w-3xl px-4 text-center">
             <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
               Ready to build a resume that gets you hired?
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-slate-300">
+            <p className="mx-auto mt-3 max-w-xl text-white/90">
               It&apos;s free to get started — build your first resume in minutes.
             </p>
             <Link href="/signup">
-              <Button size="lg" className="mt-6">
+              <Button size="lg" variant="solidInverse" className="mt-6">
                 Create your resume
                 <ArrowRight className="h-4 w-4" />
               </Button>

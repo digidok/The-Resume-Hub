@@ -4,23 +4,23 @@
   --background: #ffffff;
   --foreground: #0f172a;
 
-  /* Brand: deep navy — primary actions, headers, dark surfaces */
-  --color-brand-50: #eef2f8;
-  --color-brand-100: #d8e2f0;
-  --color-brand-200: #b2c5e0;
-  --color-brand-300: #82a1cb;
-  --color-brand-400: #5679ad;
-  --color-brand-500: #375a8c;
-  --color-brand-600: #26436d;
-  --color-brand-700: #1c3355;
-  --color-brand-800: #142640;
-  --color-brand-900: #0c1a2c;
-  --color-brand-950: #060f1b;
+  /* Brand: turquoise — primary actions, headers, interactive accents */
+  --color-brand-50: #eafffc;
+  --color-brand-100: #cbfdf6;
+  --color-brand-200: #99f8ed;
+  --color-brand-300: #5eeade;
+  --color-brand-400: #2dd4c6;
+  --color-brand-500: #14b8a8;
+  --color-brand-600: #0d9488;
+  --color-brand-700: #0f766e;
+  --color-brand-800: #135e58;
+  --color-brand-900: #134945;
+  --color-brand-950: #062825;
 
-  /* Accent: muted gold — reserved for highlights, badges, pro/premium markers */
-  --color-accent-400: #e0b568;
-  --color-accent-500: #cc9a45;
-  --color-accent-600: #ab7d31;
+  /* Accent: warm coral — pairs with the turquoise for a fun, warm energy */
+  --color-accent-400: #ff9466;
+  --color-accent-500: #ff7a45;
+  --color-accent-600: #f2602c;
 }
 
 @theme inline {

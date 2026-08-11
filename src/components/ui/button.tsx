@@ -1,29 +1,39 @@
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
-type Variant = "primary" | "secondary" | "outline" | "outlineInverse" | "ghost" | "danger";
+type Variant =
+  | "primary"
+  | "secondary"
+  | "outline"
+  | "outlineInverse"
+  | "solidInverse"
+  | "ghost"
+  | "danger";
 type Size = "sm" | "md" | "lg";
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-brand-700 text-white shadow-sm shadow-brand-900/10 hover:bg-brand-600 hover:-translate-y-px hover:shadow-md hover:shadow-brand-900/15 focus-visible:outline-brand-600 disabled:bg-brand-300 disabled:shadow-none disabled:translate-y-0",
+    "bg-brand-500 text-white shadow-md shadow-brand-500/25 hover:bg-brand-600 hover:shadow-lg hover:shadow-brand-500/30 focus-visible:outline-brand-500",
+  // Warm coral — the fun, high-energy counterpart to the turquoise primary.
   secondary:
-    "bg-brand-950 text-white hover:bg-brand-800 focus-visible:outline-brand-700 disabled:bg-slate-400",
+    "bg-accent-500 text-white shadow-md shadow-accent-500/25 hover:bg-accent-600 hover:shadow-lg hover:shadow-accent-500/30 focus-visible:outline-accent-500",
   outline:
-    "border border-slate-300 bg-white text-slate-900 hover:border-brand-300 hover:bg-brand-50 focus-visible:outline-brand-600 disabled:text-slate-400",
-  // For use on dark/brand-colored backgrounds (e.g. the landing hero), where the
+    "border-2 border-brand-200 bg-white text-brand-700 hover:border-brand-400 hover:bg-brand-50 focus-visible:outline-brand-500",
+  // For use on colorful/dark backgrounds (e.g. the landing hero), where the
   // default `outline` variant's white fill would blend in or clash.
   outlineInverse:
-    "border border-white/25 bg-white/5 text-white hover:bg-white/15 focus-visible:outline-white disabled:text-white/50",
-  ghost:
-    "text-slate-700 hover:bg-slate-100 focus-visible:outline-brand-600 disabled:text-slate-400",
+    "border-2 border-white/30 bg-white/10 text-white hover:bg-white/20 focus-visible:outline-white",
+  // Solid white, for the primary CTA on a colorful/dark background.
+  solidInverse:
+    "bg-white text-brand-700 shadow-lg shadow-black/10 hover:bg-white/90 focus-visible:outline-white",
+  ghost: "text-slate-700 hover:bg-brand-50 hover:text-brand-700 focus-visible:outline-brand-500",
   danger:
-    "bg-red-600 text-white hover:bg-red-500 focus-visible:outline-red-600 disabled:bg-red-300",
+    "bg-red-500 text-white shadow-md shadow-red-500/25 hover:bg-red-600 focus-visible:outline-red-500",
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: "px-3 py-1.5 text-sm",
-  md: "px-4 py-2 text-sm",
-  lg: "px-5 py-3 text-base",
+  sm: "px-3.5 py-1.5 text-sm",
+  md: "px-5 py-2 text-sm",
+  lg: "px-6 py-3 text-base",
 };
 
 export const Button = forwardRef<
@@ -33,7 +43,7 @@ export const Button = forwardRef<
   return (
     <button
       ref={ref}
-      className={`inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all hover:scale-[1.03] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
       {...props}
     />
   );
