@@ -14,7 +14,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, full_name, plan, credits_remaining")
+    .select("role, full_name, plan, credits_remaining, job_posting_credits")
     .eq("id", user.id)
     .single();
 
@@ -122,6 +122,15 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
             >
               <span className="font-medium capitalize text-indigo-700">{profile?.plan ?? "free"} plan</span>
               <span className="text-indigo-600">{profile?.credits_remaining ?? 0} credits</span>
+            </Link>
+          )}
+          {role === "employer" && (
+            <Link
+              href="/dashboard/subscription"
+              className="mb-3 flex items-center justify-between rounded-lg bg-indigo-50 px-3 py-2 text-sm"
+            >
+              <span className="font-medium text-indigo-700">Billing</span>
+              <span className="text-indigo-600">{profile?.job_posting_credits ?? 0} job posts left</span>
             </Link>
           )}
           <p className="truncate text-sm font-medium text-slate-900">

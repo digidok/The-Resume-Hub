@@ -18,11 +18,17 @@ export async function createJob(
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, job_posting_credits")
     .eq("id", user.id)
     .single();
   if (profile?.role !== "employer") {
     return { error: "Only employer accounts can post jobs." };
+  }
+  if (profile.job_posting_credits <= 0) {
+    return {
+      error:
+        "You've used up your job posting allowance. Subscribe to the Employer Job Package to unlock 5 more job posts.",
+    };
   }
 
   const title = String(formData.get("title") ?? "").trim();
@@ -57,6 +63,12 @@ export async function createJob(
   if (error || !data) {
     return { error: error?.message ?? "Could not create job." };
   }
+
+  await supabase
+    .from("profiles")
+    .update({ job_posting_credits: profile.job_posting_credits - 1 })
+    .eq("id", user.id)
+    .eq("job_posting_credits", profile.job_posting_credits);
 
   revalidatePath("/dashboard/jobs");
   revalidatePath("/jobs");

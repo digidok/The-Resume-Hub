@@ -1,6 +1,8 @@
 export type ProfileRole = "candidate" | "employer" | "admin";
 export type ProfilePlan = "free" | "pro";
 
+export type SubscriptionPlan = "candidate_pro" | "employer_jobs";
+
 export type Profile = {
   id: string;
   role: ProfileRole;
@@ -10,6 +12,9 @@ export type Profile = {
   plan: ProfilePlan;
   credits_remaining: number;
   open_to_work: boolean;
+  subscription_plan: SubscriptionPlan | null;
+  subscription_expires_at: string | null;
+  job_posting_credits: number;
   created_at: string;
   updated_at: string;
 };

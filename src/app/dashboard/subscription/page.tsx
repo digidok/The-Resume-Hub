@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { CREDIT_PACKAGES, getPayfastConfig } from "@/lib/payfast/config";
+import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGES, getPayfastConfig } from "@/lib/payfast/config";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -13,27 +13,40 @@ export default async function SubscriptionPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("plan, credits_remaining")
+    .select("role, plan, credits_remaining, subscription_plan, subscription_expires_at, job_posting_credits")
     .eq("id", user.id)
     .single();
 
   const { data: payments } = await supabase
     .from("payments")
-    .select("id, item_name, amount, status, created_at")
+    .select("id, item_name, amount, status, payment_type, created_at")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(10);
 
   const config = getPayfastConfig();
+  const role = profile?.role ?? "candidate";
+  const subscriptionPkg = SUBSCRIPTION_PACKAGES.find((p) => p.role === role);
+  const isSubscribed =
+    profile?.subscription_plan &&
+    profile.subscription_expires_at &&
+    new Date(profile.subscription_expires_at) > new Date();
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Subscription & credits</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">Subscription & billing</h1>
         <p className="text-sm text-slate-500">
           You&apos;re on the <span className="font-medium capitalize">{profile?.plan ?? "free"}</span>{" "}
           plan with <span className="font-medium">{profile?.credits_remaining ?? 0}</span> AI credits
           remaining.
+          {role === "employer" && (
+            <>
+              {" "}
+              You have <span className="font-medium">{profile?.job_posting_credits ?? 0}</span> job
+              post{(profile?.job_posting_credits ?? 0) === 1 ? "" : "s"} remaining.
+            </>
+          )}
         </p>
       </div>
 
@@ -50,24 +63,61 @@ export default async function SubscriptionPage() {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {CREDIT_PACKAGES.map((pkg) => (
-          <Card key={pkg.id} className="flex flex-col p-5">
-            <h2 className="text-lg font-semibold text-slate-900">{pkg.label}</h2>
-            <p className="mt-1 text-3xl font-bold text-slate-900">R{pkg.amountZar}</p>
-            <p className="mt-1 text-sm text-slate-500">{pkg.credits} AI credits</p>
-            {pkg.grantsPro && (
-              <p className="mt-1 text-xs font-medium text-indigo-600">Includes Pro plan</p>
-            )}
-            <form action="/api/payfast/checkout" method="POST" className="mt-4">
-              <input type="hidden" name="package_id" value={pkg.id} />
-              <Button type="submit" disabled={!config.configured} className="w-full">
-                Buy
-              </Button>
-            </form>
+      {subscriptionPkg && (
+        <div>
+          <h2 className="mb-3 text-sm font-semibold text-slate-900">Monthly subscription</h2>
+          <Card className="flex flex-wrap items-center justify-between gap-4 p-5">
+            <div>
+              <p className="font-semibold text-slate-900">{subscriptionPkg.label}</p>
+              <p className="text-sm text-slate-500">{subscriptionPkg.description}</p>
+              {isSubscribed && profile?.subscription_expires_at && (
+                <p className="mt-1 text-xs font-medium text-emerald-600">
+                  Active — renews {new Date(profile.subscription_expires_at).toLocaleDateString()}
+                </p>
+              )}
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-2xl font-bold text-slate-900">R{subscriptionPkg.amountZar}</span>
+              <form action="/api/payfast/subscribe" method="POST">
+                <input type="hidden" name="package_id" value={subscriptionPkg.id} />
+                <Button type="submit" disabled={!config.configured || Boolean(isSubscribed)}>
+                  {isSubscribed ? "Subscribed" : "Subscribe"}
+                </Button>
+              </form>
+            </div>
           </Card>
-        ))}
-      </div>
+          {isSubscribed && (
+            <p className="mt-2 text-xs text-slate-400">
+              To cancel, contact us or manage the subscription directly from your Payfast account —
+              in-app cancellation isn&apos;t available yet.
+            </p>
+          )}
+        </div>
+      )}
+
+      {role === "candidate" && (
+        <div>
+          <h2 className="mb-3 text-sm font-semibold text-slate-900">One-time credit top-ups</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {CREDIT_PACKAGES.map((pkg) => (
+              <Card key={pkg.id} className="flex flex-col p-5">
+                <h3 className="text-lg font-semibold text-slate-900">{pkg.label}</h3>
+                <p className="mt-1 text-3xl font-bold text-slate-900">R{pkg.amountZar}</p>
+                <p className="mt-1 text-sm text-slate-500">{pkg.credits} AI credits</p>
+                {pkg.grantsPro && (
+                  <p className="mt-1 text-xs font-medium text-indigo-600">Includes Pro plan</p>
+                )}
+                <form action="/api/payfast/checkout" method="POST" className="mt-4">
+                  <input type="hidden" name="package_id" value={pkg.id} />
+                  <Button type="submit" disabled={!config.configured} className="w-full">
+                    Buy
+                  </Button>
+                </form>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
 
       {payments && payments.length > 0 && (
         <div>

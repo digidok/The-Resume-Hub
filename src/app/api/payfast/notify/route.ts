@@ -93,14 +93,16 @@ export async function POST(request: Request) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.rpc("complete_payfast_payment", {
+  const { error } = await supabase.rpc("process_payfast_itn", {
     p_m_payment_id: pfData.m_payment_id,
     p_pf_payment_id: pfData.pf_payment_id ?? null,
     p_amount: grossAmount,
+    p_token: pfData.token ?? null,
+    p_item_name: pfData.item_name ?? null,
   });
 
   if (error) {
-    console.error("Payfast ITN: complete_payfast_payment RPC failed", error.message, {
+    console.error("Payfast ITN: process_payfast_itn RPC failed", error.message, {
       mPaymentId: pfData.m_payment_id,
     });
   }
