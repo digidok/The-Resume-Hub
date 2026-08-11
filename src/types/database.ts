@@ -1,4 +1,4 @@
-export type ProfileRole = "candidate" | "employer";
+export type ProfileRole = "candidate" | "employer" | "admin";
 export type ProfilePlan = "free" | "pro";
 
 export type Profile = {

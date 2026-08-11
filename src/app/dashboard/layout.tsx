@@ -73,7 +73,20 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
     },
   ];
 
-  const navGroups = role === "employer" ? employerNavGroups : candidateNavGroups;
+  const adminNavGroups = [
+    {
+      label: "Platform",
+      items: [
+        { href: "/dashboard", label: "Overview" },
+        { href: "/dashboard/admin/users", label: "Users" },
+        { href: "/dashboard/admin/jobs", label: "Jobs" },
+        { href: "/dashboard/admin/payments", label: "Payments" },
+      ],
+    },
+  ];
+
+  const navGroups =
+    role === "admin" ? adminNavGroups : role === "employer" ? employerNavGroups : candidateNavGroups;
 
   return (
     <div className="flex flex-1 flex-col bg-slate-50 md:flex-row">
