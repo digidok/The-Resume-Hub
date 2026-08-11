@@ -1,7 +1,15 @@
 import { redirect } from "next/navigation";
 import { BackLink } from "@/components/ui/back-link";
+import { Zap } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { AutoApplyForm } from "@/components/dashboard/auto-apply-form";
+import { Card } from "@/components/ui/card";
+
+const TIPS = [
+  "Keywords should match how the role is actually titled — \"React Developer\" not just \"Developer\".",
+  "We only apply to jobs already open on the Resume Hub board.",
+  "Turn on the daily scheduled run to keep applying automatically, or run it on demand any time.",
+];
 
 export default async function AutoApplyPage() {
   const supabase = await createClient();
@@ -20,7 +28,7 @@ export default async function AutoApplyPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-5xl">
       <BackLink href="/dashboard" label="Dashboard" />
       <h1 className="mb-1 text-3xl font-bold text-slate-900">Auto-apply</h1>
       <p className="mb-6 text-sm text-slate-500">
@@ -28,7 +36,24 @@ export default async function AutoApplyPage() {
         turn on the daily scheduled run and we&apos;ll keep applying for you and email you when we
         do.
       </p>
-      <AutoApplyForm resumes={resumes ?? []} initialSettings={settings ?? null} />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <AutoApplyForm resumes={resumes ?? []} initialSettings={settings ?? null} />
+        </div>
+        <Card className="p-5">
+          <div className="flex items-center gap-2">
+            <Zap className="h-4 w-4 text-brand-600" />
+            <p className="text-sm font-semibold text-slate-900">Tips</p>
+          </div>
+          <ul className="mt-3 space-y-2.5">
+            {TIPS.map((tip) => (
+              <li key={tip} className="text-sm text-slate-600">
+                {tip}
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </div>
     </div>
   );
 }

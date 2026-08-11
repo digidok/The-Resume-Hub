@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { setJobStatus } from "@/lib/admin/actions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { StatCard } from "@/components/dashboard/stat-card";
 
 export default async function AdminJobsPage() {
   const supabase = await createClient();
@@ -28,11 +29,19 @@ export default async function AdminJobsPage() {
     applicantCounts.set(app.job_id, (applicantCounts.get(app.job_id) ?? 0) + 1);
   }
 
+  const openCount = (jobs ?? []).filter((j) => j.status === "open").length;
+
   return (
     <div className="mx-auto max-w-6xl">
       <BackLink href="/dashboard" label="Dashboard" />
       <h1 className="mb-1 text-3xl font-bold text-slate-900">Jobs</h1>
       <p className="mb-6 text-sm text-slate-500">{jobs?.length ?? 0} job posts across the platform.</p>
+
+      <div className="mb-6 grid grid-cols-3 gap-4">
+        <StatCard label="Total jobs" value={jobs?.length ?? 0} />
+        <StatCard label="Open" value={openCount} />
+        <StatCard label="Closed" value={(jobs?.length ?? 0) - openCount} />
+      </div>
 
       <div className="space-y-3">
         {jobs?.map((job) => {

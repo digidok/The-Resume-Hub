@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { BackLink } from "@/components/ui/back-link";
+import { Layers } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { BulkApplyForm } from "@/components/dashboard/bulk-apply-form";
+import { Card } from "@/components/ui/card";
 
 export default async function BulkApplyPage() {
   const supabase = await createClient();
@@ -29,13 +31,28 @@ export default async function BulkApplyPage() {
   const availableJobs = (jobs ?? []).filter((job) => !appliedJobIds.has(job.id));
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto max-w-6xl">
       <BackLink href="/dashboard" label="Dashboard" />
       <h1 className="mb-1 text-3xl font-bold text-slate-900">Bulk apply</h1>
       <p className="mb-6 text-sm text-slate-500">
         Apply to several open roles at once with the same resume.
       </p>
-      <BulkApplyForm resumes={resumes ?? []} jobs={availableJobs} />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+        <div className="lg:col-span-3">
+          <BulkApplyForm resumes={resumes ?? []} jobs={availableJobs} />
+        </div>
+        <Card className="p-5">
+          <div className="flex items-center gap-2">
+            <Layers className="h-4 w-4 text-brand-600" />
+            <p className="text-sm font-semibold text-slate-900">Good to know</p>
+          </div>
+          <ul className="mt-3 space-y-2.5 text-sm text-slate-600">
+            <li>The same resume is submitted to every job you select.</li>
+            <li>Jobs you&apos;ve already applied to are left out automatically.</li>
+            <li>Only currently open roles are listed here.</li>
+          </ul>
+        </Card>
+      </div>
     </div>
   );
 }
