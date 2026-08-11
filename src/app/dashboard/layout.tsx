@@ -30,6 +30,7 @@ import { signOut } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { DashboardNav, type NavGroup } from "@/components/dashboard/nav";
+import { NotificationBell } from "@/components/dashboard/notification-bell";
 
 export default async function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
   const supabase = await createClient();
@@ -39,11 +40,19 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
 
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, full_name, plan, credits_remaining, job_posting_credits")
-    .eq("id", user.id)
-    .single();
+  const [{ data: profile }, { data: notifications }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("role, full_name, plan, credits_remaining, job_posting_credits")
+      .eq("id", user.id)
+      .single(),
+    supabase
+      .from("notifications")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(15),
+  ]);
 
   const role = profile?.role ?? "candidate";
 
@@ -118,9 +127,12 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
   return (
     <div className="flex flex-1 flex-col bg-slate-50 md:flex-row">
       <aside className="flex shrink-0 flex-col border-b border-slate-200 bg-white p-4 md:w-64 md:border-b-0 md:border-r md:overflow-y-auto">
-        <Link href="/" className="mb-6">
-          <Logo />
-        </Link>
+        <div className="mb-6 flex items-center justify-between">
+          <Link href="/">
+            <Logo />
+          </Link>
+          <NotificationBell notifications={notifications ?? []} />
+        </div>
         <DashboardNav groups={navGroups} />
         <div className="mt-6 border-t border-slate-200 pt-4">
           {role === "candidate" && (

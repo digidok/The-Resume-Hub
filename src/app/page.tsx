@@ -9,6 +9,9 @@ import {
   Check,
   ArrowRight,
   ScanSearch,
+  Zap,
+  BellRing,
+  Mail,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
@@ -37,6 +40,18 @@ const FEATURES = [
     description:
       "Get an ATS-style score and concrete feedback, optionally tailored to a specific job description.",
   },
+  {
+    icon: Zap,
+    title: "Scheduled auto-apply",
+    description:
+      "Set your keywords once and we'll keep applying to new matching jobs every day — and email you when we do.",
+  },
+];
+
+const AUTO_APPLY_POINTS = [
+  "Save your keywords, location, and resume once",
+  "We check for new matching jobs every day — no manual searching",
+  "Get an email the moment we apply for you",
 ];
 
 const STEPS = [
@@ -178,7 +193,7 @@ export default function Home() {
               One place to build your resume, share it, and put it in front of real employers.
             </p>
           </div>
-          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((feature) => (
               <Card
                 key={feature.title}
@@ -273,7 +288,73 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-slate-50 py-20">
+        <section className="border-y border-slate-200 bg-slate-50 py-20">
+          <div className="mx-auto max-w-5xl px-4">
+            <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+              <Card className="order-2 p-6 lg:order-1">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-500 text-white">
+                    <BellRing className="h-4 w-4" />
+                  </span>
+                  <span className="text-xs font-medium text-slate-400">Just now</span>
+                </div>
+                <p className="mt-3 text-sm font-semibold text-slate-900">
+                  Auto-apply found new matches
+                </p>
+                <p className="mt-1 text-sm text-slate-600">
+                  Resume Hub auto-applied to 3 new jobs for you.
+                </p>
+                <div className="mt-4 space-y-2">
+                  {[
+                    ["Frontend Engineer", "Acme Robotics"],
+                    ["Product Designer", "Northwind Labs"],
+                    ["React Developer", "Globex Software"],
+                  ].map(([role, company]) => (
+                    <div
+                      key={role}
+                      className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-xs"
+                    >
+                      <span className="font-medium text-slate-700">{role}</span>
+                      <span className="text-slate-400">{company}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 flex items-center gap-1.5 text-xs font-medium text-brand-700">
+                  <Mail className="h-3.5 w-3.5" />
+                  Emailed to you
+                </div>
+              </Card>
+              <div className="order-1 lg:order-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+                  <Zap className="h-5 w-5" />
+                </div>
+                <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">
+                  Let auto-apply do the searching for you
+                </h2>
+                <p className="mt-2 text-slate-600">
+                  Turn on scheduled auto-apply once, and Resume Hub keeps applying to new
+                  matching jobs on your behalf — even when you&apos;re not looking.
+                </p>
+                <ul className="mt-5 space-y-2.5">
+                  {AUTO_APPLY_POINTS.map((point) => (
+                    <li key={point} className="flex items-start gap-2.5 text-sm text-slate-700">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/signup">
+                  <Button className="mt-6">
+                    Turn on auto-apply
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-white py-20">
           <div className="mx-auto max-w-5xl px-4">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <Card className="p-6">

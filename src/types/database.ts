@@ -156,6 +156,27 @@ export type FollowUp = {
   created_at: string;
 };
 
+export type AutoApplySettings = {
+  user_id: string;
+  resume_id: string;
+  keywords: string;
+  location: string | null;
+  enabled: boolean;
+  last_run_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Notification = {
+  id: string;
+  user_id: string;
+  type: string;
+  title: string;
+  body: string | null;
+  read: boolean;
+  created_at: string;
+};
+
 export type AiReview = {
   id: string;
   resume_id: string;
