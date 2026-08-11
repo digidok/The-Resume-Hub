@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { toggleFollowUp, deleteFollowUp } from "@/lib/followups/actions";
 import { CreateFollowUpForm } from "@/components/followups/create-followup-form";
+import { FollowUpDraft } from "@/components/followups/follow-up-draft";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -26,7 +27,7 @@ export default async function FollowUpsPage() {
   const { data: followUps } = await supabase
     .from("follow_ups")
     .select(
-      "id, due_date, note, completed, application_id, applications:application_id(jobs:job_id(title, company))"
+      "id, due_date, note, completed, draft_subject, draft_body, sent, application_id, applications:application_id(jobs:job_id(title, company))"
     )
     .eq("user_id", user.id)
     .order("due_date", { ascending: true });
@@ -51,32 +52,37 @@ export default async function FollowUpsPage() {
             : null;
           const overdue = !fu.completed && new Date(fu.due_date) < new Date(new Date().toDateString());
           return (
-            <Card
-              key={fu.id}
-              className={`flex items-center justify-between p-4 ${fu.completed ? "opacity-60" : ""}`}
-            >
-              <div>
-                <p className="font-medium text-slate-900">
-                  {job ? `${job.title} at ${job.company}` : "Application"}
-                </p>
-                {fu.note && <p className="text-sm text-slate-600">{fu.note}</p>}
-                <p className={`text-xs ${overdue ? "font-semibold text-red-600" : "text-slate-400"}`}>
-                  Due {new Date(fu.due_date).toLocaleDateString()}
-                  {overdue ? " · overdue" : ""}
-                </p>
+            <Card key={fu.id} className={`p-4 ${fu.completed ? "opacity-60" : ""}`}>
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="font-medium text-slate-900">
+                    {job ? `${job.title} at ${job.company}` : "Application"}
+                  </p>
+                  {fu.note && <p className="text-sm text-slate-600">{fu.note}</p>}
+                  <p className={`text-xs ${overdue ? "font-semibold text-red-600" : "text-slate-400"}`}>
+                    Due {new Date(fu.due_date).toLocaleDateString()}
+                    {overdue ? " · overdue" : ""}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <form action={toggleFollowUp.bind(null, fu.id, !fu.completed)}>
+                    <Button type="submit" size="sm" variant={fu.completed ? "outline" : "secondary"}>
+                      {fu.completed ? "Mark undone" : "Skip"}
+                    </Button>
+                  </form>
+                  <form action={deleteFollowUp.bind(null, fu.id)}>
+                    <Button type="submit" size="sm" variant="ghost">
+                      Delete
+                    </Button>
+                  </form>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <form action={toggleFollowUp.bind(null, fu.id, !fu.completed)}>
-                  <Button type="submit" size="sm" variant={fu.completed ? "outline" : "secondary"}>
-                    {fu.completed ? "Mark undone" : "Mark done"}
-                  </Button>
-                </form>
-                <form action={deleteFollowUp.bind(null, fu.id)}>
-                  <Button type="submit" size="sm" variant="ghost">
-                    Delete
-                  </Button>
-                </form>
-              </div>
+              <FollowUpDraft
+                followUpId={fu.id}
+                initialSubject={fu.draft_subject}
+                initialBody={fu.draft_body}
+                sent={fu.sent}
+              />
             </Card>
           );
         })}

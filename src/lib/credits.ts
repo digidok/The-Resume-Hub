@@ -6,6 +6,7 @@ export const CREDIT_COSTS = {
   mock_interview: 2,
   salary_insight: 1,
   auto_apply: 1,
+  follow_up_draft: 1,
 } as const;
 
 export type CreditAction = keyof typeof CREDIT_COSTS;

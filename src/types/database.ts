@@ -153,6 +153,9 @@ export type FollowUp = {
   due_date: string;
   note: string | null;
   completed: boolean;
+  draft_subject: string | null;
+  draft_body: string | null;
+  sent: boolean;
   created_at: string;
 };
 

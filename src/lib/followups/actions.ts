@@ -65,3 +65,35 @@ export async function deleteFollowUp(followUpId: string) {
 
   revalidatePath("/dashboard/follow-ups");
 }
+
+export async function saveFollowUpDraft(followUpId: string, subject: string, body: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  await supabase
+    .from("follow_ups")
+    .update({ draft_subject: subject, draft_body: body })
+    .eq("id", followUpId)
+    .eq("user_id", user.id);
+
+  revalidatePath("/dashboard/follow-ups");
+}
+
+export async function markFollowUpSent(followUpId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  await supabase
+    .from("follow_ups")
+    .update({ sent: true, completed: true })
+    .eq("id", followUpId)
+    .eq("user_id", user.id);
+
+  revalidatePath("/dashboard/follow-ups");
+}
