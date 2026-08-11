@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { saveResume, renameResumeSlug } from "@/lib/resumes/actions";
+import { syncResumeToCareerPassport } from "@/lib/career/actions";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/field";
 import { Card } from "@/components/ui/card";
@@ -22,7 +23,15 @@ function newId() {
   return crypto.randomUUID();
 }
 
-export function ResumeEditor({ resume, siteUrl }: { resume: Resume; siteUrl: string }) {
+export function ResumeEditor({
+  resume,
+  siteUrl,
+  initialJobDescription,
+}: {
+  resume: Resume;
+  siteUrl: string;
+  initialJobDescription?: string;
+}) {
   const router = useRouter();
   const [title, setTitle] = useState(resume.title);
   const [template, setTemplate] = useState(resume.template);
@@ -35,7 +44,7 @@ export function ResumeEditor({ resume, siteUrl }: { resume: Resume; siteUrl: str
   const [fillGapsPending, setFillGapsPending] = useState(false);
   const [fillGapsStatus, setFillGapsStatus] = useState<string | null>(null);
   const [fillGapsError, setFillGapsError] = useState<string | null>(null);
-  const [jobDescription, setJobDescription] = useState("");
+  const [jobDescription, setJobDescription] = useState(initialJobDescription ?? "");
   const [alignPending, setAlignPending] = useState(false);
   const [alignError, setAlignError] = useState<string | null>(null);
   const [alignResult, setAlignResult] = useState<{
@@ -47,6 +56,32 @@ export function ResumeEditor({ resume, siteUrl }: { resume: Resume; siteUrl: str
   const [targetLanguage, setTargetLanguage] = useState("Arabic");
   const [translatePending, setTranslatePending] = useState(false);
   const [translateError, setTranslateError] = useState<string | null>(null);
+  const [syncPending, setSyncPending] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<string | null>(null);
+  const [syncError, setSyncError] = useState<string | null>(null);
+
+  async function handleSyncToCareerPassport() {
+    setSyncPending(true);
+    setSyncError(null);
+    setSyncStatus(null);
+    const result = await syncResumeToCareerPassport(content);
+    if (result.error) {
+      setSyncError(result.error);
+    } else {
+      const added = [
+        result.addedSkills ? `${result.addedSkills} skill${result.addedSkills === 1 ? "" : "s"}` : null,
+        result.addedLanguages
+          ? `${result.addedLanguages} language${result.addedLanguages === 1 ? "" : "s"}`
+          : null,
+      ].filter(Boolean);
+      setSyncStatus(
+        added.length > 0
+          ? `Added ${added.join(" and ")} to your Career Passport.`
+          : "Your Career Passport is already up to date."
+      );
+    }
+    setSyncPending(false);
+  }
 
   function update<K extends keyof ResumeContent>(key: K, value: ResumeContent[K]) {
     setContent((prev) => ({ ...prev, [key]: value }));
@@ -498,6 +533,21 @@ export function ResumeEditor({ resume, siteUrl }: { resume: Resume; siteUrl: str
               )}
             </div>
           )}
+        </Card>
+
+        <Card className="space-y-3 p-5">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">Sync to Career Passport</h2>
+            <p className="text-sm text-slate-500">
+              Add this resume&apos;s skills and languages to your Career Passport. Never
+              overwrites anything you&apos;ve already added there.
+            </p>
+          </div>
+          <Button type="button" variant="outline" disabled={syncPending} onClick={handleSyncToCareerPassport}>
+            {syncPending ? "Syncing…" : "Sync to Career Passport"}
+          </Button>
+          {syncStatus && <p className="text-sm text-emerald-600">{syncStatus}</p>}
+          {syncError && <p className="text-sm text-red-600">{syncError}</p>}
         </Card>
 
         <Card className="space-y-3 p-5">

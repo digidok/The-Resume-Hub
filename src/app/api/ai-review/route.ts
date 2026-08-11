@@ -42,14 +42,40 @@ function contentToPlainText(content: ResumeContent): string {
 const REVIEW_SCHEMA = {
   type: "object" as const,
   properties: {
-    score: { type: "integer" as const, description: "ATS match score from 0-100" },
+    score: { type: "integer" as const, description: "Overall CV score from 0-100" },
     summary: { type: "string" as const },
     strengths: { type: "array" as const, items: { type: "string" as const } },
     weaknesses: { type: "array" as const, items: { type: "string" as const } },
     suggestions: { type: "array" as const, items: { type: "string" as const } },
     keyword_gaps: { type: "array" as const, items: { type: "string" as const } },
+    categories: {
+      type: "object" as const,
+      description:
+        "Sub-scores (0-100), each grounded in specific evidence from the resume text — not guessed.",
+      properties: {
+        ats_compatibility: { type: "integer" as const },
+        keyword_coverage: { type: "integer" as const },
+        summary_quality: { type: "integer" as const },
+        experience_quality: { type: "integer" as const },
+        achievement_quality: { type: "integer" as const },
+        skills_score: { type: "integer" as const },
+        formatting_score: { type: "integer" as const },
+        completeness_score: { type: "integer" as const },
+      },
+      required: [
+        "ats_compatibility",
+        "keyword_coverage",
+        "summary_quality",
+        "experience_quality",
+        "achievement_quality",
+        "skills_score",
+        "formatting_score",
+        "completeness_score",
+      ],
+      additionalProperties: false,
+    },
   },
-  required: ["score", "summary", "strengths", "weaknesses", "suggestions", "keyword_gaps"],
+  required: ["score", "summary", "strengths", "weaknesses", "suggestions", "keyword_gaps", "categories"],
   additionalProperties: false,
 };
 
@@ -96,9 +122,19 @@ export async function POST(request: Request) {
   const resumeText = contentToPlainText(resume.content as ResumeContent);
   const anthropic = new Anthropic({ apiKey });
 
+  const categoryInstructions = `Also score these 8 categories from 0-100, each based on specific, concrete evidence you can point to in the resume text above — never a guess or a round default number:
+- ats_compatibility: would an ATS parse the structure/dates/headings correctly?
+- keyword_coverage: ${jobDescription ? "overlap with the job description's key terms" : "presence of role-relevant keywords for the candidate's apparent field"}
+- summary_quality: is the summary specific and outcome-focused, or generic filler?
+- experience_quality: are roles described with real scope and responsibility, not just duty lists?
+- achievement_quality: how many bullet points show a measurable, quantified result?
+- skills_score: are the listed skills relevant, specific, and not vague buzzwords?
+- formatting_score: is structure consistent (dates present, no obvious gaps in the data)?
+- completeness_score: how many expected sections (summary, experience, education, skills) are actually filled in?`;
+
   const prompt = jobDescription
-    ? `Review this resume against the target job description. Score how well it matches (0-100, ATS-style), and give concrete, specific feedback.\n\nRESUME:\n${resumeText}\n\nJOB DESCRIPTION:\n${jobDescription}`
-    : `Review this resume for general quality, clarity, and impact. Score it 0-100 as if evaluated by an applicant tracking system, and give concrete, specific feedback.\n\nRESUME:\n${resumeText}`;
+    ? `Review this resume against the target job description. Score how well it matches (0-100, ATS-style), and give concrete, specific feedback.\n\nRESUME:\n${resumeText}\n\nJOB DESCRIPTION:\n${jobDescription}\n\n${categoryInstructions}`
+    : `Review this resume for general quality, clarity, and impact. Score it 0-100 as if evaluated by an applicant tracking system, and give concrete, specific feedback.\n\nRESUME:\n${resumeText}\n\n${categoryInstructions}`;
 
   try {
     const message = await anthropic.messages.create({

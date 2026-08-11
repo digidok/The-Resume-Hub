@@ -255,6 +255,17 @@ export type Notification = {
   created_at: string;
 };
 
+export type ResumeScoreCategories = {
+  ats_compatibility: number;
+  keyword_coverage: number;
+  summary_quality: number;
+  experience_quality: number;
+  achievement_quality: number;
+  skills_score: number;
+  formatting_score: number;
+  completeness_score: number;
+};
+
 export type AiReview = {
   id: string;
   resume_id: string;
@@ -266,6 +277,7 @@ export type AiReview = {
     weaknesses?: string[];
     suggestions?: string[];
     keyword_gaps?: string[];
+    categories?: ResumeScoreCategories;
   };
   created_at: string;
 };
@@ -291,6 +303,17 @@ export type CareerProfile = {
   portfolio_url: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type RecruiterMessageChannel = "linkedin" | "email" | "whatsapp";
+
+export type RecruiterMessage = {
+  id: string;
+  user_id: string;
+  job_id: string | null;
+  channel: RecruiterMessageChannel;
+  content: string;
+  created_at: string;
 };
 
 export type BlogPost = {

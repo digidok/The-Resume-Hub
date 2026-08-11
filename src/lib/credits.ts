@@ -11,6 +11,7 @@ export const CREDIT_COSTS = {
   suggest_duties: 1,
   align_to_job: 1,
   resume_translate: 1,
+  recruiter_message: 1,
 } as const;
 
 export type CreditAction = keyof typeof CREDIT_COSTS;

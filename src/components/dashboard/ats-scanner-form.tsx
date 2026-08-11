@@ -3,7 +3,18 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, Textarea } from "@/components/ui/field";
-import type { AiReview } from "@/types/database";
+import type { AiReview, ResumeScoreCategories } from "@/types/database";
+
+const CATEGORY_LABELS: Record<keyof ResumeScoreCategories, string> = {
+  ats_compatibility: "ATS Compatibility",
+  keyword_coverage: "Keyword Coverage",
+  summary_quality: "Summary Quality",
+  experience_quality: "Experience Quality",
+  achievement_quality: "Achievement Strength",
+  skills_score: "Skills",
+  formatting_score: "Formatting",
+  completeness_score: "Completeness",
+};
 
 export function AtsScannerForm({ resumes }: { resumes: { id: string; title: string }[] }) {
   const [resumeId, setResumeId] = useState("");
@@ -80,6 +91,16 @@ export function AtsScannerForm({ resumes }: { resumes: { id: string; title: stri
             </div>
           )}
           {review.summary && <p className="text-sm text-slate-700">{review.summary}</p>}
+          {review.categories && (
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {(Object.keys(CATEGORY_LABELS) as (keyof ResumeScoreCategories)[]).map((key) => (
+                <div key={key} className="rounded-lg bg-white p-2.5 text-center">
+                  <p className="text-lg font-bold text-slate-900">{review.categories![key]}%</p>
+                  <p className="text-[11px] text-slate-500">{CATEGORY_LABELS[key]}</p>
+                </div>
+              ))}
+            </div>
+          )}
           {(
             [
               ["strengths", "Strengths", "text-emerald-700"],
