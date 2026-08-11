@@ -5,7 +5,18 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/field";
-import type { AiReview } from "@/types/database";
+import type { AiReview, ResumeScoreCategories } from "@/types/database";
+
+const CATEGORY_LABELS: Record<keyof ResumeScoreCategories, string> = {
+  ats_compatibility: "ATS Compatibility",
+  keyword_coverage: "Keyword Coverage",
+  summary_quality: "Summary Quality",
+  experience_quality: "Experience Quality",
+  achievement_quality: "Achievement Strength",
+  skills_score: "Skills",
+  formatting_score: "Formatting",
+  completeness_score: "Completeness",
+};
 
 export function AiReviewPanel({ resumeId }: { resumeId: string }) {
   const router = useRouter();
@@ -67,6 +78,16 @@ export function AiReviewPanel({ resumeId }: { resumeId: string }) {
             </div>
           )}
           {review.summary && <p className="text-sm text-slate-700">{review.summary}</p>}
+          {review.categories && (
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {(Object.keys(CATEGORY_LABELS) as (keyof ResumeScoreCategories)[]).map((key) => (
+                <div key={key} className="rounded-lg bg-white p-2.5 text-center">
+                  <p className="text-lg font-bold text-slate-900">{review.categories![key]}%</p>
+                  <p className="text-[11px] text-slate-500">{CATEGORY_LABELS[key]}</p>
+                </div>
+              ))}
+            </div>
+          )}
           <ReviewList title="Strengths" items={review.strengths} tone="text-emerald-700" />
           <ReviewList title="Weaknesses" items={review.weaknesses} tone="text-amber-700" />
           <ReviewList title="Suggestions" items={review.suggestions} tone="text-brand-700" />

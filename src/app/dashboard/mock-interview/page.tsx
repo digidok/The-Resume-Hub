@@ -47,9 +47,14 @@ const TIPS = [
   "Review the AI feedback after each answer",
 ];
 
+function prefillFromQuery(key: string): string {
+  if (typeof window === "undefined") return "";
+  return new URLSearchParams(window.location.search).get(key) ?? "";
+}
+
 export default function MockInterviewPage() {
-  const [role, setRole] = useState("");
-  const [company, setCompany] = useState("");
+  const [role, setRole] = useState(() => prefillFromQuery("role"));
+  const [company, setCompany] = useState(() => prefillFromQuery("company"));
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [activeFilter, setActiveFilter] = useState<"all" | Category>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);

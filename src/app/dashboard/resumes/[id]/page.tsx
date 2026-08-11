@@ -9,13 +9,27 @@ import { emptyResumeContent, type Resume } from "@/types/database";
 
 export default async function ResumeEditPage({
   params,
+  searchParams,
 }: PageProps<"/dashboard/resumes/[id]">) {
   const { id } = await params;
+  const { job: jobId } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+
+  let initialJobDescription = "";
+  if (typeof jobId === "string") {
+    const { data: job } = await supabase
+      .from("jobs")
+      .select("title, company, description")
+      .eq("id", jobId)
+      .single();
+    if (job) {
+      initialJobDescription = `${job.title} at ${job.company}\n\n${job.description}`;
+    }
+  }
 
   const { data: resume } = await supabase
     .from("resumes")
@@ -58,7 +72,7 @@ export default async function ResumeEditPage({
           </form>
         </div>
       </div>
-      <ResumeEditor resume={normalized} siteUrl={siteUrl} />
+      <ResumeEditor resume={normalized} siteUrl={siteUrl} initialJobDescription={initialJobDescription} />
     </div>
   );
 }

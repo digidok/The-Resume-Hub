@@ -191,6 +191,13 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
           </p>
 
           <div className="mt-4 flex flex-wrap gap-3">
+            {user && !isEmployer && (
+              <Link href={`/dashboard/applications/kit/${job.id}`}>
+                <Button type="button" size="sm">
+                  Build Application Kit
+                </Button>
+              </Link>
+            )}
             <Link href="/dashboard/resumes">
               <Button type="button" variant="outline" size="sm">
                 Tailor My CV
@@ -212,7 +219,16 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
 
       {job.status === "open" && !isEmployer && (
         <Card className="p-6">
-          <h2 className="mb-4 text-lg font-semibold text-slate-900">Apply for this role</h2>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold text-slate-900">Apply for this role</h2>
+            {user && !match && (
+              <Link href={`/dashboard/applications/kit/${job.id}`}>
+                <Button type="button" variant="outline" size="sm">
+                  Build Application Kit
+                </Button>
+              </Link>
+            )}
+          </div>
           {user ? (
             <ApplyForm jobId={job.id} resumes={resumes} alreadyApplied={alreadyApplied} />
           ) : (
