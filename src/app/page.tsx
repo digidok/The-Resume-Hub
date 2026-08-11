@@ -12,6 +12,8 @@ import {
   Zap,
   BellRing,
   Mail,
+  MapPin,
+  MessageCircle,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
@@ -414,8 +416,34 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="bg-brand-950 py-8 text-center text-sm text-slate-400">
-        © {new Date().getFullYear()} Resume Hub
+      <footer className="bg-brand-950 py-10 text-slate-400">
+        <div className="mx-auto max-w-5xl px-4">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm">
+            <span className="flex items-center gap-1.5">
+              <MapPin className="h-4 w-4 text-brand-300" />
+              Sandton, Johannesburg
+            </span>
+            <a
+              href="mailto:info@resumehub.co.za"
+              className="flex items-center gap-1.5 hover:text-white"
+            >
+              <Mail className="h-4 w-4 text-brand-300" />
+              info@resumehub.co.za
+            </a>
+            <a
+              href="https://wa.me/27693391915"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 hover:text-white"
+            >
+              <MessageCircle className="h-4 w-4 text-brand-300" />
+              WhatsApp: 069 339 1915
+            </a>
+          </div>
+          <p className="mt-6 text-center text-sm text-slate-500">
+            © {new Date().getFullYear()} Resume Hub
+          </p>
+        </div>
       </footer>
     </div>
   );
