@@ -60,7 +60,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
         { href: "/dashboard/follow-ups", label: "Follow-ups", icon: "Bell" },
         { href: "/dashboard/salary-insights", label: "Salary insights", icon: "DollarSign" },
         { href: "/dashboard/auto-apply", label: "Auto-apply", icon: "Zap" },
-        { href: "/dashboard/import", label: "LinkedIn → CV", icon: "Import" },
+        { href: "/dashboard/import", label: "Import CV", icon: "Import" },
         { href: "/dashboard/profile", label: "Profile & visibility", icon: "UserCog" },
       ],
     },

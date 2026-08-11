@@ -1,77 +1,31 @@
 import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
-import { randomSuffix } from "@/lib/slug";
-import type { ResumeContent } from "@/types/database";
+import { detectFileKind, imageMediaType } from "@/lib/cv-import/detect";
+import { assessTextQuality } from "@/lib/cv-import/quality";
+import { extractDocText, extractDocxText, extractPdfText } from "@/lib/cv-import/extract-text";
+import {
+  buildDocumentExtractionPrompt,
+  buildImageExtractionPrompt,
+  buildTextExtractionPrompt,
+} from "@/lib/cv-import/schema";
+import { detectProfilePhoto, runCvExtraction, type ExtractionInput } from "@/lib/cv-import/claude";
+import { buildDraftFromExtraction } from "@/lib/cv-import/build-draft";
+import { uploadCvSourceFile } from "@/lib/cv-import/storage";
+import type { CvSourceFile } from "@/lib/cv-import/types";
 
-const PARSED_SCHEMA = {
-  type: "object" as const,
-  properties: {
-    full_name: { type: "string" as const },
-    email: { type: "string" as const },
-    phone: { type: "string" as const },
-    location: { type: "string" as const },
-    website: { type: "string" as const },
-    summary: { type: "string" as const },
-    experience: {
-      type: "array" as const,
-      items: {
-        type: "object" as const,
-        properties: {
-          company: { type: "string" as const },
-          title: { type: "string" as const },
-          location: { type: "string" as const },
-          start_date: { type: "string" as const },
-          end_date: { type: "string" as const },
-          current: { type: "boolean" as const },
-          description: { type: "string" as const },
-        },
-        required: ["company", "title"],
-        additionalProperties: false,
-      },
-    },
-    education: {
-      type: "array" as const,
-      items: {
-        type: "object" as const,
-        properties: {
-          school: { type: "string" as const },
-          degree: { type: "string" as const },
-          field: { type: "string" as const },
-          start_date: { type: "string" as const },
-          end_date: { type: "string" as const },
-        },
-        required: ["school"],
-        additionalProperties: false,
-      },
-    },
-    skills: { type: "array" as const, items: { type: "string" as const } },
-    languages: { type: "array" as const, items: { type: "string" as const } },
-    projects: {
-      type: "array" as const,
-      items: {
-        type: "object" as const,
-        properties: {
-          name: { type: "string" as const },
-          description: { type: "string" as const },
-          url: { type: "string" as const },
-        },
-        required: ["name"],
-        additionalProperties: false,
-      },
-    },
-  },
-  required: ["full_name", "experience", "education", "skills", "languages", "projects"],
-  additionalProperties: false,
-};
+export const maxDuration = 60;
+
+const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB
+const MAX_IMAGE_FILES = 10;
+
+function friendlyError(message: string, status: number) {
+  return NextResponse.json({ error: message }, { status });
+}
 
 export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return NextResponse.json(
-      { error: "Profile import is not configured. Set ANTHROPIC_API_KEY on the server." },
-      { status: 503 }
-    );
+    return friendlyError("CV import is not configured. Set ANTHROPIC_API_KEY on the server.", 503);
   }
 
   const supabase = await createClient();
@@ -79,106 +33,171 @@ export async function POST(request: Request) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return NextResponse.json({ error: "Sign in required." }, { status: 401 });
+    return friendlyError("Sign in required.", 401);
   }
 
   const formData = await request.formData().catch(() => null);
   if (!formData) {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return friendlyError("Invalid request.", 400);
   }
 
   const pastedText = String(formData.get("text") ?? "").trim();
-  const file = formData.get("file");
-
-  let sourceText = pastedText;
-
-  if (!sourceText && file instanceof File) {
-    if (file.type !== "application/pdf") {
-      return NextResponse.json({ error: "Please upload a PDF file." }, { status: 400 });
-    }
-    try {
-      const { PDFParse } = await import("pdf-parse");
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const parser = new PDFParse({ data: buffer });
-      const parsed = await parser.getText();
-      await parser.destroy();
-      sourceText = parsed.text.trim();
-    } catch (err) {
-      console.error("PDF parse failed", err);
-      return NextResponse.json({ error: "Could not read that PDF." }, { status: 400 });
-    }
-  }
-
-  if (!sourceText) {
-    return NextResponse.json(
-      { error: "Paste your profile text or upload a PDF export of it." },
-      { status: 400 }
-    );
-  }
-
-  const anthropic = new Anthropic({ apiKey });
+  const files = formData.getAll("files").filter((f): f is File => f instanceof File);
 
   try {
-    const message = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
-      max_tokens: 2048,
-      output_config: { format: { type: "json_schema", schema: PARSED_SCHEMA } },
-      messages: [
-        {
-          role: "user",
-          content: `Extract resume fields from this LinkedIn profile export. Only use information present in the text — do not invent anything. Leave fields blank/empty if not present.\n\n${sourceText}`,
-        },
-      ],
+    // --- Pasted text path (LinkedIn export paste) ---
+    if (pastedText) {
+      const parsed = await runCvExtraction(apiKey, {
+        mode: "text",
+        prompt: buildTextExtractionPrompt(pastedText),
+      });
+      const draft = buildDraftFromExtraction(parsed, []);
+      return NextResponse.json({ draft });
+    }
+
+    if (files.length === 0) {
+      return friendlyError("Paste your profile text or upload a CV file.", 400);
+    }
+
+    if (files.length > 1 && files.length > MAX_IMAGE_FILES) {
+      return friendlyError(`You can upload up to ${MAX_IMAGE_FILES} page images at once.`, 400);
+    }
+
+    for (const file of files) {
+      if (file.size > MAX_FILE_BYTES) {
+        return friendlyError(
+          `"${file.name}" is too large. Please upload files under ${MAX_FILE_BYTES / (1024 * 1024)}MB.`,
+          413
+        );
+      }
+    }
+
+    const kinds = files.map(detectFileKind);
+    if (kinds.some((k) => k === null)) {
+      return friendlyError(
+        "Unsupported file type. Please upload a PDF, DOCX, DOC, PNG, JPG, or WEBP file.",
+        400
+      );
+    }
+
+    if (files.length > 1 && kinds.some((k) => k !== "image")) {
+      return friendlyError(
+        "Multiple files are only supported for image pages (e.g. photos of each CV page). Upload a single PDF/DOCX/DOC file instead.",
+        400
+      );
+    }
+
+    const sourceFiles: CvSourceFile[] = [];
+    for (const file of files) {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const uploaded = await uploadCvSourceFile(supabase, user.id, file, buffer);
+      if (uploaded) sourceFiles.push(uploaded);
+    }
+
+    const kind = kinds[0]!;
+
+    // --- Images (single or multi-page) — sent straight to Claude vision ---
+    if (kind === "image") {
+      const images = await Promise.all(
+        files.map(async (file) => ({
+          base64: Buffer.from(await file.arrayBuffer()).toString("base64"),
+          mediaType: imageMediaType(file),
+        }))
+      );
+      const extractionInput: ExtractionInput = { mode: "image", prompt: buildImageExtractionPrompt(files.length), images };
+      const [parsed, hasProfilePhoto] = await Promise.all([
+        runCvExtraction(apiKey, extractionInput),
+        detectProfilePhoto(apiKey, extractionInput),
+      ]);
+      const draft = buildDraftFromExtraction(parsed, sourceFiles, { hasProfilePhoto });
+      return NextResponse.json({ draft });
+    }
+
+    const file = files[0]!;
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    // --- PDF: native text first, OCR/vision fallback for scanned PDFs ---
+    if (kind === "pdf") {
+      let nativeText = "";
+      let pageCount = 1;
+      try {
+        const extracted = await extractPdfText(buffer);
+        nativeText = extracted.text;
+        pageCount = extracted.pageCount;
+      } catch (err) {
+        console.error("Native PDF text extraction failed", err);
+      }
+
+      const quality = assessTextQuality(nativeText, pageCount);
+
+      if (quality.ok) {
+        const parsed = await runCvExtraction(apiKey, {
+          mode: "text",
+          prompt: buildTextExtractionPrompt(nativeText),
+        });
+        const draft = buildDraftFromExtraction(parsed, sourceFiles);
+        return NextResponse.json({ draft });
+      }
+
+      // Scanned/image-based PDF — let Claude read the document directly.
+      const extractionInput: ExtractionInput = {
+        mode: "pdf-document",
+        prompt: buildDocumentExtractionPrompt(),
+        pdfBase64: buffer.toString("base64"),
+      };
+      const [parsed, hasProfilePhoto] = await Promise.all([
+        runCvExtraction(apiKey, extractionInput),
+        detectProfilePhoto(apiKey, extractionInput),
+      ]);
+      const draft = buildDraftFromExtraction(parsed, sourceFiles, {
+        hasProfilePhoto,
+        warning:
+          "This looked like a scanned or image-based PDF, so we read it visually instead of extracting text directly.",
+      });
+      return NextResponse.json({ draft });
+    }
+
+    // --- DOCX ---
+    if (kind === "docx") {
+      let text = "";
+      try {
+        text = await extractDocxText(buffer);
+      } catch (err) {
+        console.error("DOCX parse failed", err);
+        return friendlyError("We couldn't read that DOCX file. It may be corrupted.", 400);
+      }
+      if (!assessTextQuality(text).ok) {
+        return friendlyError(
+          "We couldn't find enough readable text in that document. Please try a PDF or image export instead.",
+          400
+        );
+      }
+      const parsed = await runCvExtraction(apiKey, {
+        mode: "text",
+        prompt: buildTextExtractionPrompt(text),
+      });
+      const draft = buildDraftFromExtraction(parsed, sourceFiles);
+      return NextResponse.json({ draft });
+    }
+
+    // --- Legacy DOC (best-effort) ---
+    const text = await extractDocText(buffer);
+    if (!assessTextQuality(text).ok) {
+      return friendlyError(
+        "We couldn't fully read that .doc file. Please try saving it as PDF or DOCX and uploading again.",
+        400
+      );
+    }
+    const parsed = await runCvExtraction(apiKey, {
+      mode: "text",
+      prompt: buildTextExtractionPrompt(text),
     });
-
-    const textBlock = message.content.find((block) => block.type === "text");
-    if (!textBlock || textBlock.type !== "text") {
-      return NextResponse.json({ error: "No response from AI." }, { status: 502 });
-    }
-
-    const parsed = JSON.parse(textBlock.text);
-
-    const content: ResumeContent = {
-      full_name: parsed.full_name ?? "",
-      email: parsed.email ?? "",
-      phone: parsed.phone ?? "",
-      location: parsed.location ?? "",
-      website: parsed.website ?? "",
-      summary: parsed.summary ?? "",
-      experience: (parsed.experience ?? []).map((exp: Record<string, unknown>) => ({
-        id: crypto.randomUUID(),
-        ...exp,
-      })),
-      education: (parsed.education ?? []).map((edu: Record<string, unknown>) => ({
-        id: crypto.randomUUID(),
-        ...edu,
-      })),
-      skills: parsed.skills ?? [],
-      languages: parsed.languages ?? [],
-      projects: (parsed.projects ?? []).map((project: Record<string, unknown>) => ({
-        id: crypto.randomUUID(),
-        ...project,
-      })),
-    };
-
-    const { data: resume, error } = await supabase
-      .from("resumes")
-      .insert({
-        user_id: user.id,
-        title: content.full_name ? `${content.full_name}'s Resume` : "Imported Resume",
-        slug: `resume-${randomSuffix(8)}`,
-        content,
-      })
-      .select("id")
-      .single();
-
-    if (error || !resume) {
-      return NextResponse.json({ error: "Could not save imported resume." }, { status: 500 });
-    }
-
-    return NextResponse.json({ resumeId: resume.id });
+    const draft = buildDraftFromExtraction(parsed, sourceFiles, {
+      warning: "Older .doc files can be harder to read reliably — please double-check the details below.",
+    });
+    return NextResponse.json({ draft });
   } catch (err) {
-    console.error("Profile import failed", err);
-    return NextResponse.json({ error: "Import failed. Please try again." }, { status: 500 });
+    console.error("CV import failed", err);
+    return friendlyError("We couldn't fully read this CV. Please try again.", 500);
   }
 }

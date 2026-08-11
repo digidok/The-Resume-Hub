@@ -73,6 +73,7 @@ export type Resume = {
   template: string;
   content: ResumeContent;
   is_public: boolean;
+  source_file_path: string | null;
   created_at: string;
   updated_at: string;
 };
