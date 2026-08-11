@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { DonutChart } from "@/components/dashboard/donut-chart";
 import { WeeklyBarChart } from "@/components/dashboard/weekly-bar-chart";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { ApplicationStatus } from "@/types/database";
 
@@ -12,6 +13,13 @@ const STATUS_META: Record<ApplicationStatus, { label: string; colorClass: string
   interviewing: { label: "Interviewing", colorClass: "bg-blue-500", colorHex: "#3b82f6" },
   offer: { label: "Offer", colorClass: "bg-emerald-500", colorHex: "#10b981" },
   rejected: { label: "Rejected", colorClass: "bg-red-500", colorHex: "#ef4444" },
+};
+
+const statusStyles: Record<ApplicationStatus, string> = {
+  submitted: "bg-slate-100 text-slate-600",
+  interviewing: "bg-blue-100 text-blue-700",
+  offer: "bg-emerald-100 text-emerald-700",
+  rejected: "bg-red-100 text-red-700",
 };
 
 function startOfWeek(date: Date) {
@@ -68,8 +76,112 @@ export default async function DashboardPage() {
     .eq("id", user.id)
     .single();
 
+  const greetingHour = new Date().getHours();
+  const greeting = greetingHour < 12 ? "Good morning" : greetingHour < 18 ? "Good afternoon" : "Good evening";
+  const firstName = profile?.full_name?.split(" ")[0] || "there";
+
   if (profile?.role === "employer") {
-    redirect("/dashboard/jobs");
+    const { data: jobs } = await supabase
+      .from("jobs")
+      .select("id, title, company, status, created_at")
+      .eq("employer_id", user.id)
+      .order("created_at", { ascending: false });
+
+    const jobList = jobs ?? [];
+    const jobIds = jobList.map((j) => j.id);
+    const activeJobPosts = jobList.filter((j) => j.status === "open");
+
+    const { data: applications } = jobIds.length
+      ? await supabase
+          .from("applications")
+          .select(
+            "id, status, created_at, interview_scheduled_at, shortlisted, job_id, profiles:candidate_id(full_name, headline)"
+          )
+          .in("job_id", jobIds)
+          .order("created_at", { ascending: false })
+      : { data: [] };
+
+    const apps = applications ?? [];
+    const shortlistedCount = apps.filter((a) => a.shortlisted).length;
+    const interviewsScheduled = apps.filter((a) => a.interview_scheduled_at).length;
+    const recentApplicants = apps.slice(0, 5);
+    const jobTitleById = new Map(jobList.map((j) => [j.id, j.title]));
+
+    return (
+      <div className="mx-auto max-w-5xl space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-semibold text-slate-900">
+              {greeting}, {firstName}
+            </h1>
+            <p className="text-sm text-slate-500">
+              You have {activeJobPosts.length} active job post{activeJobPosts.length === 1 ? "" : "s"}.
+            </p>
+          </div>
+          <Link href="/dashboard/jobs/new">
+            <Button>+ Post a job</Button>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <StatCard label="Active job posts" value={activeJobPosts.length} />
+          <StatCard label="Total applicants" value={apps.length} />
+          <StatCard label="Shortlisted" value={shortlistedCount} />
+          <StatCard label="Interviews scheduled" value={interviewsScheduled} />
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <Card className="p-5">
+            <h2 className="mb-4 text-sm font-semibold text-slate-900">Active job posts</h2>
+            {activeJobPosts.length === 0 && (
+              <p className="text-sm text-slate-500">No active job posts yet.</p>
+            )}
+            <div className="space-y-2">
+              {activeJobPosts.slice(0, 6).map((job) => (
+                <Link
+                  key={job.id}
+                  href={`/dashboard/jobs/${job.id}`}
+                  className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-slate-50"
+                >
+                  <span className="font-medium text-slate-900">{job.title}</span>
+                  <span className="text-slate-500">{job.company}</span>
+                </Link>
+              ))}
+            </div>
+          </Card>
+
+          <Card className="p-5">
+            <h2 className="mb-4 text-sm font-semibold text-slate-900">Recent applicants</h2>
+            {recentApplicants.length === 0 && (
+              <p className="text-sm text-slate-500">No applicants yet.</p>
+            )}
+            <div className="space-y-2">
+              {recentApplicants.map((app) => {
+                const candidate = Array.isArray(app.profiles) ? app.profiles[0] : app.profiles;
+                const status = app.status as ApplicationStatus;
+                return (
+                  <Link
+                    key={app.id}
+                    href={`/dashboard/jobs/${app.job_id}/applicants`}
+                    className="flex items-center justify-between rounded-lg px-2 py-2 text-sm hover:bg-slate-50"
+                  >
+                    <div>
+                      <p className="font-medium text-slate-900">{candidate?.full_name || "Candidate"}</p>
+                      <p className="text-xs text-slate-500">{jobTitleById.get(app.job_id)}</p>
+                    </div>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${statusStyles[status]}`}
+                    >
+                      {status}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   const [{ data: applications }, { count: savedJobsCount }] = await Promise.all([
@@ -107,10 +219,6 @@ export default async function DashboardPage() {
   }));
 
   const weeklyBuckets = buildWeeklyBuckets(apps);
-
-  const greetingHour = new Date().getHours();
-  const greeting = greetingHour < 12 ? "Good morning" : greetingHour < 18 ? "Good afternoon" : "Good evening";
-  const firstName = profile?.full_name?.split(" ")[0] || "there";
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">

@@ -48,6 +48,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
         { href: "/dashboard/salary-insights", label: "Salary insights" },
         { href: "/dashboard/auto-apply", label: "Auto-apply" },
         { href: "/dashboard/import", label: "LinkedIn → CV" },
+        { href: "/dashboard/profile", label: "Profile & visibility" },
       ],
     },
   ];
@@ -56,9 +57,18 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
     {
       label: "Main",
       items: [
+        { href: "/dashboard", label: "Dashboard" },
         { href: "/dashboard/jobs", label: "My job posts" },
         { href: "/dashboard/jobs/new", label: "Post a job" },
         { href: "/jobs", label: "Public job board" },
+      ],
+    },
+    {
+      label: "Hiring",
+      items: [
+        { href: "/dashboard/interviews", label: "Interviews" },
+        { href: "/dashboard/candidates", label: "Candidate pool" },
+        { href: "/dashboard/analytics", label: "Analytics" },
       ],
     },
   ];

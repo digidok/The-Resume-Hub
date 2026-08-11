@@ -105,3 +105,16 @@ export async function updateApplicationStatus(
   revalidatePath(`/dashboard/jobs/${jobId}/applicants`);
   revalidatePath("/dashboard/applications");
 }
+
+export async function toggleShortlist(jobId: string, applicationId: string, shortlisted: boolean) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  await supabase.from("applications").update({ shortlisted }).eq("id", applicationId);
+
+  revalidatePath(`/dashboard/jobs/${jobId}/applicants`);
+  revalidatePath("/dashboard");
+}

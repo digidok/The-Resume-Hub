@@ -9,6 +9,7 @@ export type Profile = {
   avatar_url: string | null;
   plan: ProfilePlan;
   credits_remaining: number;
+  open_to_work: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -93,7 +94,33 @@ export type Application = {
   cover_note: string | null;
   status: ApplicationStatus;
   interview_scheduled_at: string | null;
+  shortlisted: boolean;
   created_at: string;
+};
+
+export type ScorecardRecommendation = "strong_yes" | "yes" | "no" | "strong_no";
+
+export type InterviewScorecard = {
+  id: string;
+  application_id: string;
+  employer_id: string;
+  ratings: Record<string, number>;
+  notes: string | null;
+  recommendation: ScorecardRecommendation | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type OfferLetterStatus = "draft" | "sent";
+
+export type OfferLetter = {
+  id: string;
+  application_id: string;
+  employer_id: string;
+  content: string;
+  status: OfferLetterStatus;
+  created_at: string;
+  updated_at: string;
 };
 
 export type CoverLetter = {

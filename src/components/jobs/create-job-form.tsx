@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { createJob } from "@/lib/jobs/actions";
 import type { AuthActionState } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,38 @@ const initialState: AuthActionState = {};
 
 export function CreateJobForm() {
   const [state, formAction, pending] = useActionState(createJob, initialState);
+  const [title, setTitle] = useState("");
+  const [company, setCompany] = useState("");
+  const [employmentType, setEmploymentType] = useState("full_time");
+  const [description, setDescription] = useState("");
+  const [assisting, setAssisting] = useState(false);
+  const [assistError, setAssistError] = useState<string | null>(null);
+
+  async function assistDescription() {
+    setAssistError(null);
+    if (!title.trim() || !company.trim()) {
+      setAssistError("Enter a job title and company first.");
+      return;
+    }
+    setAssisting(true);
+    try {
+      const res = await fetch("/api/jobs/ai-assist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, company, employmentType, description }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setAssistError(data.error ?? "Could not draft a description.");
+        return;
+      }
+      setDescription(data.description);
+    } catch {
+      setAssistError("Could not reach the AI service.");
+    } finally {
+      setAssisting(false);
+    }
+  }
 
   return (
     <Card className="space-y-4 p-6">
@@ -18,11 +50,17 @@ export function CreateJobForm() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="title">Job title</Label>
-            <Input id="title" name="title" required />
+            <Input id="title" name="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
           </div>
           <div>
             <Label htmlFor="company">Company</Label>
-            <Input id="company" name="company" required />
+            <Input
+              id="company"
+              name="company"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              required
+            />
           </div>
           <div>
             <Label htmlFor="location">Location</Label>
@@ -30,7 +68,12 @@ export function CreateJobForm() {
           </div>
           <div>
             <Label htmlFor="employment_type">Employment type</Label>
-            <Select id="employment_type" name="employment_type" defaultValue="full_time">
+            <Select
+              id="employment_type"
+              name="employment_type"
+              value={employmentType}
+              onChange={(e) => setEmploymentType(e.target.value)}
+            >
               <option value="full_time">Full-time</option>
               <option value="part_time">Part-time</option>
               <option value="contract">Contract</option>
@@ -47,8 +90,23 @@ export function CreateJobForm() {
           </div>
         </div>
         <div>
-          <Label htmlFor="description">Description</Label>
-          <Textarea id="description" name="description" rows={8} required />
+          <div className="mb-1 flex items-center justify-between">
+            <Label htmlFor="description" className="mb-0">
+              Description
+            </Label>
+            <Button type="button" size="sm" variant="outline" onClick={assistDescription} disabled={assisting}>
+              {assisting ? "Writing…" : description ? "AI: Improve" : "AI: Write"}
+            </Button>
+          </div>
+          <Textarea
+            id="description"
+            name="description"
+            rows={8}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+          {assistError && <p className="mt-1 text-sm text-red-600">{assistError}</p>}
         </div>
         {state.error && <p className="text-sm text-red-600">{state.error}</p>}
         <Button type="submit" disabled={pending}>

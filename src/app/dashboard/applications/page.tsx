@@ -59,11 +59,21 @@ export default async function MyApplicationsPage() {
                   </p>
                 )}
               </div>
-              <span
-                className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${statusStyles[app.status as ApplicationStatus]}`}
-              >
-                {app.status}
-              </span>
+              <div className="flex flex-col items-end gap-2">
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${statusStyles[app.status as ApplicationStatus]}`}
+                >
+                  {app.status}
+                </span>
+                {app.status === "offer" && (
+                  <Link
+                    href={`/dashboard/applications/${app.id}/offer`}
+                    className="text-xs font-medium text-indigo-600 hover:underline"
+                  >
+                    View offer letter
+                  </Link>
+                )}
+              </div>
             </Card>
           );
         })}
