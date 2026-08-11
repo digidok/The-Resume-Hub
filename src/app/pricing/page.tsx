@@ -25,7 +25,7 @@ const CANDIDATE_FREE_FEATURES = [
 
 const CANDIDATE_PRO_FEATURES = [
   "Everything in Free",
-  "Priority AI credit refills via top-ups",
+  "Unlimited AI credits — resume review, generation, mock interviews & more",
   "Pro status unlocked",
 ];
 
@@ -111,7 +111,9 @@ export default function PricingPage() {
                 <p className="mt-1 text-2xl font-bold text-slate-900">R{pkg.amountZar}</p>
                 <p className="mt-1 text-sm text-slate-500">{pkg.credits} AI credits</p>
                 {pkg.grantsPro && (
-                  <p className="mt-1 text-xs font-medium text-brand-600">Includes Pro status</p>
+                  <p className="mt-1 text-xs font-medium text-brand-600">
+                    Includes Pro status (unlimited AI credits, no expiry)
+                  </p>
                 )}
               </Card>
             ))}

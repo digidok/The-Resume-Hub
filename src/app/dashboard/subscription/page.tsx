@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGES, getPayfastConfig } from "@/lib/payfast/config";
+import { hasUnlimitedCredits } from "@/lib/credits";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -32,6 +33,13 @@ export default async function SubscriptionPage() {
     profile?.subscription_plan &&
     profile.subscription_expires_at &&
     new Date(profile.subscription_expires_at) > new Date();
+  const unlimitedCredits = profile
+    ? hasUnlimitedCredits({
+        plan: profile.plan,
+        subscription_plan: profile.subscription_plan,
+        subscription_expires_at: profile.subscription_expires_at,
+      })
+    : false;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -40,8 +48,16 @@ export default async function SubscriptionPage() {
         <h1 className="text-3xl font-bold text-slate-900">Subscription & billing</h1>
         <p className="text-sm text-slate-500">
           You&apos;re on the <span className="font-medium capitalize">{profile?.plan ?? "free"}</span>{" "}
-          plan with <span className="font-medium">{profile?.credits_remaining ?? 0}</span> AI credits
-          remaining.
+          plan with{" "}
+          {unlimitedCredits ? (
+            <span className="font-medium text-brand-700">unlimited AI credits</span>
+          ) : (
+            <>
+              <span className="font-medium">{profile?.credits_remaining ?? 0}</span> AI credits
+              remaining
+            </>
+          )}
+          .
           {role === "employer" && (
             <>
               {" "}
