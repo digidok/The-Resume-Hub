@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #eef1f0;
+  --background: #ffffff;
   --foreground: #0f172a;
 
   /* Brand: turquoise — primary actions, headers, interactive accents */

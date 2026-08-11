@@ -31,10 +31,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full">
-        <div className="mx-auto flex min-h-full w-full max-w-[11in] flex-col bg-white shadow-xl shadow-slate-900/5">
-          <MotionProvider>{children}</MotionProvider>
-        </div>
+      <body className="min-h-full flex flex-col">
+        <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
   );
