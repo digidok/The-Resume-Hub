@@ -151,7 +151,7 @@ export default function Home() {
           <ScrollStagger className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {TRUST_POINTS.map((point) => (
               <MotionCard key={point.title}>
-                <Card className="border-0 border-l-2 border-brand-200 p-6 shadow-none">
+                <Card className="border-0 border-l-[3px] border-brand-400 bg-gradient-to-br from-white to-brand-50/50 p-6 shadow-sm">
                   <div className="flex items-center gap-2.5">
                     <point.icon className="h-5 w-5 shrink-0 text-brand-600" />
                     <h3 className="text-base font-semibold text-slate-900">{point.title}</h3>
@@ -287,7 +287,7 @@ export default function Home() {
           <ScrollStagger className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((feature) => (
               <MotionCard key={feature.title}>
-                <Card className="border-0 border-t-2 border-brand-500 p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                <Card className="border-0 border-t-[3px] border-brand-500 bg-gradient-to-br from-white to-brand-50/40 p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-brand-500/10">
                   <feature.icon className="h-6 w-6 text-brand-600" />
                   <h3 className="mt-3 text-lg font-semibold text-slate-900">{feature.title}</h3>
                   <p className="mt-2 text-sm text-slate-600">{feature.description}</p>
@@ -297,7 +297,7 @@ export default function Home() {
           </ScrollStagger>
         </section>
 
-        <section className="border-y border-slate-200 bg-white py-20">
+        <section className="border-y border-slate-200 bg-gradient-to-b from-brand-50/50 via-white to-white py-20">
           <div className="mx-auto max-w-5xl px-4">
             <ScrollReveal className="mx-auto max-w-2xl text-center">
               <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">How It Works</h2>
@@ -310,7 +310,7 @@ export default function Home() {
                 <MotionCard key={step.title}>
                   <div>
                     <div className="flex items-baseline gap-3">
-                      <span className="text-4xl font-bold text-brand-100">0{i + 1}</span>
+                      <span className="text-4xl font-bold text-brand-200">0{i + 1}</span>
                       <step.icon className="h-5 w-5 text-brand-600" />
                     </div>
                     <h3 className="mt-3 text-base font-semibold text-slate-900">{step.title}</h3>
@@ -430,7 +430,7 @@ export default function Home() {
                   ))}
                 </ul>
                 <Link href="/signup">
-                  <Button className="mt-6">
+                  <Button variant="secondary" className="mt-6">
                     Turn on auto-apply
                     <ArrowRight className="h-4 w-4" />
                   </Button>
@@ -460,7 +460,7 @@ export default function Home() {
           <div className="mx-auto max-w-5xl px-4">
             <ScrollStagger className="grid grid-cols-1 gap-6 sm:grid-cols-2" staggerChildren={0.15}>
               <MotionCard>
-                <Card className="border-0 border-b-2 border-brand-500 p-6">
+                <Card className="border-0 border-b-[3px] border-brand-500 bg-gradient-to-br from-white to-brand-50/40 p-6">
                   <div className="flex items-center gap-2.5">
                     <Users className="h-5 w-5 text-brand-600" />
                     <h3 className="text-lg font-semibold text-slate-900">For candidates</h3>
@@ -478,7 +478,7 @@ export default function Home() {
                 </Card>
               </MotionCard>
               <MotionCard>
-                <Card className="border-0 border-b-2 border-accent-500 p-6">
+                <Card className="border-0 border-b-[3px] border-accent-500 bg-gradient-to-br from-white to-accent-50/40 p-6">
                   <div className="flex items-center gap-2.5">
                     <Building2 className="h-5 w-5 text-accent-600" />
                     <h3 className="text-lg font-semibold text-slate-900">For employers</h3>
@@ -507,7 +507,7 @@ export default function Home() {
 
         <section className="bg-white py-16">
           <div className="mx-auto max-w-3xl px-4">
-            <ScrollReveal className="rounded-3xl bg-brand-50 p-8 text-center shadow-sm sm:p-10">
+            <ScrollReveal className="rounded-3xl bg-gradient-to-br from-brand-50 to-accent-50/60 p-8 text-center shadow-sm sm:p-10">
               <h2 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
                 Ready to find your next great hire?
               </h2>

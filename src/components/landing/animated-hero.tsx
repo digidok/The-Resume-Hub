@@ -30,8 +30,9 @@ export function AnimatedHero() {
     <section className="relative overflow-hidden bg-gradient-to-b from-brand-50 via-white to-white">
       {/* Ambient background: slow drifting light fields + faint grid. Transform/opacity only. */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div className="animate-drift-a absolute -left-32 top-0 h-[32rem] w-[32rem] rounded-full bg-brand-200/40 blur-3xl" />
-        <div className="animate-drift-b absolute -right-24 top-1/3 h-[28rem] w-[28rem] rounded-full bg-accent-300/25 blur-3xl" />
+        <div className="animate-drift-a absolute -left-32 top-0 h-[34rem] w-[34rem] rounded-full bg-brand-300/50 blur-3xl" />
+        <div className="animate-drift-b absolute -right-24 top-1/3 h-[30rem] w-[30rem] rounded-full bg-accent-300/40 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-brand-400/20 blur-3xl" />
         <div
           className="absolute inset-0 opacity-[0.04]"
           style={{
@@ -48,7 +49,7 @@ export function AnimatedHero() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: EASE }}
-            className="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brand-700"
+            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-brand-500 to-brand-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm shadow-brand-500/25"
           >
             <Sparkles className="h-3.5 w-3.5" />
             Africa&apos;s first scheduled auto-apply platform
@@ -128,7 +129,9 @@ export function AnimatedHero() {
     </section>
 
     <div className="relative z-10 mx-auto -mt-12 max-w-5xl px-4 sm:-mt-16">
-      <ScrollReveal className="rounded-3xl bg-white p-6 shadow-xl shadow-slate-900/10 sm:p-8">
+      <ScrollReveal className="overflow-hidden rounded-3xl bg-gradient-to-br from-white to-brand-50/50 p-6 shadow-xl shadow-slate-900/10 sm:p-8">
+        <div className="-mx-6 -mt-6 mb-6 h-1.5 bg-gradient-to-r from-brand-500 via-accent-400 to-brand-500 sm:-mx-8 sm:-mt-8" />
+
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
           {HERO_STATS.map((stat) => (
             <div key={stat.label} className="text-center">
