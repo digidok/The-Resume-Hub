@@ -6,14 +6,23 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { ApplicationStatus } from "@/types/database";
 
-const STATUS_OPTIONS: ApplicationStatus[] = ["submitted", "reviewed", "accepted", "rejected"];
+const STATUS_OPTIONS: Exclude<ApplicationStatus, "submitted">[] = [
+  "interviewing",
+  "offer",
+  "rejected",
+];
 
 const statusStyles: Record<ApplicationStatus, string> = {
   submitted: "bg-slate-100 text-slate-600",
-  reviewed: "bg-blue-100 text-blue-700",
-  accepted: "bg-emerald-100 text-emerald-700",
+  interviewing: "bg-blue-100 text-blue-700",
+  offer: "bg-emerald-100 text-emerald-700",
   rejected: "bg-red-100 text-red-700",
 };
+
+function toDateInputValue(iso: string | null) {
+  if (!iso) return "";
+  return iso.slice(0, 10);
+}
 
 export default async function ApplicantsPage({
   params,
@@ -37,7 +46,7 @@ export default async function ApplicantsPage({
   const { data: applications } = await supabase
     .from("applications")
     .select(
-      "id, status, cover_note, created_at, candidate_id, resume_id, profiles:candidate_id(full_name, headline), resumes:resume_id(title, slug, is_public)"
+      "id, status, cover_note, created_at, interview_scheduled_at, candidate_id, resume_id, profiles:candidate_id(full_name, headline), resumes:resume_id(title, slug, is_public)"
     )
     .eq("job_id", id)
     .order("created_at", { ascending: false });
@@ -57,6 +66,7 @@ export default async function ApplicantsPage({
         {applications?.map((app) => {
           const candidate = Array.isArray(app.profiles) ? app.profiles[0] : app.profiles;
           const resume = Array.isArray(app.resumes) ? app.resumes[0] : app.resumes;
+          const status = app.status as ApplicationStatus;
           return (
             <Card key={app.id} className="p-5">
               <div className="flex flex-wrap items-start justify-between gap-2">
@@ -72,14 +82,20 @@ export default async function ApplicantsPage({
                   </p>
                 </div>
                 <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${statusStyles[app.status as ApplicationStatus]}`}
+                  className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${statusStyles[status]}`}
                 >
-                  {app.status}
+                  {status}
                 </span>
               </div>
 
               {app.cover_note && (
                 <p className="mt-3 whitespace-pre-line text-sm text-slate-700">{app.cover_note}</p>
+              )}
+
+              {app.interview_scheduled_at && (
+                <p className="mt-2 text-sm text-blue-700">
+                  Interview scheduled: {new Date(app.interview_scheduled_at).toLocaleDateString()}
+                </p>
               )}
 
               <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -96,14 +112,15 @@ export default async function ApplicantsPage({
                 <form
                   action={async (formData: FormData) => {
                     "use server";
-                    const status = formData.get("status") as ApplicationStatus;
-                    await updateApplicationStatus(id, app.id, status as "reviewed" | "rejected" | "accepted");
+                    const newStatus = formData.get("status") as "interviewing" | "offer" | "rejected";
+                    const interviewDate = String(formData.get("interview_date") ?? "") || undefined;
+                    await updateApplicationStatus(id, app.id, newStatus, interviewDate);
                   }}
-                  className="flex items-center gap-2"
+                  className="flex flex-wrap items-center gap-2"
                 >
                   <select
                     name="status"
-                    defaultValue={app.status}
+                    defaultValue={status === "submitted" ? "interviewing" : status}
                     className="rounded-lg border border-slate-300 px-2 py-1 text-sm"
                   >
                     {STATUS_OPTIONS.map((s) => (
@@ -112,6 +129,13 @@ export default async function ApplicantsPage({
                       </option>
                     ))}
                   </select>
+                  <input
+                    type="date"
+                    name="interview_date"
+                    defaultValue={toDateInputValue(app.interview_scheduled_at)}
+                    className="rounded-lg border border-slate-300 px-2 py-1 text-sm text-slate-600"
+                    title="Interview date (only used when status is set to interviewing)"
+                  />
                   <Button type="submit" size="sm" variant="outline">
                     Update
                   </Button>

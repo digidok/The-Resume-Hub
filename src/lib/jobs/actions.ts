@@ -84,7 +84,8 @@ export async function updateJobStatus(jobId: string, status: "open" | "closed") 
 export async function updateApplicationStatus(
   jobId: string,
   applicationId: string,
-  status: "reviewed" | "rejected" | "accepted"
+  status: "interviewing" | "offer" | "rejected",
+  interviewScheduledAt?: string
 ) {
   const supabase = await createClient();
   const {
@@ -94,8 +95,13 @@ export async function updateApplicationStatus(
 
   await supabase
     .from("applications")
-    .update({ status })
+    .update({
+      status,
+      interview_scheduled_at:
+        status === "interviewing" && interviewScheduledAt ? interviewScheduledAt : null,
+    })
     .eq("id", applicationId);
 
   revalidatePath(`/dashboard/jobs/${jobId}/applicants`);
+  revalidatePath("/dashboard/applications");
 }

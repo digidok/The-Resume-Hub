@@ -6,8 +6,8 @@ import type { ApplicationStatus } from "@/types/database";
 
 const statusStyles: Record<ApplicationStatus, string> = {
   submitted: "bg-slate-100 text-slate-600",
-  reviewed: "bg-blue-100 text-blue-700",
-  accepted: "bg-emerald-100 text-emerald-700",
+  interviewing: "bg-blue-100 text-blue-700",
+  offer: "bg-emerald-100 text-emerald-700",
   rejected: "bg-red-100 text-red-700",
 };
 
@@ -20,7 +20,7 @@ export default async function MyApplicationsPage() {
 
   const { data: applications } = await supabase
     .from("applications")
-    .select("id, status, created_at, jobs:job_id(id, title, company)")
+    .select("id, status, created_at, interview_scheduled_at, jobs:job_id(id, title, company)")
     .eq("candidate_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -53,6 +53,11 @@ export default async function MyApplicationsPage() {
                 <p className="mt-1 text-xs text-slate-400">
                   Applied {new Date(app.created_at).toLocaleDateString()}
                 </p>
+                {app.interview_scheduled_at && (
+                  <p className="mt-1 text-xs font-medium text-blue-600">
+                    Interview: {new Date(app.interview_scheduled_at).toLocaleDateString()}
+                  </p>
+                )}
               </div>
               <span
                 className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${statusStyles[app.status as ApplicationStatus]}`}

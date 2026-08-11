@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/field";
 import type { AiReview } from "@/types/database";
 
 export function AiReviewPanel({ resumeId }: { resumeId: string }) {
+  const router = useRouter();
   const [jobDescription, setJobDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +31,7 @@ export function AiReviewPanel({ resumeId }: { resumeId: string }) {
         return;
       }
       setReview(data);
+      router.refresh();
     } catch {
       setError("Could not reach the AI review service.");
     } finally {

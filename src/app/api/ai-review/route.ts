@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { spendCredits } from "@/lib/credits";
 import type { ResumeContent } from "@/types/database";
 
 function contentToPlainText(content: ResumeContent): string {
@@ -84,6 +85,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Resume not found." }, { status: 404 });
   }
 
+  const spend = await spendCredits(supabase, user.id, "ai_review");
+  if (!spend.ok) {
+    return NextResponse.json({ error: spend.error }, { status: 402 });
+  }
+
   const resumeText = contentToPlainText(resume.content as ResumeContent);
   const anthropic = new Anthropic({ apiKey });
 
@@ -115,7 +121,7 @@ export async function POST(request: Request) {
       feedback: review,
     });
 
-    return NextResponse.json(review);
+    return NextResponse.json({ ...review, credits_remaining: spend.remaining });
   } catch (err) {
     console.error("AI review failed", err);
     return NextResponse.json({ error: "AI review failed. Please try again." }, { status: 500 });

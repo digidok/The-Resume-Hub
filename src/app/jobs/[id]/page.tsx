@@ -2,7 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { ApplyForm } from "@/components/jobs/apply-form";
+import { toggleSavedJob } from "@/lib/savedjobs/actions";
 
 const EMPLOYMENT_LABELS: Record<string, string> = {
   full_time: "Full-time",
@@ -30,6 +32,7 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
   let resumes: { id: string; title: string }[] = [];
   let alreadyApplied = false;
   let isEmployer = false;
+  let isSaved = false;
 
   if (user) {
     const { data: profile } = await supabase
@@ -54,14 +57,31 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
         .eq("candidate_id", user.id)
         .maybeSingle();
       alreadyApplied = Boolean(existing);
+
+      const { data: saved } = await supabase
+        .from("saved_jobs")
+        .select("id")
+        .eq("job_id", id)
+        .eq("user_id", user.id)
+        .maybeSingle();
+      isSaved = Boolean(saved);
     }
   }
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <Link href="/jobs" className="text-sm text-indigo-600 hover:underline">
-        ← All jobs
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link href="/jobs" className="text-sm text-indigo-600 hover:underline">
+          ← All jobs
+        </Link>
+        {user && !isEmployer && (
+          <form action={toggleSavedJob.bind(null, job.id, !isSaved)}>
+            <Button type="submit" size="sm" variant={isSaved ? "secondary" : "outline"}>
+              {isSaved ? "★ Saved" : "☆ Save job"}
+            </Button>
+          </form>
+        )}
+      </div>
       <div className="mt-2 mb-6">
         <h1 className="text-3xl font-bold text-slate-900">{job.title}</h1>
         <p className="mt-1 text-slate-600">

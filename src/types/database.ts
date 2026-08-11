@@ -1,4 +1,5 @@
 export type ProfileRole = "candidate" | "employer";
+export type ProfilePlan = "free" | "pro";
 
 export type Profile = {
   id: string;
@@ -6,6 +7,8 @@ export type Profile = {
   full_name: string | null;
   headline: string | null;
   avatar_url: string | null;
+  plan: ProfilePlan;
+  credits_remaining: number;
   created_at: string;
   updated_at: string;
 };
@@ -80,7 +83,7 @@ export type Job = {
   updated_at: string;
 };
 
-export type ApplicationStatus = "submitted" | "reviewed" | "rejected" | "accepted";
+export type ApplicationStatus = "submitted" | "interviewing" | "offer" | "rejected";
 
 export type Application = {
   id: string;
@@ -89,6 +92,34 @@ export type Application = {
   resume_id: string;
   cover_note: string | null;
   status: ApplicationStatus;
+  interview_scheduled_at: string | null;
+  created_at: string;
+};
+
+export type CoverLetter = {
+  id: string;
+  user_id: string;
+  job_id: string | null;
+  title: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SavedJob = {
+  id: string;
+  user_id: string;
+  job_id: string;
+  created_at: string;
+};
+
+export type FollowUp = {
+  id: string;
+  application_id: string;
+  user_id: string;
+  due_date: string;
+  note: string | null;
+  completed: boolean;
   created_at: string;
 };
 
