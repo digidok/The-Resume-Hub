@@ -155,6 +155,15 @@ export type InductionQuestionPublic = {
   options: string[];
 };
 
+export type InterviewNoteFile = {
+  id: string;
+  application_id: string;
+  employer_id: string;
+  file_name: string;
+  storage_path: string;
+  uploaded_at: string;
+};
+
 export type InductionAttempt = {
   id: string;
   module_id: string;

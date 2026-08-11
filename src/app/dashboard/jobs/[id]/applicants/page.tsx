@@ -293,6 +293,12 @@ export default async function ApplicantsPage({
                 >
                   Offer letter
                 </Link>
+                <Link
+                  href={`/dashboard/jobs/${id}/applicants/${app.id}/notes`}
+                  className="font-medium text-brand-600 hover:underline"
+                >
+                  Interview notes
+                </Link>
               </div>
             </Card>
           );
