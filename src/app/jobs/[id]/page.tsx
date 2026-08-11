@@ -17,6 +17,37 @@ const EMPLOYMENT_LABELS: Record<string, string> = {
   internship: "Internship",
 };
 
+function daysAgo(iso: string) {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const days = Math.floor(diffMs / 86400000);
+  if (days <= 0) return "Posted today";
+  if (days === 1) return "Posted 1 day ago";
+  return `Posted ${days} days ago`;
+}
+
+function isRecentlyPosted(iso: string) {
+  return Date.now() - new Date(iso).getTime() < 7 * 86400000;
+}
+
+export async function generateMetadata({ params }: PageProps<"/jobs/[id]">) {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: job } = await supabase
+    .from("jobs")
+    .select("title, company, location, description")
+    .eq("id", id)
+    .single();
+
+  if (!job) return { title: "Job not found — Resume Hub" };
+
+  return {
+    title: `${job.title} at ${job.company} — Resume Hub`,
+    description: job.description
+      ? job.description.slice(0, 155)
+      : `${job.title} at ${job.company}${job.location ? ` in ${job.location}` : ""}. Apply on Resume Hub.`,
+  };
+}
+
 export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">) {
   const { id } = await params;
   const supabase = await createClient();
@@ -82,8 +113,52 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
 
   const match = careerProfile ? computeJobMatch(careerProfile, job as Job) : null;
 
+  const EMPLOYMENT_TYPE_SCHEMA: Record<string, string> = {
+    full_time: "FULL_TIME",
+    part_time: "PART_TIME",
+    contract: "CONTRACTOR",
+    internship: "INTERN",
+  };
+
+  const jobPostingJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: job.title,
+    description: job.description,
+    datePosted: job.posted_at,
+    employmentType: EMPLOYMENT_TYPE_SCHEMA[job.employment_type] ?? undefined,
+    hiringOrganization: {
+      "@type": "Organization",
+      name: job.company,
+    },
+    jobLocation: job.location
+      ? {
+          "@type": "Place",
+          address: { "@type": "PostalAddress", addressLocality: job.location, addressCountry: "ZA" },
+        }
+      : undefined,
+    baseSalary:
+      job.salary_min || job.salary_max
+        ? {
+            "@type": "MonetaryAmount",
+            currency: "ZAR",
+            value: {
+              "@type": "QuantitativeValue",
+              minValue: job.salary_min ?? undefined,
+              maxValue: job.salary_max ?? undefined,
+              unitText: "YEAR",
+            },
+          }
+        : undefined,
+    validThrough: job.status !== "open" ? job.posted_at : undefined,
+  };
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingJsonLd) }}
+      />
       <div className="flex items-center justify-between">
         <Link href="/jobs" className="text-sm text-brand-600 hover:underline">
           ← All jobs
@@ -109,6 +184,14 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
             {job.salary_max ? `R${job.salary_max.toLocaleString()}` : ""}
           </p>
         )}
+        <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${
+              isRecentlyPosted(job.posted_at) ? "bg-emerald-500" : "bg-slate-300"
+            }`}
+          />
+          {daysAgo(job.posted_at)}
+        </p>
         {job.status !== "open" && (
           <p className="mt-2 inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500">
             This role is no longer accepting applications.
