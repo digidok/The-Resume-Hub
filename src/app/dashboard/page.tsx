@@ -1,12 +1,61 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { UploadCloud, FilePlus2, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { createResume } from "@/lib/resumes/actions";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { DonutChart } from "@/components/dashboard/donut-chart";
 import { WeeklyBarChart } from "@/components/dashboard/weekly-bar-chart";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { ApplicationStatus } from "@/types/database";
+
+function GetStartedChooser({ firstName }: { firstName: string }) {
+  return (
+    <div className="mx-auto max-w-3xl space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold text-slate-900">Welcome, {firstName}</h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Let&apos;s get your resume set up — you can always add more later.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Link href="/dashboard/import">
+          <Card className="flex h-full flex-col p-6 transition hover:-translate-y-0.5 hover:shadow-md">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+              <UploadCloud className="h-5 w-5" />
+            </div>
+            <h2 className="mt-4 text-lg font-semibold text-slate-900">Upload your CV</h2>
+            <p className="mt-2 flex-1 text-sm text-slate-600">
+              Already have a CV? Upload a PDF (or paste your LinkedIn profile) and we&apos;ll fill
+              in your resume automatically.
+            </p>
+            <span className="mt-4 flex items-center gap-1.5 text-sm font-medium text-brand-700">
+              Upload a CV <ArrowRight className="h-4 w-4" />
+            </span>
+          </Card>
+        </Link>
+
+        <form action={createResume}>
+          <button type="submit" className="block h-full w-full text-left">
+            <Card className="flex h-full flex-col p-6 transition hover:-translate-y-0.5 hover:shadow-md">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-500/10 text-accent-600">
+                <FilePlus2 className="h-5 w-5" />
+              </div>
+              <h2 className="mt-4 text-lg font-semibold text-slate-900">Build from scratch</h2>
+              <p className="mt-2 flex-1 text-sm text-slate-600">
+                Start with a blank resume and fill it in step by step, with AI help along the way.
+              </p>
+              <span className="mt-4 flex items-center gap-1.5 text-sm font-medium text-accent-600">
+                Start building <ArrowRight className="h-4 w-4" />
+              </span>
+            </Card>
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
 
 const STATUS_META: Record<ApplicationStatus, { label: string; colorClass: string; colorHex: string }> = {
   submitted: { label: "Submitted", colorClass: "bg-slate-400", colorHex: "#94a3b8" },
@@ -241,7 +290,7 @@ export default async function DashboardPage() {
     );
   }
 
-  const [{ data: applications }, { count: savedJobsCount }] = await Promise.all([
+  const [{ data: applications }, { count: savedJobsCount }, { count: resumeCount }] = await Promise.all([
     supabase
       .from("applications")
       .select("id, status, created_at, interview_scheduled_at")
@@ -250,7 +299,15 @@ export default async function DashboardPage() {
       .from("saved_jobs")
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id),
+    supabase
+      .from("resumes")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id),
   ]);
+
+  if (!resumeCount) {
+    return <GetStartedChooser firstName={firstName} />;
+  }
 
   const apps = applications ?? [];
   const weekStart = startOfWeek(new Date());
