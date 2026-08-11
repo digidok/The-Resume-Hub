@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
-import { setUserRole, grantCredits } from "@/lib/admin/actions";
+import { setUserRole, grantCredits, revokeSubscription } from "@/lib/admin/actions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/field";
@@ -34,7 +34,9 @@ export default async function AdminUsersPage({
 
   let usersQuery = supabase
     .from("profiles")
-    .select("id, full_name, role, plan, credits_remaining, created_at, source, phone_number")
+    .select(
+      "id, full_name, role, plan, credits_remaining, created_at, source, phone_number, subscription_plan"
+    )
     .order("created_at", { ascending: false });
 
   if (query) {
@@ -126,6 +128,18 @@ export default async function AdminUsersPage({
                   Grant
                 </Button>
               </form>
+              {u.plan === "pro" && (
+                <form
+                  action={async () => {
+                    "use server";
+                    await revokeSubscription(u.id);
+                  }}
+                >
+                  <Button type="submit" size="sm" variant="outline">
+                    Revoke Pro
+                  </Button>
+                </form>
+              )}
             </div>
           </Card>
         ))}

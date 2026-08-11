@@ -4,9 +4,12 @@ import { createClient } from "@/lib/supabase/server";
 import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGES, getPayfastConfig } from "@/lib/payfast/config";
 import { hasUnlimitedCredits } from "@/lib/credits";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 
-export default async function SubscriptionPage() {
+export default async function SubscriptionPage({
+  searchParams,
+}: PageProps<"/dashboard/subscription">) {
+  const params = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -15,7 +18,9 @@ export default async function SubscriptionPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, plan, credits_remaining, subscription_plan, subscription_expires_at, job_posting_credits")
+    .select(
+      "role, plan, credits_remaining, subscription_plan, subscription_expires_at, job_posting_credits, payfast_token"
+    )
     .eq("id", user.id)
     .single();
 
@@ -80,6 +85,23 @@ export default async function SubscriptionPage() {
           PAYFAST_MODE=live with your live credentials when you&apos;re ready to accept real payments.
         </Card>
       )}
+      {params.cancelled === "1" && (
+        <Card className="border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+          Your subscription won&apos;t renew. You&apos;ll keep your current benefits until the billing
+          period ends.
+        </Card>
+      )}
+      {params.cancel_error === "no_active_subscription" && (
+        <Card className="border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          There&apos;s no active subscription to cancel.
+        </Card>
+      )}
+      {params.cancel_error === "payfast_error" && (
+        <Card className="border-red-200 bg-red-50 p-4 text-sm text-red-800">
+          Couldn&apos;t cancel with Payfast — please try again, or contact us at info@resumehub.co.za
+          and we&apos;ll cancel it manually.
+        </Card>
+      )}
 
       {subscriptionPkg && (
         <div>
@@ -90,29 +112,37 @@ export default async function SubscriptionPage() {
               <p className="text-sm text-slate-500">{subscriptionPkg.description}</p>
               {isSubscribed && profile?.subscription_expires_at && (
                 <p className="mt-1 text-xs font-medium text-emerald-600">
-                  Active — renews {new Date(profile.subscription_expires_at).toLocaleDateString()}
+                  {profile.payfast_token
+                    ? `Active — renews ${new Date(profile.subscription_expires_at).toLocaleDateString()}`
+                    : `Active until ${new Date(profile.subscription_expires_at).toLocaleDateString()} — won't renew`}
                 </p>
               )}
             </div>
-            <form
-              action="/api/payfast/subscribe"
-              method="POST"
-              className="flex flex-wrap items-center gap-3"
-            >
-              <span className="text-2xl font-bold text-slate-900">R{subscriptionPkg.amountZar}</span>
-              <input type="hidden" name="package_id" value={subscriptionPkg.id} />
-              {!isSubscribed && (
+            {isSubscribed ? (
+              profile?.payfast_token && (
+                <form action="/api/payfast/cancel" method="POST">
+                  <SubmitButton variant="outline" size="sm" pendingLabel="Cancelling…">
+                    Cancel subscription
+                  </SubmitButton>
+                </form>
+              )
+            ) : (
+              <form
+                action="/api/payfast/subscribe"
+                method="POST"
+                className="flex flex-wrap items-center gap-3"
+              >
+                <span className="text-2xl font-bold text-slate-900">R{subscriptionPkg.amountZar}</span>
+                <input type="hidden" name="package_id" value={subscriptionPkg.id} />
                 <input
                   type="text"
                   name="promo_code"
                   placeholder="Promo code (optional)"
                   className="w-40 rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm placeholder:text-slate-400"
                 />
-              )}
-              <Button type="submit" disabled={!config.configured || Boolean(isSubscribed)}>
-                {isSubscribed ? "Subscribed" : "Subscribe"}
-              </Button>
-            </form>
+                <SubmitButton disabled={!config.configured}>Subscribe</SubmitButton>
+              </form>
+            )}
           </Card>
           {!isSubscribed && role === "candidate" && (
             <p className="mt-2 text-xs text-slate-400">
@@ -121,12 +151,6 @@ export default async function SubscriptionPage() {
                 student discount code
               </a>{" "}
               and enter it above before subscribing.
-            </p>
-          )}
-          {isSubscribed && (
-            <p className="mt-2 text-xs text-slate-400">
-              To cancel, contact us or manage the subscription directly from your Payfast account —
-              in-app cancellation isn&apos;t available yet.
             </p>
           )}
         </div>
@@ -146,9 +170,9 @@ export default async function SubscriptionPage() {
                 )}
                 <form action="/api/payfast/checkout" method="POST" className="mt-4">
                   <input type="hidden" name="package_id" value={pkg.id} />
-                  <Button type="submit" disabled={!config.configured} className="w-full">
+                  <SubmitButton disabled={!config.configured} className="w-full">
                     Buy
-                  </Button>
+                  </SubmitButton>
                 </form>
               </Card>
             ))}

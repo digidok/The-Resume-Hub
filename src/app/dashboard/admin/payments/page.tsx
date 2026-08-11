@@ -1,13 +1,16 @@
 import { redirect } from "next/navigation";
 import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
+import { markPaymentRefunded } from "@/lib/admin/actions";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const statusStyles: Record<string, string> = {
   complete: "bg-emerald-100 text-emerald-700",
   pending: "bg-amber-100 text-amber-700",
   failed: "bg-red-100 text-red-700",
+  refunded: "bg-slate-200 text-slate-600",
 };
 
 export default async function AdminPaymentsPage() {
@@ -62,6 +65,18 @@ export default async function AdminPaymentsPage() {
                 >
                   {payment.status}
                 </span>
+                {payment.status === "complete" && (
+                  <form
+                    action={async () => {
+                      "use server";
+                      await markPaymentRefunded(payment.id);
+                    }}
+                  >
+                    <Button type="submit" size="sm" variant="outline">
+                      Mark refunded
+                    </Button>
+                  </form>
+                )}
               </div>
             </Card>
           );
