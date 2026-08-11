@@ -53,6 +53,7 @@ export type ResumeContent = {
   location?: string;
   website?: string;
   summary?: string;
+  photo_url?: string;
   experience: ResumeExperience[];
   education: ResumeEducation[];
   skills: string[];

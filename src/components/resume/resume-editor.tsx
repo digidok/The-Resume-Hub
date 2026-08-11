@@ -8,6 +8,7 @@ import { Input, Label, Select, Textarea } from "@/components/ui/field";
 import { Card } from "@/components/ui/card";
 import { ResumePreview, RESUME_TEMPLATES } from "@/components/resume/resume-preview";
 import { AiReviewPanel } from "@/components/resume/ai-review-panel";
+import { PhotoUploader } from "@/components/resume/photo-uploader";
 import { COMMON_LANGUAGES } from "@/lib/languages";
 import type {
   Resume,
@@ -31,9 +32,57 @@ export function ResumeEditor({ resume, siteUrl }: { resume: Resume; siteUrl: str
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [fillGapsPending, setFillGapsPending] = useState(false);
+  const [fillGapsStatus, setFillGapsStatus] = useState<string | null>(null);
+  const [fillGapsError, setFillGapsError] = useState<string | null>(null);
 
   function update<K extends keyof ResumeContent>(key: K, value: ResumeContent[K]) {
     setContent((prev) => ({ ...prev, [key]: value }));
+  }
+
+  const hasGaps =
+    !content.summary?.trim() ||
+    content.skills.length === 0 ||
+    content.experience.some((exp) => (exp.title || exp.company) && !exp.description?.trim());
+
+  async function handleFillGaps() {
+    setFillGapsError(null);
+    setFillGapsStatus(null);
+    setFillGapsPending(true);
+    try {
+      const res = await fetch("/api/resume/fill-gaps", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setFillGapsError(data.error || "Could not fill gaps.");
+        return;
+      }
+      setContent((prev) => {
+        const next = { ...prev };
+        if (data.summary && !prev.summary?.trim()) next.summary = data.summary;
+        if (data.skills?.length && prev.skills.length === 0) next.skills = data.skills;
+        if (data.experience_descriptions?.length) {
+          const byId = new Map<string, string>(
+            data.experience_descriptions.map((d: { id: string; description: string }) => [d.id, d.description])
+          );
+          next.experience = prev.experience.map((exp) =>
+            !exp.description?.trim() && byId.has(exp.id)
+              ? { ...exp, description: byId.get(exp.id)! }
+              : exp
+          );
+        }
+        return next;
+      });
+      setFillGapsStatus("Gaps filled in — review the new content and save when ready.");
+      setTimeout(() => setFillGapsStatus(null), 5000);
+    } catch {
+      setFillGapsError("Could not fill gaps. Please try again.");
+    } finally {
+      setFillGapsPending(false);
+    }
   }
 
   function handleSave() {
@@ -81,6 +130,28 @@ export function ResumeEditor({ resume, siteUrl }: { resume: Resume; siteUrl: str
           </div>
           {status && <p className="text-sm text-emerald-600">{status}</p>}
           {error && <p className="text-sm text-red-600">{error}</p>}
+
+          {hasGaps && (
+            <div className="rounded-lg border border-brand-200 bg-brand-50 p-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-sm text-slate-700">
+                  Missing a summary, skills, or role descriptions? Let AI fill in the gaps using what you&apos;ve
+                  already added.
+                </p>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  onClick={handleFillGaps}
+                  disabled={fillGapsPending}
+                >
+                  {fillGapsPending ? "Filling gaps…" : "Fill gaps with AI"}
+                </Button>
+              </div>
+              {fillGapsStatus && <p className="mt-2 text-sm text-emerald-600">{fillGapsStatus}</p>}
+              {fillGapsError && <p className="mt-2 text-sm text-red-600">{fillGapsError}</p>}
+            </div>
+          )}
 
           <div>
             <Label htmlFor="title">Resume title</Label>
@@ -142,6 +213,11 @@ export function ResumeEditor({ resume, siteUrl }: { resume: Resume; siteUrl: str
 
         <Card className="space-y-4 p-5">
           <h2 className="text-lg font-semibold text-slate-900">Contact</h2>
+          <PhotoUploader
+            userId={resume.user_id}
+            photoUrl={content.photo_url}
+            onChange={(url) => update("photo_url", url)}
+          />
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="full_name">Full name</Label>
@@ -252,6 +328,13 @@ function SectionCard({
   );
 }
 
+type DutySuggestion = {
+  loading: boolean;
+  duties: string[];
+  selected: string[];
+  error: string | null;
+};
+
 function ExperienceEditor({
   items,
   onChange,
@@ -259,6 +342,8 @@ function ExperienceEditor({
   items: ResumeExperience[];
   onChange: (items: ResumeExperience[]) => void;
 }) {
+  const [suggestions, setSuggestions] = useState<Record<string, DutySuggestion>>({});
+
   function add() {
     onChange([...items, { id: newId(), company: "", title: "" }]);
   }
@@ -267,6 +352,57 @@ function ExperienceEditor({
   }
   function remove(id: string) {
     onChange(items.filter((item) => item.id !== id));
+  }
+
+  async function suggestDuties(item: ResumeExperience) {
+    setSuggestions((prev) => ({
+      ...prev,
+      [item.id]: { loading: true, duties: [], selected: [], error: null },
+    }));
+    try {
+      const res = await fetch("/api/resume/suggest-duties", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: item.title, company: item.company }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSuggestions((prev) => ({
+          ...prev,
+          [item.id]: { loading: false, duties: [], selected: [], error: data.error || "Could not suggest duties." },
+        }));
+        return;
+      }
+      setSuggestions((prev) => ({
+        ...prev,
+        [item.id]: { loading: false, duties: data.duties, selected: [], error: null },
+      }));
+    } catch {
+      setSuggestions((prev) => ({
+        ...prev,
+        [item.id]: { loading: false, duties: [], selected: [], error: "Could not suggest duties. Please try again." },
+      }));
+    }
+  }
+
+  function toggleDuty(itemId: string, duty: string) {
+    setSuggestions((prev) => {
+      const current = prev[itemId];
+      if (!current) return prev;
+      const selected = current.selected.includes(duty)
+        ? current.selected.filter((d) => d !== duty)
+        : [...current.selected, duty];
+      return { ...prev, [itemId]: { ...current, selected } };
+    });
+  }
+
+  function insertDuties(item: ResumeExperience) {
+    const current = suggestions[item.id];
+    if (!current || current.selected.length === 0) return;
+    const bulletText = current.selected.map((d) => `• ${d}`).join("\n");
+    const merged = item.description?.trim() ? `${item.description}\n${bulletText}` : bulletText;
+    update(item.id, { description: merged });
+    setSuggestions((prev) => ({ ...prev, [item.id]: { loading: false, duties: [], selected: [], error: null } }));
   }
 
   return (
@@ -320,6 +456,49 @@ function ExperienceEditor({
               value={item.description ?? ""}
               onChange={(e) => update(item.id, { description: e.target.value })}
             />
+
+            <div className="rounded-lg border border-dashed border-slate-200 p-2">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs text-slate-500">Stuck on what to write?</p>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={!item.title || suggestions[item.id]?.loading}
+                  onClick={() => suggestDuties(item)}
+                >
+                  {suggestions[item.id]?.loading ? "Thinking…" : "Suggest duties with AI"}
+                </Button>
+              </div>
+              {suggestions[item.id]?.error && (
+                <p className="mt-1 text-xs text-red-600">{suggestions[item.id]?.error}</p>
+              )}
+              {!!suggestions[item.id]?.duties.length && (
+                <div className="mt-2 space-y-1">
+                  {suggestions[item.id]!.duties.map((duty) => (
+                    <label key={duty} className="flex items-start gap-2 text-xs text-slate-700">
+                      <input
+                        type="checkbox"
+                        className="mt-0.5 h-3.5 w-3.5 rounded border-slate-300 text-brand-600"
+                        checked={suggestions[item.id]!.selected.includes(duty)}
+                        onChange={() => toggleDuty(item.id, duty)}
+                      />
+                      {duty}
+                    </label>
+                  ))}
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    disabled={suggestions[item.id]?.selected.length === 0}
+                    onClick={() => insertDuties(item)}
+                  >
+                    Insert selected
+                  </Button>
+                </div>
+              )}
+            </div>
+
             <button
               type="button"
               onClick={() => remove(item.id)}
