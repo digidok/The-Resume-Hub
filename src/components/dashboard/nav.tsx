@@ -2,9 +2,66 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
+import {
+  LayoutDashboard,
+  Search,
+  ClipboardList,
+  Layers,
+  Sparkles,
+  FileText,
+  Mail,
+  ScanSearch,
+  Bookmark,
+  MessageSquare,
+  Bell,
+  DollarSign,
+  Zap,
+  Import,
+  UserCog,
+  Briefcase,
+  PlusSquare,
+  Globe,
+  CalendarClock,
+  Users,
+  GraduationCap,
+  BarChart3,
+  CreditCard,
+  Newspaper,
+} from "lucide-react";
 
-export type NavItem = { href: string; label: string; icon: LucideIcon };
+// Server Components can't pass component/function references as props to
+// Client Components (RSC serialization boundary) — so nav items carry an
+// icon *name* string, and this map resolves it to the actual icon
+// component here, inside the client boundary.
+const ICONS = {
+  LayoutDashboard,
+  Search,
+  ClipboardList,
+  Layers,
+  Sparkles,
+  FileText,
+  Mail,
+  ScanSearch,
+  Bookmark,
+  MessageSquare,
+  Bell,
+  DollarSign,
+  Zap,
+  Import,
+  UserCog,
+  Briefcase,
+  PlusSquare,
+  Globe,
+  CalendarClock,
+  Users,
+  GraduationCap,
+  BarChart3,
+  CreditCard,
+  Newspaper,
+} as const;
+
+export type NavIconName = keyof typeof ICONS;
+export type NavItem = { href: string; label: string; icon: NavIconName };
 export type NavGroup = { label: string; items: NavItem[] };
 
 export function DashboardNav({ groups }: { groups: NavGroup[] }) {
@@ -21,6 +78,7 @@ export function DashboardNav({ groups }: { groups: NavGroup[] }) {
             {group.items.map((item) => {
               const active =
                 item.href === "/dashboard" ? pathname === item.href : pathname.startsWith(item.href);
+              const Icon = ICONS[item.icon];
               return (
                 <Link
                   key={item.href}
@@ -32,7 +90,7 @@ export function DashboardNav({ groups }: { groups: NavGroup[] }) {
                       : "text-slate-700 hover:bg-slate-100"
                   }`}
                 >
-                  <item.icon className={`h-4 w-4 shrink-0 ${active ? "text-brand-700" : "text-slate-400"}`} />
+                  <Icon className={`h-4 w-4 shrink-0 ${active ? "text-brand-700" : "text-slate-400"}`} />
                   {item.label}
                 </Link>
               );

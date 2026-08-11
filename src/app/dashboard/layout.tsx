@@ -1,33 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import {
-  LayoutDashboard,
-  Search,
-  ClipboardList,
-  Layers,
-  Sparkles,
-  FileText,
-  Mail,
-  ScanSearch,
-  Bookmark,
-  MessageSquare,
-  Bell,
-  DollarSign,
-  Zap,
-  Import,
-  UserCog,
-  Briefcase,
-  PlusSquare,
-  Globe,
-  CalendarClock,
-  Users,
-  BarChart3,
-  ShieldCheck,
-  CreditCard,
-  MessageCircle,
-  GraduationCap,
-  Newspaper,
-} from "lucide-react";
+import { ShieldCheck, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
@@ -63,31 +36,31 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
     {
       label: "Main",
       items: [
-        { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/jobs", label: "Find jobs", icon: Search },
-        { href: "/dashboard/applications", label: "Applications", icon: ClipboardList },
-        { href: "/dashboard/bulk-apply", label: "Bulk apply", icon: Layers },
-        { href: "/dashboard/ai-generator", label: "AI generator", icon: Sparkles },
+        { href: "/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
+        { href: "/jobs", label: "Find jobs", icon: "Search" },
+        { href: "/dashboard/applications", label: "Applications", icon: "ClipboardList" },
+        { href: "/dashboard/bulk-apply", label: "Bulk apply", icon: "Layers" },
+        { href: "/dashboard/ai-generator", label: "AI generator", icon: "Sparkles" },
       ],
     },
     {
       label: "Documents",
       items: [
-        { href: "/dashboard/resumes", label: "Resumes", icon: FileText },
-        { href: "/dashboard/cover-letters", label: "Cover letters", icon: Mail },
-        { href: "/dashboard/ats-scanner", label: "ATS scanner", icon: ScanSearch },
-        { href: "/dashboard/saved-jobs", label: "Saved jobs", icon: Bookmark },
+        { href: "/dashboard/resumes", label: "Resumes", icon: "FileText" },
+        { href: "/dashboard/cover-letters", label: "Cover letters", icon: "Mail" },
+        { href: "/dashboard/ats-scanner", label: "ATS scanner", icon: "ScanSearch" },
+        { href: "/dashboard/saved-jobs", label: "Saved jobs", icon: "Bookmark" },
       ],
     },
     {
       label: "Prep & tools",
       items: [
-        { href: "/dashboard/mock-interview", label: "Mock interview", icon: MessageSquare },
-        { href: "/dashboard/follow-ups", label: "Follow-ups", icon: Bell },
-        { href: "/dashboard/salary-insights", label: "Salary insights", icon: DollarSign },
-        { href: "/dashboard/auto-apply", label: "Auto-apply", icon: Zap },
-        { href: "/dashboard/import", label: "LinkedIn → CV", icon: Import },
-        { href: "/dashboard/profile", label: "Profile & visibility", icon: UserCog },
+        { href: "/dashboard/mock-interview", label: "Mock interview", icon: "MessageSquare" },
+        { href: "/dashboard/follow-ups", label: "Follow-ups", icon: "Bell" },
+        { href: "/dashboard/salary-insights", label: "Salary insights", icon: "DollarSign" },
+        { href: "/dashboard/auto-apply", label: "Auto-apply", icon: "Zap" },
+        { href: "/dashboard/import", label: "LinkedIn → CV", icon: "Import" },
+        { href: "/dashboard/profile", label: "Profile & visibility", icon: "UserCog" },
       ],
     },
   ];
@@ -96,19 +69,19 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
     {
       label: "Main",
       items: [
-        { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/dashboard/jobs", label: "My job posts", icon: Briefcase },
-        { href: "/dashboard/jobs/new", label: "Post a job", icon: PlusSquare },
-        { href: "/jobs", label: "Public job board", icon: Globe },
+        { href: "/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
+        { href: "/dashboard/jobs", label: "My job posts", icon: "Briefcase" },
+        { href: "/dashboard/jobs/new", label: "Post a job", icon: "PlusSquare" },
+        { href: "/jobs", label: "Public job board", icon: "Globe" },
       ],
     },
     {
       label: "Hiring",
       items: [
-        { href: "/dashboard/interviews", label: "Interviews", icon: CalendarClock },
-        { href: "/dashboard/candidates", label: "Candidate pool", icon: Users },
-        { href: "/dashboard/induction", label: "Induction & onboarding", icon: GraduationCap },
-        { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+        { href: "/dashboard/interviews", label: "Interviews", icon: "CalendarClock" },
+        { href: "/dashboard/candidates", label: "Candidate pool", icon: "Users" },
+        { href: "/dashboard/induction", label: "Induction & onboarding", icon: "GraduationCap" },
+        { href: "/dashboard/analytics", label: "Analytics", icon: "BarChart3" },
       ],
     },
   ];
@@ -117,11 +90,11 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
     {
       label: "Platform",
       items: [
-        { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-        { href: "/dashboard/admin/users", label: "Users", icon: Users },
-        { href: "/dashboard/admin/jobs", label: "Jobs", icon: Briefcase },
-        { href: "/dashboard/admin/payments", label: "Payments", icon: CreditCard },
-        { href: "/dashboard/admin/blog", label: "Blog", icon: Newspaper },
+        { href: "/dashboard", label: "Overview", icon: "LayoutDashboard" },
+        { href: "/dashboard/admin/users", label: "Users", icon: "Users" },
+        { href: "/dashboard/admin/jobs", label: "Jobs", icon: "Briefcase" },
+        { href: "/dashboard/admin/payments", label: "Payments", icon: "CreditCard" },
+        { href: "/dashboard/admin/blog", label: "Blog", icon: "Newspaper" },
       ],
     },
   ];
