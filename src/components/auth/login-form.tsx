@@ -21,7 +21,12 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
         <Input id="email" name="email" type="email" autoComplete="email" required />
       </div>
       <div>
-        <Label htmlFor="password">Password</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password">Password</Label>
+          <Link href="/forgot-password" className="text-xs font-medium text-brand-600 hover:text-brand-500">
+            Forgot password?
+          </Link>
+        </div>
         <Input
           id="password"
           name="password"

@@ -86,3 +86,61 @@ export async function signOut() {
   await supabase.auth.signOut();
   redirect("/");
 }
+
+export async function requestPasswordReset(
+  _prevState: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
+  const email = String(formData.get("email") ?? "").trim();
+  if (!email) {
+    return { error: "Enter your email address." };
+  }
+
+  const headerList = await headers();
+  const host = headerList.get("host");
+  const protocol = host?.startsWith("localhost") ? "http" : "https";
+  const siteUrl = `${protocol}://${host}`;
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/auth/callback?redirect=${encodeURIComponent("/auth/reset-password")}`,
+  });
+
+  // Supabase doesn't reveal whether the email exists, so this message stays
+  // generic either way — that's what keeps it from leaking which emails
+  // have accounts.
+  if (error) {
+    return { error: error.message };
+  }
+  return { message: "If an account exists for that email, we've sent a password reset link." };
+}
+
+export async function updatePassword(
+  _prevState: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
+  const password = String(formData.get("password") ?? "");
+  const confirmPassword = String(formData.get("confirm_password") ?? "");
+
+  if (password.length < 8) {
+    return { error: "Password must be at least 8 characters." };
+  }
+  if (password !== confirmPassword) {
+    return { error: "Passwords don't match." };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "This reset link has expired. Request a new one." };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    return { error: error.message };
+  }
+
+  redirect("/dashboard");
+}
