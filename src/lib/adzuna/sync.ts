@@ -4,6 +4,9 @@ import type { EmploymentType } from "@/types/database";
 const ADZUNA_SOURCE = "Adzuna";
 const RESULTS_PER_PAGE = 50;
 const PAGES_TO_FETCH = 3;
+/** Resume Hub's home market — always synced first, and pulled much deeper than the rest. */
+const PRIMARY_COUNTRY_CODE = "za";
+const PRIMARY_COUNTRY_PAGES = 10;
 /** External listings this stale are assumed expired/filled — closed automatically. */
 const STALE_AFTER_DAYS = 45;
 /**
@@ -16,7 +19,7 @@ const TIME_BUDGET_MS = 48_000;
 
 /** Every country Adzuna's Jobs API covers — same app_id/app_key works across all of them. */
 export const ADZUNA_COUNTRIES: { code: string; country: string; currency: string }[] = [
-  { code: "za", country: "South Africa", currency: "ZAR" },
+  { code: PRIMARY_COUNTRY_CODE, country: "South Africa", currency: "ZAR" },
   { code: "in", country: "India", currency: "INR" },
   { code: "sg", country: "Singapore", currency: "SGD" },
   { code: "gb", country: "United Kingdom", currency: "GBP" },
@@ -106,12 +109,17 @@ export type AdzunaSyncResult = {
  * function's execution time limit.
  *
  * Even batched, 19 countries' worth of Adzuna round-trips can outrun a
- * single invocation, so the country loop is time-budgeted (TIME_BUDGET_MS)
- * and starts from a different country each day (date-based rotation) —
- * a run that can't fit every country still returns cleanly instead of
- * hitting Vercel's hard timeout, and whichever countries got bumped this
- * run are first in line tomorrow, so full coverage still converges within
- * a few runs without any persisted cursor.
+ * single invocation, so the (non-South-African) country loop is
+ * time-budgeted (TIME_BUDGET_MS) and starts from a different country each
+ * day (date-based rotation) — a run that can't fit every country still
+ * returns cleanly instead of hitting Vercel's hard timeout, and whichever
+ * countries got bumped this run are first in line tomorrow, so full
+ * coverage still converges within a few runs without any persisted cursor.
+ *
+ * South Africa is Resume Hub's home market, so it's carved out of that
+ * rotation entirely: it's always synced first (never skipped by the time
+ * budget) and pulled PRIMARY_COUNTRY_PAGES deep instead of PAGES_TO_FETCH,
+ * for meaningfully more listings than the rest of the rotation gets.
  */
 export async function syncAdzunaJobs(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -124,10 +132,13 @@ export async function syncAdzunaJobs(
   }
 
   const startedAt = Date.now();
-  const dayIndex = Math.floor(startedAt / 86400000) % ADZUNA_COUNTRIES.length;
+  const primaryCountry = ADZUNA_COUNTRIES.find((c) => c.code === PRIMARY_COUNTRY_CODE)!;
+  const restCountries = ADZUNA_COUNTRIES.filter((c) => c.code !== PRIMARY_COUNTRY_CODE);
+  const dayIndex = Math.floor(startedAt / 86400000) % restCountries.length;
   const rotatedCountries = [
-    ...ADZUNA_COUNTRIES.slice(dayIndex),
-    ...ADZUNA_COUNTRIES.slice(0, dayIndex),
+    primaryCountry,
+    ...restCountries.slice(dayIndex),
+    ...restCountries.slice(0, dayIndex),
   ];
 
   const errors: string[] = [];
@@ -137,13 +148,15 @@ export async function syncAdzunaJobs(
   let truncated = false;
 
   for (const { code, country, currency } of rotatedCountries) {
-    if (Date.now() - startedAt > TIME_BUDGET_MS) {
+    const isPrimary = code === PRIMARY_COUNTRY_CODE;
+    if (!isPrimary && Date.now() - startedAt > TIME_BUDGET_MS) {
       truncated = true;
       break;
     }
     countriesProcessed++;
 
-    for (let page = 1; page <= PAGES_TO_FETCH; page++) {
+    const pagesToFetch = isPrimary ? PRIMARY_COUNTRY_PAGES : PAGES_TO_FETCH;
+    for (let page = 1; page <= pagesToFetch; page++) {
       let results: AdzunaResult[];
       try {
         results = await fetchAdzunaPage(appId, appKey, code, page);
