@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { ApplicationsTour } from "@/components/dashboard/applications-tour";
 import type { ApplicationStatus } from "@/types/database";
 
 const statusStyles: Record<ApplicationStatus, string> = {
@@ -15,6 +16,14 @@ const statusStyles: Record<ApplicationStatus, string> = {
   hired: "bg-brand-100 text-brand-700",
   rejected: "bg-red-100 text-red-700",
 };
+
+const STATUS_LEGEND: { status: ApplicationStatus; label: string; hint: string }[] = [
+  { status: "submitted", label: "Submitted", hint: "Applied, waiting to hear back" },
+  { status: "interviewing", label: "Interviewing", hint: "In the interview process" },
+  { status: "offer", label: "Offer", hint: "An offer's on the table" },
+  { status: "hired", label: "Hired", hint: "You accepted — welcome aboard" },
+  { status: "rejected", label: "Rejected", hint: "Didn't move forward this time" },
+];
 
 export default async function MyApplicationsPage() {
   const supabase = await createClient();
@@ -36,12 +45,27 @@ export default async function MyApplicationsPage() {
   return (
     <div className="mx-auto max-w-5xl">
       <BackLink href="/dashboard" label="Dashboard" />
-      <h1 className="mb-6 text-3xl font-bold text-slate-900">My applications</h1>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-3xl font-bold text-slate-900">My applications</h1>
+        <ApplicationsTour />
+      </div>
 
-      <div className="mb-6 grid grid-cols-3 gap-4">
+      <div id="applications-stats" className="mb-6 grid grid-cols-3 gap-4">
         <StatCard label="Total applications" value={list.length} />
         <StatCard label="Interviewing" value={interviewingCount} />
         <StatCard label="Offers" value={offerCount} />
+      </div>
+
+      <div id="status-legend" className="mb-6 flex flex-wrap gap-2">
+        {STATUS_LEGEND.map((item) => (
+          <span
+            key={item.status}
+            title={item.hint}
+            className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusStyles[item.status]}`}
+          >
+            {item.label}
+          </span>
+        ))}
       </div>
 
       {list.length === 0 && (
@@ -61,7 +85,7 @@ export default async function MyApplicationsPage() {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div id="applications-list" className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {list.map((app) => {
           const job = Array.isArray(app.jobs) ? app.jobs[0] : app.jobs;
           return (
