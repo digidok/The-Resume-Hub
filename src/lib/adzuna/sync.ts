@@ -6,6 +6,13 @@ const RESULTS_PER_PAGE = 50;
 const PAGES_TO_FETCH = 3;
 /** External listings this stale are assumed expired/filled — closed automatically. */
 const STALE_AFTER_DAYS = 45;
+/**
+ * Soft cap on the whole run, well under Vercel's 60s hard limit (maxDuration
+ * on the cron route). A hard timeout kills the function with no response at
+ * all; this lets a long run finish the country it's on and return cleanly
+ * with whatever it managed instead.
+ */
+const TIME_BUDGET_MS = 48_000;
 
 /** Every country Adzuna's Jobs API covers — same app_id/app_key works across all of them. */
 export const ADZUNA_COUNTRIES: { code: string; country: string; currency: string }[] = [
@@ -75,7 +82,15 @@ async function fetchAdzunaPage(
   return (data.results ?? []) as AdzunaResult[];
 }
 
-export type AdzunaSyncResult = { fetched: number; created: number; closed: number; errors: string[] };
+export type AdzunaSyncResult = {
+  fetched: number;
+  created: number;
+  closed: number;
+  errors: string[];
+  countriesProcessed: number;
+  countriesTotal: number;
+  truncated: boolean;
+};
 
 /**
  * Pulls current listings from every country Adzuna's Jobs API covers and
@@ -89,6 +104,14 @@ export type AdzunaSyncResult = { fetched: number; created: number; closed: numbe
  * per result) — at 19 countries × 3 pages that's up to 57 pages of ~50
  * results each, and a per-result round-trip would risk the serverless
  * function's execution time limit.
+ *
+ * Even batched, 19 countries' worth of Adzuna round-trips can outrun a
+ * single invocation, so the country loop is time-budgeted (TIME_BUDGET_MS)
+ * and starts from a different country each day (date-based rotation) —
+ * a run that can't fit every country still returns cleanly instead of
+ * hitting Vercel's hard timeout, and whichever countries got bumped this
+ * run are first in line tomorrow, so full coverage still converges within
+ * a few runs without any persisted cursor.
  */
 export async function syncAdzunaJobs(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -100,11 +123,26 @@ export async function syncAdzunaJobs(
     throw new Error("ADZUNA_APP_ID / ADZUNA_APP_KEY are not configured.");
   }
 
+  const startedAt = Date.now();
+  const dayIndex = Math.floor(startedAt / 86400000) % ADZUNA_COUNTRIES.length;
+  const rotatedCountries = [
+    ...ADZUNA_COUNTRIES.slice(dayIndex),
+    ...ADZUNA_COUNTRIES.slice(0, dayIndex),
+  ];
+
   const errors: string[] = [];
   let fetched = 0;
   let created = 0;
+  let countriesProcessed = 0;
+  let truncated = false;
 
-  for (const { code, country, currency } of ADZUNA_COUNTRIES) {
+  for (const { code, country, currency } of rotatedCountries) {
+    if (Date.now() - startedAt > TIME_BUDGET_MS) {
+      truncated = true;
+      break;
+    }
+    countriesProcessed++;
+
     for (let page = 1; page <= PAGES_TO_FETCH; page++) {
       let results: AdzunaResult[];
       try {
@@ -166,5 +204,13 @@ export async function syncAdzunaJobs(
     .lt("posted_at", staleCutoff)
     .select("id");
 
-  return { fetched, created, closed: closedRows?.length ?? 0, errors };
+  return {
+    fetched,
+    created,
+    closed: closedRows?.length ?? 0,
+    errors,
+    countriesProcessed,
+    countriesTotal: ADZUNA_COUNTRIES.length,
+    truncated,
+  };
 }
