@@ -3,7 +3,7 @@ import { ArrowRight, Bookmark, MapPin } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toggleSavedJob } from "@/lib/savedjobs/actions";
-import { applyToJob } from "@/lib/applications/actions";
+import { quickApply } from "@/lib/applications/actions";
 import type { Job } from "@/types/database";
 
 const AVATAR_COLORS = ["bg-brand-700", "bg-slate-800", "bg-brand-500", "bg-accent-600"];
@@ -132,7 +132,7 @@ export function RecommendedJobs({
                       </button>
                     </form>
                     {resumeId ? (
-                      <form action={applyToJob.bind(null, undefined)}>
+                      <form action={quickApply}>
                         <input type="hidden" name="job_id" value={job.id} />
                         <input type="hidden" name="resume_id" value={resumeId} />
                         <Button type="submit" size="sm">
