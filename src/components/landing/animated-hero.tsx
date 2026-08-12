@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check, Clock, FileText, HeartHandshake, LayoutTemplate, Sparkles } from "lucide-react";
+import { Briefcase, Check, Clock, HeartHandshake, ShieldCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AnimatedCounter } from "@/components/motion/animated-counter";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
@@ -11,16 +11,16 @@ import { DashboardPreview } from "@/components/landing/dashboard-preview";
 import { ProductTour } from "@/components/landing/product-tour";
 
 const TRUST_ITEMS = [
-  "AI-powered CV optimisation",
-  "Real job matching",
-  "Application tracking",
-  "Human support",
+  "1,000+ live jobs",
+  "Auto Apply while you rest",
+  "Verified employers & candidates",
+  "Real human support",
 ];
 
 const HERO_STATS = [
-  { icon: Clock, value: 5, suffix: "+ yrs", label: "Writing CVs professionally" },
-  { icon: FileText, value: 66788, suffix: "+", label: "CVs written by our team" },
-  { icon: LayoutTemplate, value: 10, suffix: "+", label: "Resume templates" },
+  { icon: Briefcase, value: 1000, suffix: "+", label: "Live jobs right now" },
+  { icon: Clock, value: 5, suffix: "+ yrs", label: "Helping SA job seekers get hired" },
+  { icon: ShieldCheck, value: 100, suffix: "%", label: "Verified employers & candidates" },
   { icon: HeartHandshake, value: 100, suffix: "%", label: "Real human support" },
 ];
 
@@ -58,7 +58,7 @@ export function AnimatedHero() {
             className="inline-flex items-center gap-1.5 rounded-sm border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brand-800"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            Africa&apos;s first scheduled auto-apply platform
+            1,000+ live jobs · Africa&apos;s first scheduled auto-apply platform
           </motion.span>
 
           <h1 className="mx-auto mt-6 max-w-xl text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl lg:mx-0">
@@ -68,7 +68,7 @@ export function AnimatedHero() {
               transition={{ duration: 0.6, ease: EASE, delay: 0.1 }}
               className="block"
             >
-              Your next job
+              We apply for jobs.
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 16 }}
@@ -76,7 +76,7 @@ export function AnimatedHero() {
               transition={{ duration: 0.6, ease: EASE, delay: 0.25 }}
               className="block text-brand-700"
             >
-              starts here.
+              You get on with life.
             </motion.span>
           </h1>
 
@@ -86,8 +86,9 @@ export function AnimatedHero() {
             transition={{ duration: 0.6, ease: EASE, delay: 0.4 }}
             className="mx-auto mt-5 max-w-xl text-lg text-slate-600 lg:mx-0"
           >
-            Build a stronger CV, discover jobs that fit your experience, create better
-            applications and manage your entire job search from one place.
+            Browse 1,000+ live jobs across South Africa, then let Auto Apply submit
+            tailored applications on your behalf while you rest, work, or just get on
+            with your day. Verified employers, verified candidates — one platform.
           </motion.p>
 
           <motion.div
@@ -97,11 +98,11 @@ export function AnimatedHero() {
             className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start"
           >
             <Link href="/signup">
-              <Button size="lg">Build My CV Free</Button>
+              <Button size="lg">Start Auto Apply Free</Button>
             </Link>
             <Link href="/jobs">
               <Button size="lg" variant="outline">
-                Browse Jobs
+                Browse 1,000+ Jobs
               </Button>
             </Link>
           </motion.div>
