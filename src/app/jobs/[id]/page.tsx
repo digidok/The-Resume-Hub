@@ -17,6 +17,11 @@ const COUNTRY_ISO: Record<string, string> = Object.fromEntries(
   ADZUNA_COUNTRIES.map((c) => [c.country, c.code.toUpperCase()])
 );
 
+/** Adzuna's search API returns only a short snippet of the real listing (capped ~500 chars, ending in "…") — the full text lives only on their own job page. */
+function looksTruncated(description: string) {
+  return description.trim().endsWith("…");
+}
+
 const EMPLOYMENT_LABELS: Record<string, string> = {
   full_time: "Full-time",
   part_time: "Part-time",
@@ -212,6 +217,17 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
         <p className="whitespace-pre-line text-sm leading-relaxed text-slate-700">
           {job.description}
         </p>
+        {job.application_url && looksTruncated(job.description) && (
+          <a
+            href={job.application_url}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 inline-block text-sm font-medium text-brand-600 hover:underline"
+          >
+            This is a preview from {job.source ?? "the source site"} — read the full listing and apply
+            there →
+          </a>
+        )}
       </Card>
 
       {job.hiring_manager_name && (
