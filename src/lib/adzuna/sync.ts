@@ -7,6 +7,18 @@ const PAGES_TO_FETCH = 3;
 /** Resume Hub's home market — always synced first, and pulled much deeper than the rest. */
 const PRIMARY_COUNTRY_CODE = "za";
 const PRIMARY_COUNTRY_PAGES = 10;
+/**
+ * How many of the other 18 countries get synced per run. Adzuna's free
+ * plan caps out around 1,000 API calls/month (1 call per page fetched).
+ * South Africa alone costs PRIMARY_COUNTRY_PAGES (10) calls/day (~300/mo).
+ * Syncing all 18 remaining countries daily at PAGES_TO_FETCH each would add
+ * up to 54 more calls/day (~1,620/mo) — comfortably over quota on its own.
+ * Capping it to 6/day (~18 calls, ~540/mo) keeps South Africa + the rest
+ * around 840 calls/month, under quota with room to spare, at the cost of
+ * each non-primary country only getting synced roughly once every 3 days
+ * instead of daily (see the block rotation below).
+ */
+const OTHER_COUNTRIES_PER_RUN = 6;
 /** External listings this stale are assumed expired/filled — closed automatically. */
 const STALE_AFTER_DAYS = 45;
 /**
@@ -104,22 +116,17 @@ export type AdzunaSyncResult = {
  * writes with no owning employer.
  *
  * Dedupe checks and inserts are batched per page (one query each, not one
- * per result) — at 19 countries × 3 pages that's up to 57 pages of ~50
- * results each, and a per-result round-trip would risk the serverless
- * function's execution time limit.
+ * per result) — a per-result round-trip would risk both the serverless
+ * function's execution time limit and Adzuna's own call quota.
  *
- * Even batched, 19 countries' worth of Adzuna round-trips can outrun a
- * single invocation, so the (non-South-African) country loop is
- * time-budgeted (TIME_BUDGET_MS) and starts from a different country each
- * day (date-based rotation) — a run that can't fit every country still
- * returns cleanly instead of hitting Vercel's hard timeout, and whichever
- * countries got bumped this run are first in line tomorrow, so full
- * coverage still converges within a few runs without any persisted cursor.
- *
- * South Africa is Resume Hub's home market, so it's carved out of that
- * rotation entirely: it's always synced first (never skipped by the time
- * budget) and pulled PRIMARY_COUNTRY_PAGES deep instead of PAGES_TO_FETCH,
- * for meaningfully more listings than the rest of the rotation gets.
+ * South Africa is Resume Hub's home market: it's always synced first and
+ * pulled PRIMARY_COUNTRY_PAGES deep. The other 18 countries are capped to
+ * OTHER_COUNTRIES_PER_RUN per run (see its comment for the call-budget
+ * math) via a block rotation that advances by a full block each day, so
+ * every country gets synced roughly once every few days rather than all
+ * 18 daily — deterministic and independent of how long any run takes,
+ * with TIME_BUDGET_MS kept as a secondary safety net against Vercel's
+ * hard timeout on a slow day.
  */
 export async function syncAdzunaJobs(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -134,12 +141,11 @@ export async function syncAdzunaJobs(
   const startedAt = Date.now();
   const primaryCountry = ADZUNA_COUNTRIES.find((c) => c.code === PRIMARY_COUNTRY_CODE)!;
   const restCountries = ADZUNA_COUNTRIES.filter((c) => c.code !== PRIMARY_COUNTRY_CODE);
-  const dayIndex = Math.floor(startedAt / 86400000) % restCountries.length;
-  const rotatedCountries = [
-    primaryCountry,
-    ...restCountries.slice(dayIndex),
-    ...restCountries.slice(0, dayIndex),
-  ];
+  const cycleLength = Math.ceil(restCountries.length / OTHER_COUNTRIES_PER_RUN);
+  const cycleIndex = Math.floor(startedAt / 86400000) % cycleLength;
+  const blockStart = cycleIndex * OTHER_COUNTRIES_PER_RUN;
+  const todaysRest = restCountries.slice(blockStart, blockStart + OTHER_COUNTRIES_PER_RUN);
+  const orderedCountries = [primaryCountry, ...todaysRest];
 
   const errors: string[] = [];
   let fetched = 0;
@@ -147,7 +153,7 @@ export async function syncAdzunaJobs(
   let countriesProcessed = 0;
   let truncated = false;
 
-  for (const { code, country, currency } of rotatedCountries) {
+  for (const { code, country, currency } of orderedCountries) {
     const isPrimary = code === PRIMARY_COUNTRY_CODE;
     if (!isPrimary && Date.now() - startedAt > TIME_BUDGET_MS) {
       truncated = true;
@@ -223,7 +229,7 @@ export async function syncAdzunaJobs(
     closed: closedRows?.length ?? 0,
     errors,
     countriesProcessed,
-    countriesTotal: ADZUNA_COUNTRIES.length,
+    countriesTotal: orderedCountries.length,
     truncated,
   };
 }
