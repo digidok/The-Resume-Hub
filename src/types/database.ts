@@ -65,6 +65,8 @@ export type ResumeContent = {
   skills: string[];
   languages: string[];
   projects: ResumeProject[];
+  certifications: string[];
+  awards: string[];
 };
 
 export type Resume = {
@@ -427,4 +429,6 @@ export const emptyResumeContent = (): ResumeContent => ({
   skills: [],
   languages: [],
   projects: [],
+  certifications: [],
+  awards: [],
 });

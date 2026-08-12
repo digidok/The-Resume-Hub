@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BackLink } from "@/components/ui/back-link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { createResume } from "@/lib/resumes/actions";
+import { createResume, deleteResume, duplicateResume } from "@/lib/resumes/actions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -37,8 +37,8 @@ export default async function ResumesPage() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {resumes?.map((resume) => (
-          <Link key={resume.id} href={`/dashboard/resumes/${resume.id}`}>
-            <Card className="p-5 transition hover:border-brand-300 hover:shadow-md">
+          <Card key={resume.id} className="p-5 transition hover:border-brand-300 hover:shadow-md">
+            <Link href={`/dashboard/resumes/${resume.id}`}>
               <h2 className="font-semibold text-slate-900">{resume.title}</h2>
               <p className="mt-1 text-sm capitalize text-slate-500">
                 {resume.template} template
@@ -57,8 +57,20 @@ export default async function ResumesPage() {
                   Updated {new Date(resume.updated_at).toLocaleDateString()}
                 </span>
               </div>
-            </Card>
-          </Link>
+            </Link>
+            <div className="mt-3 flex gap-2 border-t border-slate-100 pt-3">
+              <form action={duplicateResume.bind(null, resume.id)}>
+                <Button type="submit" variant="outline" size="sm">
+                  Duplicate
+                </Button>
+              </form>
+              <form action={deleteResume.bind(null, resume.id)}>
+                <Button type="submit" variant="outline" size="sm">
+                  Delete
+                </Button>
+              </form>
+            </div>
+          </Card>
         ))}
       </div>
     </div>
