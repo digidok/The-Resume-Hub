@@ -106,7 +106,7 @@ export function DashboardPreview() {
             </span>
           </div>
           <p className="mt-2 text-sm font-semibold text-slate-900">Senior HR Manager</p>
-          <p className="text-xs text-slate-500">ABC Mining · Johannesburg</p>
+          <p className="text-xs text-slate-500">Meridian Mining · Johannesburg</p>
           <span className="mt-3 inline-block rounded-full bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white">
             View Job
           </span>
@@ -130,7 +130,7 @@ export function DashboardPreview() {
         className="absolute -bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full bg-slate-900 px-4 py-2 text-xs font-medium text-white shadow-lg shadow-black/20"
       >
         <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-        Application sent to ABC Mining
+        Application sent to Meridian Mining
       </motion.div>
     </div>
   );
