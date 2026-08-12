@@ -4,15 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toggleSavedJob } from "@/lib/savedjobs/actions";
 import { quickApply } from "@/lib/applications/actions";
+import { avatarColor } from "@/lib/avatar-color";
 import type { Job } from "@/types/database";
-
-const AVATAR_COLORS = ["bg-brand-700", "bg-slate-800", "bg-brand-500", "bg-accent-600"];
-
-function avatarColor(seed: string) {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
-}
 
 function daysAgo(iso: string) {
   const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
