@@ -13,9 +13,10 @@ type Size = "sm" | "md" | "lg";
 const variantClasses: Record<Variant, string> = {
   primary:
     "bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-md shadow-brand-500/25 hover:from-brand-600 hover:to-brand-700 hover:shadow-lg hover:shadow-brand-500/35 focus-visible:outline-brand-500",
-  // Warm coral — the fun, high-energy counterpart to the turquoise primary.
+  // Violet — the premium counterpart to the electric-blue primary. Coral is
+  // retained as a token but no longer used for primary interface chrome.
   secondary:
-    "bg-gradient-to-r from-accent-500 to-accent-600 text-white shadow-md shadow-accent-500/25 hover:from-accent-600 hover:to-accent-700 hover:shadow-lg hover:shadow-accent-500/35 focus-visible:outline-accent-500",
+    "bg-gradient-to-r from-violet-500 to-violet-600 text-white shadow-md shadow-violet-500/25 hover:from-violet-600 hover:to-violet-700 hover:shadow-lg hover:shadow-violet-500/35 focus-visible:outline-violet-500",
   outline:
     "border-2 border-brand-200 bg-white text-brand-700 hover:border-brand-400 hover:bg-brand-50 focus-visible:outline-brand-500",
   // For use on colorful/dark backgrounds (e.g. the landing hero), where the
