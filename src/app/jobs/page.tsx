@@ -4,7 +4,10 @@ import { Card } from "@/components/ui/card";
 import { Input, Label, Select } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { computeJobMatch } from "@/lib/matching/job-match";
+import { formatSalaryFull } from "@/lib/currency";
 import type { CareerProfile, Job } from "@/types/database";
+
+const COUNTRIES = ["South Africa", "India", "Singapore"];
 
 export const metadata = {
   title: "Find Jobs — Resume Hub",
@@ -36,6 +39,7 @@ function isRecentlyPosted(iso: string) {
 
 export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">) {
   const params = await searchParams;
+  const country = typeof params.country === "string" ? params.country : "";
   const keyword = typeof params.q === "string" ? params.q : "";
   const location = typeof params.location === "string" ? params.location : "";
   const province = typeof params.province === "string" ? params.province : "";
@@ -49,6 +53,7 @@ export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">)
   const supabase = await createClient();
 
   let query = supabase.from("jobs").select("*").eq("status", "open");
+  if (country) query = query.eq("country", country);
   if (keyword) query = query.or(`title.ilike.%${keyword}%,company.ilike.%${keyword}%`);
   if (location) query = query.ilike("location", `%${location}%`);
   if (province) query = query.ilike("province", `%${province}%`);
@@ -94,6 +99,28 @@ export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">)
       <h1 className="mb-1 text-3xl font-bold text-slate-900">Find Jobs</h1>
       <p className="mb-6 text-slate-600">Open roles from employers on Resume Hub.</p>
 
+      <div className="mb-6 flex flex-wrap gap-2">
+        <Link
+          href="/jobs"
+          className={`rounded-full px-3 py-1.5 text-sm font-medium ${
+            !country ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+          }`}
+        >
+          All regions
+        </Link>
+        {COUNTRIES.map((c) => (
+          <Link
+            key={c}
+            href={`/jobs?country=${encodeURIComponent(c)}`}
+            className={`rounded-full px-3 py-1.5 text-sm font-medium ${
+              country === c ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+            }`}
+          >
+            {c}
+          </Link>
+        ))}
+      </div>
+
       {user && !careerProfile && (
         <Card className="mb-6 border-brand-200 bg-brand-50 p-4 text-sm text-slate-700">
           <Link href="/dashboard/career-passport" className="font-medium text-brand-700 hover:underline">
@@ -105,6 +132,7 @@ export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">)
 
       <Card className="mb-6 p-4">
         <form method="get" className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {country && <input type="hidden" name="country" value={country} />}
           <div>
             <Label htmlFor="q">Keyword</Label>
             <Input id="q" name="q" defaultValue={keyword} placeholder="Job title or company" />
@@ -200,11 +228,7 @@ export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">)
               </div>
               <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
                 {(job.salary_min || job.salary_max) && (
-                  <span>
-                    {job.salary_min ? `R${job.salary_min.toLocaleString()}` : ""}
-                    {job.salary_min && job.salary_max ? " – " : ""}
-                    {job.salary_max ? `R${job.salary_max.toLocaleString()}` : ""}
-                  </span>
+                  <span>{formatSalaryFull(job.salary_min, job.salary_max, job.currency)}</span>
                 )}
                 <span className="flex items-center gap-1.5">
                   <span

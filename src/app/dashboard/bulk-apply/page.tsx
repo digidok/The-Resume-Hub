@@ -45,6 +45,7 @@ export default async function BulkApplyPage() {
       location: job.location,
       salaryMin: job.salary_min,
       salaryMax: job.salary_max,
+      currency: job.currency,
       postedAt: job.posted_at,
       matchScore: careerProfile ? computeJobMatch(careerProfile, job).overallScore : null,
     }));

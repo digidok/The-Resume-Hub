@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { CircleCheck, Sparkles, Zap } from "lucide-react";
 import { bulkApply } from "@/lib/applications/actions";
 import { avatarColor } from "@/lib/avatar-color";
+import { formatSalaryRange } from "@/lib/currency";
 import { Button } from "@/components/ui/button";
 import { Select, Textarea } from "@/components/ui/field";
 import { Card } from "@/components/ui/card";
@@ -17,6 +18,7 @@ type JobRow = {
   location: string | null;
   salaryMin: number | null;
   salaryMax: number | null;
+  currency: string;
   postedAt: string;
   matchScore: number | null;
 };
@@ -25,13 +27,6 @@ function matchColor(score: number) {
   if (score >= 85) return "text-emerald-600";
   if (score >= 60) return "text-amber-600";
   return "text-slate-500";
-}
-
-function formatSalary(min: number | null, max: number | null) {
-  if (!min && !max) return null;
-  const fmt = (n: number) => `R${Math.round(n / 1000)}K`;
-  if (min && max) return `${fmt(min)} – ${fmt(max)}`;
-  return fmt(min ?? max ?? 0);
 }
 
 function daysAgo(iso: string) {
@@ -104,7 +99,7 @@ export function BulkApplyForm({ resumes, jobs }: { resumes: { id: string; title:
           <div className="space-y-3">
             {jobs.map((job) => {
               const isSelected = selected.has(job.id);
-              const salary = formatSalary(job.salaryMin, job.salaryMax);
+              const salary = formatSalaryRange(job.salaryMin, job.salaryMax, job.currency);
               return (
                 <button
                   key={job.id}

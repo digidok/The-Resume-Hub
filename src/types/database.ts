@@ -95,6 +95,7 @@ export type Job = {
   description: string;
   salary_min: number | null;
   salary_max: number | null;
+  currency: string;
   industry: string | null;
   experience_min: number | null;
   experience_max: number | null;

@@ -9,6 +9,7 @@ import { ExternalApplyLink } from "@/components/jobs/external-apply-link";
 import { QualificationCheck } from "@/components/jobs/qualification-check";
 import { toggleSavedJob } from "@/lib/savedjobs/actions";
 import { computeJobMatch } from "@/lib/matching/job-match";
+import { formatSalaryFull } from "@/lib/currency";
 import type { CareerProfile, Job } from "@/types/database";
 
 const EMPLOYMENT_LABELS: Record<string, string> = {
@@ -121,6 +122,12 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
     internship: "INTERN",
   };
 
+  const COUNTRY_ISO: Record<string, string> = {
+    "South Africa": "ZA",
+    India: "IN",
+    Singapore: "SG",
+  };
+
   const jobPostingJsonLd = {
     "@context": "https://schema.org",
     "@type": "JobPosting",
@@ -135,14 +142,18 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
     jobLocation: job.location
       ? {
           "@type": "Place",
-          address: { "@type": "PostalAddress", addressLocality: job.location, addressCountry: "ZA" },
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: job.location,
+            addressCountry: COUNTRY_ISO[job.country] ?? "ZA",
+          },
         }
       : undefined,
     baseSalary:
       job.salary_min || job.salary_max
         ? {
             "@type": "MonetaryAmount",
-            currency: "ZAR",
+            currency: job.currency,
             value: {
               "@type": "QuantitativeValue",
               minValue: job.salary_min ?? undefined,
@@ -180,9 +191,7 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
         </p>
         {(job.salary_min || job.salary_max) && (
           <p className="mt-1 text-sm text-slate-500">
-            {job.salary_min ? `R${job.salary_min.toLocaleString()}` : ""}
-            {job.salary_min && job.salary_max ? " – " : ""}
-            {job.salary_max ? `R${job.salary_max.toLocaleString()}` : ""}
+            {formatSalaryFull(job.salary_min, job.salary_max, job.currency)}
           </p>
         )}
         <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
