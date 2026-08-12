@@ -128,6 +128,8 @@ export type JobMatch = {
 
 export type ApplicationStatus = "submitted" | "interviewing" | "offer" | "hired" | "rejected";
 
+export type VerificationStatus = "not_requested" | "requested" | "in_progress" | "passed" | "failed";
+
 export type Application = {
   id: string;
   job_id: string;
@@ -140,6 +142,8 @@ export type Application = {
   created_at: string;
   updated_at: string;
   cover_letter_id: string | null;
+  verification_status: VerificationStatus;
+  verification_requested_at: string | null;
 };
 
 export type AiGeneration = {
@@ -341,8 +345,49 @@ export type CareerProfile = {
   languages: string[];
   linkedin_url: string | null;
   portfolio_url: string | null;
+  id_number: string | null;
+  date_of_birth: string | null;
+  has_drivers_license: boolean;
+  drivers_license_code: string | null;
+  has_criminal_record: boolean | null;
+  criminal_record_details: string | null;
+  has_been_arrested: boolean | null;
+  arrest_details: string | null;
+  background_consent_given: boolean;
+  background_consent_signed_name: string | null;
+  background_consent_signed_at: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type CareerDocumentType = "id_copy" | "drivers_license" | "certificate" | "payslip" | "other";
+
+export type CareerDocument = {
+  id: string;
+  user_id: string;
+  document_type: CareerDocumentType;
+  storage_path: string;
+  file_name: string;
+  file_size: number;
+  uploaded_at: string;
+};
+
+export type ReferenceRequestStatus = "not_requested" | "requested" | "received";
+
+export type CareerReference = {
+  id: string;
+  user_id: string;
+  name: string;
+  relationship: string | null;
+  company: string | null;
+  email: string | null;
+  phone: string | null;
+  request_status: ReferenceRequestStatus;
+  request_token: string;
+  requested_at: string | null;
+  reference_text: string | null;
+  received_at: string | null;
+  created_at: string;
 };
 
 export type RecruiterMessageChannel = "linkedin" | "email" | "whatsapp";
