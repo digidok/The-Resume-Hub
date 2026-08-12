@@ -27,21 +27,17 @@ const HERO_STATS = [
 export function AnimatedHero() {
   return (
     <>
-    <section className="relative overflow-hidden bg-gradient-to-b from-brand-50 via-white to-white">
-      {/* Ambient background: slow drifting light fields + faint grid. Transform/opacity only. */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div className="animate-drift-a absolute -left-32 top-0 h-[34rem] w-[34rem] rounded-full bg-brand-300/50 blur-3xl" />
-        <div className="animate-drift-b absolute -right-24 top-1/3 h-[30rem] w-[30rem] rounded-full bg-accent-300/40 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-brand-400/20 blur-3xl" />
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, #0f766e 1px, transparent 1px), linear-gradient(to bottom, #0f766e 1px, transparent 1px)",
-            backgroundSize: "56px 56px",
-          }}
-        />
-      </div>
+    <section className="relative overflow-hidden bg-white">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.035]"
+        aria-hidden="true"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, #0f766e 1px, transparent 1px), linear-gradient(to bottom, #0f766e 1px, transparent 1px)",
+          backgroundSize: "56px 56px",
+        }}
+      />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-brand-600" aria-hidden="true" />
 
       <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 pb-28 pt-20 sm:pb-32 sm:pt-24 lg:grid-cols-2 lg:gap-16">
         <div className="text-center lg:text-left">
@@ -49,18 +45,18 @@ export function AnimatedHero() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: EASE }}
-            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-brand-500 to-brand-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm shadow-brand-500/25"
+            className="inline-flex items-center gap-1.5 rounded-sm border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brand-800"
           >
             <Sparkles className="h-3.5 w-3.5" />
             Africa&apos;s first scheduled auto-apply platform
           </motion.span>
 
-          <h1 className="mx-auto mt-6 max-w-xl text-5xl font-bold tracking-tight sm:text-6xl lg:mx-0">
+          <h1 className="mx-auto mt-6 max-w-xl text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl lg:mx-0">
             <motion.span
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: EASE, delay: 0.1 }}
-              className="block text-slate-900"
+              className="block"
             >
               Your next job
             </motion.span>
@@ -68,7 +64,7 @@ export function AnimatedHero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: EASE, delay: 0.25 }}
-              className="block bg-gradient-to-r from-brand-600 to-brand-500 bg-clip-text text-transparent"
+              className="block text-brand-700"
             >
               starts here.
             </motion.span>
@@ -117,7 +113,7 @@ export function AnimatedHero() {
           >
             {TRUST_ITEMS.map((item) => (
               <span key={item} className="flex items-center gap-1.5">
-                <Check className="h-4 w-4 text-brand-500" />
+                <Check className="h-4 w-4 text-brand-700" />
                 {item}
               </span>
             ))}
@@ -129,13 +125,13 @@ export function AnimatedHero() {
     </section>
 
     <div className="relative z-10 mx-auto -mt-12 max-w-5xl px-4 sm:-mt-16">
-      <ScrollReveal className="overflow-hidden rounded-3xl bg-gradient-to-br from-white to-brand-50/50 p-6 shadow-xl shadow-slate-900/10 sm:p-8">
-        <div className="-mx-6 -mt-6 mb-6 h-1.5 bg-gradient-to-r from-brand-500 via-accent-400 to-brand-500 sm:-mx-8 sm:-mt-8" />
+      <ScrollReveal className="overflow-hidden rounded-md border border-slate-200 bg-white p-6 shadow-lg shadow-slate-900/5 sm:p-8">
+        <div className="-mx-6 -mt-6 mb-6 h-1 bg-brand-600 sm:-mx-8 sm:-mt-8" />
 
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
           {HERO_STATS.map((stat) => (
             <div key={stat.label} className="text-center">
-              <stat.icon className="mx-auto h-5 w-5 text-brand-500" />
+              <stat.icon className="mx-auto h-5 w-5 text-brand-700" />
               <p className="mt-2 text-2xl font-bold text-slate-900">
                 <AnimatedCounter value={stat.value} suffix={stat.suffix} duration={1.2} />
               </p>
