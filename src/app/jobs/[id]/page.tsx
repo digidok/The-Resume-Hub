@@ -10,7 +10,12 @@ import { QualificationCheck } from "@/components/jobs/qualification-check";
 import { toggleSavedJob } from "@/lib/savedjobs/actions";
 import { computeJobMatch } from "@/lib/matching/job-match";
 import { formatSalaryFull } from "@/lib/currency";
+import { ADZUNA_COUNTRIES } from "@/lib/adzuna/sync";
 import type { CareerProfile, Job } from "@/types/database";
+
+const COUNTRY_ISO: Record<string, string> = Object.fromEntries(
+  ADZUNA_COUNTRIES.map((c) => [c.country, c.code.toUpperCase()])
+);
 
 const EMPLOYMENT_LABELS: Record<string, string> = {
   full_time: "Full-time",
@@ -120,12 +125,6 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
     part_time: "PART_TIME",
     contract: "CONTRACTOR",
     internship: "INTERN",
-  };
-
-  const COUNTRY_ISO: Record<string, string> = {
-    "South Africa": "ZA",
-    India: "IN",
-    Singapore: "SG",
   };
 
   const jobPostingJsonLd = {

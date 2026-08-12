@@ -7,11 +7,27 @@ const PAGES_TO_FETCH = 3;
 /** External listings this stale are assumed expired/filled — closed automatically. */
 const STALE_AFTER_DAYS = 45;
 
-/** Countries Adzuna covers that we sync — same app_id/app_key works across all of them. */
-const COUNTRIES: { code: string; country: string; currency: string }[] = [
+/** Every country Adzuna's Jobs API covers — same app_id/app_key works across all of them. */
+export const ADZUNA_COUNTRIES: { code: string; country: string; currency: string }[] = [
   { code: "za", country: "South Africa", currency: "ZAR" },
   { code: "in", country: "India", currency: "INR" },
   { code: "sg", country: "Singapore", currency: "SGD" },
+  { code: "gb", country: "United Kingdom", currency: "GBP" },
+  { code: "us", country: "United States", currency: "USD" },
+  { code: "au", country: "Australia", currency: "AUD" },
+  { code: "ca", country: "Canada", currency: "CAD" },
+  { code: "nz", country: "New Zealand", currency: "NZD" },
+  { code: "de", country: "Germany", currency: "EUR" },
+  { code: "fr", country: "France", currency: "EUR" },
+  { code: "nl", country: "Netherlands", currency: "EUR" },
+  { code: "it", country: "Italy", currency: "EUR" },
+  { code: "es", country: "Spain", currency: "EUR" },
+  { code: "at", country: "Austria", currency: "EUR" },
+  { code: "be", country: "Belgium", currency: "EUR" },
+  { code: "pl", country: "Poland", currency: "PLN" },
+  { code: "br", country: "Brazil", currency: "BRL" },
+  { code: "mx", country: "Mexico", currency: "MXN" },
+  { code: "ch", country: "Switzerland", currency: "CHF" },
 ];
 
 type AdzunaResult = {
@@ -62,12 +78,17 @@ async function fetchAdzunaPage(
 export type AdzunaSyncResult = { fetched: number; created: number; closed: number; errors: string[] };
 
 /**
- * Pulls current listings from Adzuna (South Africa, India, Singapore — the
- * countries this Adzuna account has confirmed coverage for) and upserts them
- * into the jobs table (deduped by application_url, since Adzuna's own id
- * isn't a column we store separately). Requires a service-role client —
- * synced jobs have no employer_id (see 20260812170059_nullable_job_employer.sql),
- * and RLS would otherwise block writes with no owning employer.
+ * Pulls current listings from every country Adzuna's Jobs API covers and
+ * upserts them into the jobs table (deduped by application_url, since
+ * Adzuna's own id isn't a column we store separately). Requires a
+ * service-role client — synced jobs have no employer_id (see
+ * 20260812170059_nullable_job_employer.sql), and RLS would otherwise block
+ * writes with no owning employer.
+ *
+ * Dedupe checks and inserts are batched per page (one query each, not one
+ * per result) — at 19 countries × 3 pages that's up to 57 pages of ~50
+ * results each, and a per-result round-trip would risk the serverless
+ * function's execution time limit.
  */
 export async function syncAdzunaJobs(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,7 +104,7 @@ export async function syncAdzunaJobs(
   let fetched = 0;
   let created = 0;
 
-  for (const { code, country, currency } of COUNTRIES) {
+  for (const { code, country, currency } of ADZUNA_COUNTRIES) {
     for (let page = 1; page <= PAGES_TO_FETCH; page++) {
       let results: AdzunaResult[];
       try {
@@ -95,20 +116,22 @@ export async function syncAdzunaJobs(
       if (results.length === 0) break;
       fetched += results.length;
 
-      for (const result of results) {
-        if (!result.redirect_url || !result.title || !result.company?.display_name) continue;
+      const valid = results.filter((r) => r.redirect_url && r.title && r.company?.display_name);
+      if (valid.length === 0) continue;
 
-        const { data: existing } = await supabase
-          .from("jobs")
-          .select("id")
-          .eq("application_url", result.redirect_url)
-          .maybeSingle();
-        if (existing) continue;
+      const urls = valid.map((r) => r.redirect_url as string);
+      const { data: existingRows } = await supabase
+        .from("jobs")
+        .select("application_url")
+        .in("application_url", urls);
+      const existingUrls = new Set((existingRows ?? []).map((r) => r.application_url));
 
-        const { error } = await supabase.from("jobs").insert({
+      const newRows = valid
+        .filter((r) => !existingUrls.has(r.redirect_url))
+        .map((result) => ({
           employer_id: null,
           title: result.title,
-          company: result.company.display_name,
+          company: result.company!.display_name,
           location: result.location?.display_name ?? null,
           country,
           currency,
@@ -120,13 +143,15 @@ export async function syncAdzunaJobs(
           application_url: result.redirect_url,
           source: ADZUNA_SOURCE,
           posted_at: result.created ?? new Date().toISOString(),
-          status: "open",
-        });
+          status: "open" as const,
+        }));
 
+      if (newRows.length > 0) {
+        const { data: inserted, error } = await supabase.from("jobs").insert(newRows).select("id");
         if (error) {
-          errors.push(error.message);
+          errors.push(`${code}: ${error.message}`);
         } else {
-          created += 1;
+          created += inserted?.length ?? 0;
         }
       }
     }
