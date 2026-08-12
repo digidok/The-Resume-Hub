@@ -27,20 +27,25 @@ const HERO_STATS = [
 export function AnimatedHero() {
   return (
     <>
-    <section className="relative overflow-hidden bg-slate-50">
+    <section className="relative overflow-hidden bg-slate-100">
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.05]"
+        className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 bg-brand-950 lg:block"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.12]"
         aria-hidden="true"
         style={{
           backgroundImage:
             "linear-gradient(to right, #0f766e 1px, transparent 1px), linear-gradient(to bottom, #0f766e 1px, transparent 1px)",
-          backgroundSize: "56px 56px",
+          backgroundSize: "48px 48px",
         }}
       />
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div className="absolute -right-16 top-16 h-64 w-64 rotate-12 border border-brand-200/70" />
-        <div className="absolute -left-10 bottom-10 h-40 w-40 -rotate-6 border border-brand-200/60" />
-        <div className="absolute right-1/4 bottom-0 h-24 w-24 rotate-45 border border-slate-200" />
+        <div className="absolute -right-24 top-10 h-80 w-80 rotate-12 border-2 border-brand-400/40" />
+        <div className="absolute right-10 top-1/2 h-48 w-48 -translate-y-1/2 rotate-45 border-2 border-white/10" />
+        <div className="absolute -left-14 bottom-6 h-52 w-52 -rotate-6 border-2 border-brand-600/50" />
+        <div className="absolute left-1/3 top-10 h-20 w-20 rotate-45 border-2 border-slate-300" />
       </div>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-brand-600" aria-hidden="true" />
 
