@@ -138,6 +138,34 @@ export type Application = {
   shortlisted: boolean;
   created_at: string;
   updated_at: string;
+  cover_letter_id: string | null;
+};
+
+export type AiGeneration = {
+  id: string;
+  user_id: string;
+  job_id: string;
+  source_resume_id: string;
+  tailored_resume_id: string;
+  cover_letter_id: string;
+  matched_skills: string[];
+  skills_to_address: string[];
+  profile_match_pct: number | null;
+  application_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ReviewChecklist = {
+  id: string;
+  ai_generation_id: string;
+  resume_reviewed: boolean;
+  cover_letter_reviewed: boolean;
+  contact_confirmed: boolean;
+  work_auth_confirmed: boolean;
+  salary_confirmed: boolean;
+  questions_done: boolean;
+  updated_at: string;
 };
 
 export type ScorecardRecommendation = "strong_yes" | "yes" | "no" | "strong_no";

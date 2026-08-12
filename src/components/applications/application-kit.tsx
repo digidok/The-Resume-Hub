@@ -7,9 +7,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/field";
 import { ApplyForm } from "@/components/jobs/apply-form";
-import type { Job, JobMatch, RecruiterMessageChannel } from "@/types/database";
+import { AiGeneratorPanel } from "@/components/applications/ai-generator-panel";
+import type { Job, JobMatch, RecruiterMessageChannel, ResumeContent } from "@/types/database";
 
-type ResumeOption = { id: string; title: string };
+type ResumeOption = { id: string; title: string; content: ResumeContent };
 
 const CHANNEL_LABELS: Record<RecruiterMessageChannel, string> = {
   linkedin: "LinkedIn",
@@ -22,46 +23,21 @@ export function ApplicationKit({
   resumes,
   match,
   alreadyApplied,
+  creditsRemaining,
 }: {
   job: Job;
   resumes: ResumeOption[];
   match: JobMatch | null;
   alreadyApplied: boolean;
+  creditsRemaining: number;
 }) {
   const [resumeId, setResumeId] = useState(resumes[0]?.id ?? "");
-
-  const [coverLetter, setCoverLetter] = useState<{ id: string; content?: string } | null>(null);
-  const [coverLetterPending, setCoverLetterPending] = useState(false);
-  const [coverLetterError, setCoverLetterError] = useState<string | null>(null);
 
   const [messages, setMessages] = useState<Record<RecruiterMessageChannel, string> | null>(null);
   const [messagesPending, setMessagesPending] = useState(false);
   const [messagesError, setMessagesError] = useState<string | null>(null);
   const [activeChannel, setActiveChannel] = useState<RecruiterMessageChannel>("linkedin");
   const [copied, setCopied] = useState(false);
-
-  async function generateCoverLetter() {
-    if (!resumeId) return;
-    setCoverLetterPending(true);
-    setCoverLetterError(null);
-    try {
-      const res = await fetch("/api/ai-generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ resumeId, jobId: job.id }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setCoverLetterError(data.error ?? "Could not generate cover letter.");
-        return;
-      }
-      setCoverLetter({ id: data.coverLetterId });
-    } catch {
-      setCoverLetterError("Could not reach the AI service.");
-    } finally {
-      setCoverLetterPending(false);
-    }
-  }
 
   async function generateMessages() {
     if (!resumeId) return;
@@ -96,93 +72,14 @@ export function ApplicationKit({
   return (
     <div className="space-y-6">
       <Card className="p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-              Application Kit
-            </p>
-            <h1 className="text-xl font-bold text-slate-900">{job.title}</h1>
-            <p className="text-sm text-slate-500">{job.company}</p>
-          </div>
-          {match && (
-            <span
-              className={`rounded-full px-3 py-1 text-sm font-bold ${
-                match.overallScore >= 85
-                  ? "bg-emerald-50 text-emerald-700"
-                  : match.overallScore >= 60
-                    ? "bg-amber-50 text-amber-700"
-                    : "bg-slate-100 text-slate-600"
-              }`}
-            >
-              {match.overallScore}% Match
-            </span>
-          )}
-        </div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Application Kit</p>
+        <h1 className="text-xl font-bold text-slate-900">{job.title}</h1>
+        <p className="text-sm text-slate-500">{job.company}</p>
       </Card>
 
-      {resumes.length > 1 && (
-        <Card className="p-4">
-          <label className="mb-1 block text-sm font-medium text-slate-700">Building this kit with</label>
-          <Select value={resumeId} onChange={(e) => setResumeId(e.target.value)}>
-            {resumes.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.title}
-              </option>
-            ))}
-          </Select>
-        </Card>
-      )}
+      <AiGeneratorPanel job={job} resumes={resumes} initialMatch={match} creditsRemaining={creditsRemaining} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Card className="p-5">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-            <Check className="h-4 w-4 text-emerald-600" /> CV
-          </h2>
-          <p className="mt-2 text-sm text-slate-600">
-            Tailor your CV&apos;s summary and skills to this specific role before applying.
-          </p>
-          <Link href={resumeId ? `/dashboard/resumes/${resumeId}?job=${job.id}` : "/dashboard/resumes"}>
-            <Button type="button" variant="outline" size="sm" className="mt-3">
-              Tailor CV
-            </Button>
-          </Link>
-        </Card>
-
-        <Card className="p-5">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-            {coverLetter ? <Check className="h-4 w-4 text-emerald-600" /> : <Sparkles className="h-4 w-4 text-brand-600" />}
-            Cover Letter
-          </h2>
-          {!coverLetter && (
-            <>
-              <p className="mt-2 text-sm text-slate-600">
-                Generate a cover letter tailored to this role from your real experience.
-              </p>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="mt-3"
-                disabled={coverLetterPending || !resumeId}
-                onClick={generateCoverLetter}
-              >
-                {coverLetterPending ? "Generating…" : "Generate Cover Letter"}
-              </Button>
-            </>
-          )}
-          {coverLetter && (
-            <>
-              <p className="mt-2 text-sm text-emerald-700">Cover letter ready.</p>
-              <Link href={`/dashboard/cover-letters/${coverLetter.id}`}>
-                <Button type="button" variant="outline" size="sm" className="mt-3">
-                  View / edit
-                </Button>
-              </Link>
-            </>
-          )}
-          {coverLetterError && <p className="mt-2 text-sm text-red-600">{coverLetterError}</p>}
-        </Card>
-
         <Card className="p-5 sm:col-span-2">
           <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-900">
             {messages ? <Check className="h-4 w-4 text-emerald-600" /> : <Sparkles className="h-4 w-4 text-brand-600" />}
@@ -193,6 +90,18 @@ export function ApplicationKit({
               <p className="mt-2 text-sm text-slate-600">
                 Generate a LinkedIn note, email, and WhatsApp message to reach out about this role.
               </p>
+              {resumes.length > 1 && (
+                <div className="mt-3 max-w-xs">
+                  <label className="mb-1 block text-xs font-medium text-slate-700">Based on resume</label>
+                  <Select value={resumeId} onChange={(e) => setResumeId(e.target.value)}>
+                    {resumes.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.title}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+              )}
               <Button
                 type="button"
                 variant="outline"

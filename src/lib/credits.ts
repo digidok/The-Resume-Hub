@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const CREDIT_COSTS = {
   ai_review: 1,
-  ai_generate: 2,
+  ai_generate_application: 1,
   mock_interview: 2,
   salary_insight: 1,
   auto_apply: 1,
