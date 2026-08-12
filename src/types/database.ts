@@ -85,7 +85,7 @@ export type JobStatus = "open" | "closed";
 
 export type Job = {
   id: string;
-  employer_id: string;
+  employer_id: string | null;
   title: string;
   company: string;
   location: string | null;

@@ -50,6 +50,8 @@ export async function quickApply(formData: FormData): Promise<void> {
   await applyToJob({}, formData);
 }
 
+const BULK_APPLY_MAX_JOBS = 5;
+
 export async function bulkApply(
   resumeId: string,
   coverNote: string,
@@ -63,6 +65,9 @@ export async function bulkApply(
 
   if (!resumeId || jobIds.length === 0) {
     return { applied: 0, skipped: 0, error: "Choose a resume and at least one job." };
+  }
+  if (jobIds.length > BULK_APPLY_MAX_JOBS) {
+    return { applied: 0, skipped: 0, error: `You can bulk apply to at most ${BULK_APPLY_MAX_JOBS} jobs at once.` };
   }
 
   const rows = jobIds.map((jobId) => ({
