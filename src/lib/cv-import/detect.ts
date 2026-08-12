@@ -21,14 +21,17 @@ const EXTENSION_MAP: Record<string, CvFileKind> = {
 
 export const ACCEPTED_EXTENSIONS = Object.keys(EXTENSION_MAP);
 
-export function detectFileKind(file: File): CvFileKind | null {
+/** Just the two properties detection needs — satisfied by a browser File or a plain {name, type} record. */
+type FileLike = { name: string; type?: string };
+
+export function detectFileKind(file: FileLike): CvFileKind | null {
   if (file.type && MIME_MAP[file.type]) return MIME_MAP[file.type];
   const ext = file.name.split(".").pop()?.toLowerCase();
   if (ext && EXTENSION_MAP[ext]) return EXTENSION_MAP[ext];
   return null;
 }
 
-export function imageMediaType(file: File): "image/png" | "image/jpeg" | "image/webp" {
+export function imageMediaType(file: FileLike): "image/png" | "image/jpeg" | "image/webp" {
   if (file.type === "image/png") return "image/png";
   if (file.type === "image/webp") return "image/webp";
   const ext = file.name.split(".").pop()?.toLowerCase();
