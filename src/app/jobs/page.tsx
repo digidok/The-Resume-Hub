@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { computeJobMatch } from "@/lib/matching/job-match";
 import { formatSalaryFull } from "@/lib/currency";
 import { ADZUNA_COUNTRIES } from "@/lib/adzuna/sync";
+import { RegionJobCounts } from "@/components/jobs/region-job-counts";
 import type { CareerProfile, Job } from "@/types/database";
 
 export const metadata = {
@@ -106,6 +107,8 @@ export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">)
           to see a personalised match score on every job.
         </Card>
       )}
+
+      <RegionJobCounts />
 
       <Card className="mb-6 p-4">
         <form method="get" className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-4">
