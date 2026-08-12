@@ -18,30 +18,23 @@ export default async function AiGeneratorPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: resumes }, { data: jobs }] = await Promise.all([
-    supabase
-      .from("resumes")
-      .select("id, title")
-      .eq("user_id", user.id)
-      .order("updated_at", { ascending: false }),
-    supabase
-      .from("jobs")
-      .select("id, title, company")
-      .eq("status", "open")
-      .order("created_at", { ascending: false })
-      .limit(50),
-  ]);
+  const { data: jobs } = await supabase
+    .from("jobs")
+    .select("id, title, company")
+    .eq("status", "open")
+    .order("created_at", { ascending: false })
+    .limit(50);
 
   return (
     <div className="mx-auto max-w-5xl">
       <BackLink href="/dashboard" label="Dashboard" />
       <h1 className="mb-1 text-3xl font-bold text-slate-900">AI generator</h1>
       <p className="mb-6 text-sm text-slate-500">
-        Generate a cover letter tailored to a specific job, using your real resume content.
+        Generate a tailored resume and cover letter for a specific job, using your real resume content.
       </p>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card className="p-6 lg:col-span-2">
-          <AiGeneratorForm resumes={resumes ?? []} jobs={jobs ?? []} />
+          <AiGeneratorForm jobs={jobs ?? []} />
         </Card>
         <Card className="p-5">
           <div className="flex items-center gap-2">

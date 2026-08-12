@@ -18,11 +18,11 @@ export default async function ApplicationKitPage({
   const { data: job } = await supabase.from("jobs").select("*").eq("id", jobId).single();
   if (!job) notFound();
 
-  const [{ data: resumes }, { data: existingApplication }, { data: careerProfileData }] =
+  const [{ data: resumes }, { data: existingApplication }, { data: careerProfileData }, { data: profile }] =
     await Promise.all([
       supabase
         .from("resumes")
-        .select("id, title")
+        .select("id, title, content")
         .eq("user_id", user.id)
         .order("updated_at", { ascending: false }),
       supabase
@@ -32,6 +32,7 @@ export default async function ApplicationKitPage({
         .eq("candidate_id", user.id)
         .maybeSingle(),
       supabase.from("career_profiles").select("*").eq("user_id", user.id).maybeSingle(),
+      supabase.from("profiles").select("credits_remaining").eq("id", user.id).single(),
     ]);
 
   const careerProfile = (careerProfileData as CareerProfile) ?? null;
@@ -48,6 +49,7 @@ export default async function ApplicationKitPage({
           resumes={resumes ?? []}
           match={match}
           alreadyApplied={Boolean(existingApplication)}
+          creditsRemaining={profile?.credits_remaining ?? 0}
         />
       </div>
     </div>
