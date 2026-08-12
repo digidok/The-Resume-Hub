@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import type { ProfileRole } from "@/types/database";
 
@@ -29,12 +30,18 @@ export async function signUp(
     return { error: "Invalid account type." };
   }
 
+  const headerList = await headers();
+  const host = headerList.get("host");
+  const protocol = host?.startsWith("localhost") ? "http" : "https";
+  const siteUrl = `${protocol}://${host}`;
+
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: { full_name: fullName, role },
+      emailRedirectTo: `${siteUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,
     },
   });
 
