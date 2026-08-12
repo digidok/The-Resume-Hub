@@ -24,7 +24,7 @@ const TRACKED_JOBS = [
   },
   {
     title: "Senior HR Manager",
-    company: "ABC Mining",
+    company: "Baobab Construction",
     salary: "R110k – R140k",
     location: "Johannesburg",
     status: "Bookmarked",

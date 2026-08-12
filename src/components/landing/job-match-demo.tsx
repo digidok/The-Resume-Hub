@@ -26,7 +26,7 @@ export function JobMatchDemo() {
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             Senior HR Manager
           </p>
-          <h3 className="mt-1 text-xl font-bold text-slate-900">ABC Mining</h3>
+          <h3 className="mt-1 text-xl font-bold text-slate-900">Sable Platinum Group</h3>
           <p className="text-sm text-slate-500">Johannesburg · Full-time</p>
         </div>
         <div className="flex flex-col items-center sm:items-end">

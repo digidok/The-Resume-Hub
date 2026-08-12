@@ -20,8 +20,8 @@ export function ApplicationKitDemo() {
     <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 lg:grid-cols-2">
       <ScrollReveal className="rounded-2xl border border-white/10 bg-white/5 p-6">
         <p className="text-xs font-semibold uppercase tracking-wide text-white/50">Applying for</p>
-        <h3 className="mt-2 text-xl font-bold text-white">Senior HR Manager</h3>
-        <p className="text-sm text-white/60">ABC Mining · Johannesburg</p>
+        <h3 className="mt-2 text-xl font-bold text-white">Operations Manager</h3>
+        <p className="text-sm text-white/60">Coastal Logistics · Durban</p>
         <div className="mt-6 space-y-2 text-sm text-white/70">
           <p>One click builds everything you need — tailored to this specific role.</p>
         </div>
