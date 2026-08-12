@@ -7,6 +7,13 @@ const PAGES_TO_FETCH = 3;
 /** External listings this stale are assumed expired/filled — closed automatically. */
 const STALE_AFTER_DAYS = 45;
 
+/** Countries Adzuna covers that we sync — same app_id/app_key works across all of them. */
+const COUNTRIES: { code: string; country: string; currency: string }[] = [
+  { code: "za", country: "South Africa", currency: "ZAR" },
+  { code: "in", country: "India", currency: "INR" },
+  { code: "sg", country: "Singapore", currency: "SGD" },
+];
+
 type AdzunaResult = {
   id: string;
   title: string;
@@ -32,8 +39,13 @@ function stripHtml(text: string) {
   return text.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
-async function fetchAdzunaPage(appId: string, appKey: string, page: number): Promise<AdzunaResult[]> {
-  const url = new URL(`https://api.adzuna.com/v1/api/jobs/za/search/${page}`);
+async function fetchAdzunaPage(
+  appId: string,
+  appKey: string,
+  countryCode: string,
+  page: number
+): Promise<AdzunaResult[]> {
+  const url = new URL(`https://api.adzuna.com/v1/api/jobs/${countryCode}/search/${page}`);
   url.searchParams.set("app_id", appId);
   url.searchParams.set("app_key", appKey);
   url.searchParams.set("results_per_page", String(RESULTS_PER_PAGE));
@@ -41,7 +53,7 @@ async function fetchAdzunaPage(appId: string, appKey: string, page: number): Pro
 
   const res = await fetch(url.toString());
   if (!res.ok) {
-    throw new Error(`Adzuna API returned ${res.status}`);
+    throw new Error(`Adzuna API (${countryCode}) returned ${res.status}`);
   }
   const data = await res.json();
   return (data.results ?? []) as AdzunaResult[];
@@ -50,11 +62,12 @@ async function fetchAdzunaPage(appId: string, appKey: string, page: number): Pro
 export type AdzunaSyncResult = { fetched: number; created: number; closed: number; errors: string[] };
 
 /**
- * Pulls current South Africa listings from Adzuna and upserts them into the
- * jobs table (deduped by application_url, since Adzuna's own id isn't a
- * column we store separately). Requires a service-role client — synced jobs
- * have no employer_id (see 20260812170059_nullable_job_employer.sql), and
- * RLS would otherwise block writes with no owning employer.
+ * Pulls current listings from Adzuna (South Africa, India, Singapore — the
+ * countries this Adzuna account has confirmed coverage for) and upserts them
+ * into the jobs table (deduped by application_url, since Adzuna's own id
+ * isn't a column we store separately). Requires a service-role client —
+ * synced jobs have no employer_id (see 20260812170059_nullable_job_employer.sql),
+ * and RLS would otherwise block writes with no owning employer.
  */
 export async function syncAdzunaJobs(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -70,47 +83,51 @@ export async function syncAdzunaJobs(
   let fetched = 0;
   let created = 0;
 
-  for (let page = 1; page <= PAGES_TO_FETCH; page++) {
-    let results: AdzunaResult[];
-    try {
-      results = await fetchAdzunaPage(appId, appKey, page);
-    } catch (err) {
-      errors.push(err instanceof Error ? err.message : "Unknown fetch error");
-      break;
-    }
-    if (results.length === 0) break;
-    fetched += results.length;
+  for (const { code, country, currency } of COUNTRIES) {
+    for (let page = 1; page <= PAGES_TO_FETCH; page++) {
+      let results: AdzunaResult[];
+      try {
+        results = await fetchAdzunaPage(appId, appKey, code, page);
+      } catch (err) {
+        errors.push(err instanceof Error ? err.message : `Unknown fetch error (${code})`);
+        break;
+      }
+      if (results.length === 0) break;
+      fetched += results.length;
 
-    for (const result of results) {
-      if (!result.redirect_url || !result.title || !result.company?.display_name) continue;
+      for (const result of results) {
+        if (!result.redirect_url || !result.title || !result.company?.display_name) continue;
 
-      const { data: existing } = await supabase
-        .from("jobs")
-        .select("id")
-        .eq("application_url", result.redirect_url)
-        .maybeSingle();
-      if (existing) continue;
+        const { data: existing } = await supabase
+          .from("jobs")
+          .select("id")
+          .eq("application_url", result.redirect_url)
+          .maybeSingle();
+        if (existing) continue;
 
-      const { error } = await supabase.from("jobs").insert({
-        employer_id: null,
-        title: result.title,
-        company: result.company.display_name,
-        location: result.location?.display_name ?? null,
-        employment_type: mapEmploymentType(result),
-        description: result.description ? stripHtml(result.description) : "See full listing for details.",
-        salary_min: result.salary_min ? Math.round(result.salary_min) : null,
-        salary_max: result.salary_max ? Math.round(result.salary_max) : null,
-        industry: result.category?.label ?? null,
-        application_url: result.redirect_url,
-        source: ADZUNA_SOURCE,
-        posted_at: result.created ?? new Date().toISOString(),
-        status: "open",
-      });
+        const { error } = await supabase.from("jobs").insert({
+          employer_id: null,
+          title: result.title,
+          company: result.company.display_name,
+          location: result.location?.display_name ?? null,
+          country,
+          currency,
+          employment_type: mapEmploymentType(result),
+          description: result.description ? stripHtml(result.description) : "See full listing for details.",
+          salary_min: result.salary_min ? Math.round(result.salary_min) : null,
+          salary_max: result.salary_max ? Math.round(result.salary_max) : null,
+          industry: result.category?.label ?? null,
+          application_url: result.redirect_url,
+          source: ADZUNA_SOURCE,
+          posted_at: result.created ?? new Date().toISOString(),
+          status: "open",
+        });
 
-      if (error) {
-        errors.push(error.message);
-      } else {
-        created += 1;
+        if (error) {
+          errors.push(error.message);
+        } else {
+          created += 1;
+        }
       }
     }
   }

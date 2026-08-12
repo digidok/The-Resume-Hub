@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { toggleSavedJob } from "@/lib/savedjobs/actions";
 import { quickApply } from "@/lib/applications/actions";
 import { avatarColor } from "@/lib/avatar-color";
+import { formatSalaryRange } from "@/lib/currency";
 import type { Job } from "@/types/database";
 
 function daysAgo(iso: string) {
@@ -12,13 +13,6 @@ function daysAgo(iso: string) {
   if (days <= 0) return "Today";
   if (days === 1) return "1d ago";
   return `${days}d ago`;
-}
-
-function formatSalary(min: number | null, max: number | null) {
-  if (!min && !max) return null;
-  const fmt = (n: number) => `R${Math.round(n / 1000)}K`;
-  if (min && max) return `${fmt(min)}–${fmt(max)}`;
-  return fmt(min ?? max ?? 0);
 }
 
 export type RecommendedJob = { job: Job; matchScore: number | null; saved: boolean };
@@ -53,7 +47,7 @@ export function RecommendedJobs({
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {jobs.map(({ job, matchScore, saved }) => {
-            const salary = formatSalary(job.salary_min, job.salary_max);
+            const salary = formatSalaryRange(job.salary_min, job.salary_max, job.currency);
             return (
               <div key={job.id} className="flex flex-col rounded-xl border border-slate-100 p-3.5">
                 <div className="flex items-start gap-2.5">
