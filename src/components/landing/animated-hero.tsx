@@ -27,9 +27,9 @@ const HERO_STATS = [
 export function AnimatedHero() {
   return (
     <>
-    <section className="relative overflow-hidden bg-white">
+    <section className="relative overflow-hidden bg-slate-50">
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.035]"
+        className="pointer-events-none absolute inset-0 opacity-[0.05]"
         aria-hidden="true"
         style={{
           backgroundImage:
@@ -37,6 +37,11 @@ export function AnimatedHero() {
           backgroundSize: "56px 56px",
         }}
       />
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute -right-16 top-16 h-64 w-64 rotate-12 border border-brand-200/70" />
+        <div className="absolute -left-10 bottom-10 h-40 w-40 -rotate-6 border border-brand-200/60" />
+        <div className="absolute right-1/4 bottom-0 h-24 w-24 rotate-45 border border-slate-200" />
+      </div>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-brand-600" aria-hidden="true" />
 
       <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 pb-28 pt-20 sm:pb-32 sm:pt-24 lg:grid-cols-2 lg:gap-16">
