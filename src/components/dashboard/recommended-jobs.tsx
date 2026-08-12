@@ -124,7 +124,13 @@ export function RecommendedJobs({
                         <Bookmark className={`h-3.5 w-3.5 ${saved ? "fill-current" : ""}`} />
                       </button>
                     </form>
-                    {resumeId ? (
+                    {job.application_url ? (
+                      <a href={job.application_url} target="_blank" rel="noreferrer">
+                        <Button size="sm" variant="outline">
+                          Apply on {job.source ?? "site"}
+                        </Button>
+                      </a>
+                    ) : resumeId ? (
                       <form action={quickApply}>
                         <input type="hidden" name="job_id" value={job.id} />
                         <input type="hidden" name="resume_id" value={resumeId} />

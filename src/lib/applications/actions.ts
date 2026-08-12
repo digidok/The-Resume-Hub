@@ -26,6 +26,11 @@ export async function applyToJob(
     return { error: "Choose a resume to apply with." };
   }
 
+  const { data: job } = await supabase.from("jobs").select("application_url").eq("id", jobId).single();
+  if (job?.application_url) {
+    return { error: "This job accepts applications on its original site, not through Resume Hub." };
+  }
+
   const { error } = await supabase.from("applications").insert({
     job_id: jobId,
     candidate_id: user.id,
@@ -70,7 +75,16 @@ export async function bulkApply(
     return { applied: 0, skipped: 0, error: `You can bulk apply to at most ${BULK_APPLY_MAX_JOBS} jobs at once.` };
   }
 
-  const rows = jobIds.map((jobId) => ({
+  // Externally-sourced jobs (application_url set) can't be applied to
+  // through Resume Hub — silently drop them rather than faking an application.
+  const { data: jobsData } = await supabase.from("jobs").select("id, application_url").in("id", jobIds);
+  const applicableJobIds = (jobsData ?? []).filter((j) => !j.application_url).map((j) => j.id);
+
+  if (applicableJobIds.length === 0) {
+    return { applied: 0, skipped: jobIds.length, error: "None of the selected jobs accept applications through Resume Hub." };
+  }
+
+  const rows = applicableJobIds.map((jobId) => ({
     job_id: jobId,
     candidate_id: user.id,
     resume_id: resumeId,

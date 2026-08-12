@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/field";
 import { ApplyForm } from "@/components/jobs/apply-form";
+import { ExternalApplyLink } from "@/components/jobs/external-apply-link";
 import { AiGeneratorPanel } from "@/components/applications/ai-generator-panel";
 import type { Job, JobMatch, RecruiterMessageChannel, ResumeContent } from "@/types/database";
 
@@ -158,7 +159,11 @@ export function ApplicationKit({
 
       <Card className="p-5">
         <h2 className="mb-4 text-lg font-semibold text-slate-900">Apply for this role</h2>
-        <ApplyForm jobId={job.id} resumes={resumes} alreadyApplied={alreadyApplied} />
+        {job.application_url ? (
+          <ExternalApplyLink url={job.application_url} source={job.source} />
+        ) : (
+          <ApplyForm jobId={job.id} resumes={resumes} alreadyApplied={alreadyApplied} />
+        )}
       </Card>
     </div>
   );
