@@ -13,6 +13,7 @@ export async function markNotificationRead(id: string) {
 
   await supabase.from("notifications").update({ read: true }).eq("id", id).eq("user_id", user.id);
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/notifications");
 }
 
 export async function markAllNotificationsRead() {
@@ -24,4 +25,5 @@ export async function markAllNotificationsRead() {
 
   await supabase.from("notifications").update({ read: true }).eq("user_id", user.id).eq("read", false);
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/notifications");
 }

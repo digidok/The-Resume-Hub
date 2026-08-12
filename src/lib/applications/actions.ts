@@ -45,6 +45,11 @@ export async function applyToJob(
   return { message: "Application submitted!" };
 }
 
+/** Fire-and-forget wrapper for one-click apply forms that don't render inline error/success state. */
+export async function quickApply(formData: FormData): Promise<void> {
+  await applyToJob({}, formData);
+}
+
 export async function bulkApply(
   resumeId: string,
   coverNote: string,
