@@ -49,13 +49,13 @@ export function AnimatedHero() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: EASE }}
-            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-brand-500 to-brand-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm shadow-brand-500/25"
+            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-brand-500 to-brand-600 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-lg shadow-brand-500/30 ring-1 ring-white/40"
           >
             <Sparkles className="h-3.5 w-3.5" />
             Africa&apos;s first scheduled auto-apply platform
           </motion.span>
 
-          <h1 className="mx-auto mt-6 max-w-xl text-5xl font-bold tracking-tight sm:text-6xl lg:mx-0">
+          <h1 className="mx-auto mt-6 max-w-xl text-5xl font-bold leading-[1.05] tracking-tighter sm:text-6xl lg:mx-0 lg:text-7xl">
             <motion.span
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -88,8 +88,12 @@ export function AnimatedHero() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE, delay: 0.55 }}
-            className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start"
+            className="relative mt-8 flex flex-wrap justify-center gap-3 lg:justify-start"
           >
+            <div
+              className="pointer-events-none absolute -inset-x-6 -inset-y-4 -z-10 rounded-full bg-brand-400/25 blur-2xl"
+              aria-hidden="true"
+            />
             <Link href="/signup">
               <Button size="lg">Build My CV Free</Button>
             </Link>
@@ -113,11 +117,14 @@ export function AnimatedHero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, ease: EASE, delay: 0.8 }}
-            className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-500 lg:justify-start"
+            className="mt-6 flex flex-wrap justify-center gap-2 lg:justify-start"
           >
             {TRUST_ITEMS.map((item) => (
-              <span key={item} className="flex items-center gap-1.5">
-                <Check className="h-4 w-4 text-brand-500" />
+              <span
+                key={item}
+                className="flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/60 px-3 py-1 text-sm text-slate-600 shadow-sm backdrop-blur-sm"
+              >
+                <Check className="h-3.5 w-3.5 text-brand-500" />
                 {item}
               </span>
             ))}
@@ -129,10 +136,13 @@ export function AnimatedHero() {
     </section>
 
     <div className="relative z-10 mx-auto -mt-12 max-w-5xl px-4 sm:-mt-16">
-      <ScrollReveal className="overflow-hidden rounded-3xl bg-gradient-to-br from-white to-brand-50/50 p-6 shadow-xl shadow-slate-900/10 sm:p-8">
-        <div className="-mx-6 -mt-6 mb-6 h-1.5 bg-gradient-to-r from-brand-500 via-accent-400 to-brand-500 sm:-mx-8 sm:-mt-8" />
+      <ScrollReveal className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white to-brand-50/50 p-6 shadow-2xl shadow-slate-900/15 ring-1 ring-slate-900/5 sm:p-8">
+        <div
+          className="pointer-events-none absolute -top-10 left-1/2 h-20 w-2/3 -translate-x-1/2 rounded-full bg-brand-400/30 blur-2xl"
+          aria-hidden="true"
+        />
 
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+        <div className="relative grid grid-cols-2 gap-6 sm:grid-cols-4">
           {HERO_STATS.map((stat) => (
             <div key={stat.label} className="text-center">
               <stat.icon className="mx-auto h-5 w-5 text-brand-500" />
