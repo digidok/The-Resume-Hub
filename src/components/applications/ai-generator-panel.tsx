@@ -349,7 +349,22 @@ export function AiGeneratorPanel({
           </div>
         </Card>
 
-        {generation && (
+        {generation && job.application_url && (
+          <Card className="p-5">
+            <p className="text-sm font-semibold text-slate-900">Ready to apply</p>
+            <p className="mt-2 text-sm text-slate-600">
+              Your tailored resume and cover letter are ready above. This role is sourced from{" "}
+              {job.source ?? "an external job board"} — apply directly there.
+            </p>
+            <a href={job.application_url} target="_blank" rel="noreferrer">
+              <Button type="button" className="mt-3 w-full">
+                Apply on {job.source ?? "external site"}
+              </Button>
+            </a>
+          </Card>
+        )}
+
+        {generation && !job.application_url && (
           <Card className="p-5">
             <p className="text-sm font-semibold text-slate-900">Review Checklist</p>
             <div className="mt-3 space-y-2.5">

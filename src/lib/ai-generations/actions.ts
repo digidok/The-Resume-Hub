@@ -115,6 +115,11 @@ export async function submitGeneratedApplication(generationId: string) {
 
   if (!generation || !checklist) return { error: "Generation not found." };
 
+  const { data: job } = await supabase.from("jobs").select("application_url").eq("id", generation.job_id).single();
+  if (job?.application_url) {
+    return { error: "This job accepts applications on its original site, not through Resume Hub." };
+  }
+
   const allChecked =
     checklist.resume_reviewed &&
     checklist.cover_letter_reviewed &&

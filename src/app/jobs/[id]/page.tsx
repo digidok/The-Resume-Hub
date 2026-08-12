@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ApplyForm } from "@/components/jobs/apply-form";
+import { ExternalApplyLink } from "@/components/jobs/external-apply-link";
 import { QualificationCheck } from "@/components/jobs/qualification-check";
 import { toggleSavedJob } from "@/lib/savedjobs/actions";
 import { computeJobMatch } from "@/lib/matching/job-match";
@@ -296,7 +297,7 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
           </p>
 
           <div className="mt-4 flex flex-wrap gap-3">
-            {user && !isEmployer && (
+            {user && !isEmployer && !job.application_url && (
               <Link href={`/dashboard/applications/kit/${job.id}`}>
                 <Button type="button" size="sm">
                   Build Application Kit
@@ -326,7 +327,7 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
         <Card className="p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-lg font-semibold text-slate-900">Apply for this role</h2>
-            {user && !match && (
+            {user && !match && !job.application_url && (
               <Link href={`/dashboard/applications/kit/${job.id}`}>
                 <Button type="button" variant="outline" size="sm">
                   Build Application Kit
@@ -334,7 +335,9 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
               </Link>
             )}
           </div>
-          {user ? (
+          {job.application_url ? (
+            <ExternalApplyLink url={job.application_url} source={job.source} />
+          ) : user ? (
             <ApplyForm jobId={job.id} resumes={resumes} alreadyApplied={alreadyApplied} />
           ) : (
             <p className="text-sm text-slate-600">
