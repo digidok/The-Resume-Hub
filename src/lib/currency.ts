@@ -2,6 +2,16 @@ export const CURRENCY_SYMBOLS: Record<string, string> = {
   ZAR: "R",
   INR: "₹",
   SGD: "S$",
+  USD: "$",
+  GBP: "£",
+  AUD: "A$",
+  EUR: "€",
+  CAD: "C$",
+  NZD: "NZ$",
+  PLN: "zł",
+  BRL: "R$",
+  MXN: "MX$",
+  CHF: "CHF ",
 };
 
 export function currencySymbol(currency: string | null | undefined) {

@@ -5,9 +5,8 @@ import { Input, Label, Select } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { computeJobMatch } from "@/lib/matching/job-match";
 import { formatSalaryFull } from "@/lib/currency";
+import { ADZUNA_COUNTRIES } from "@/lib/adzuna/sync";
 import type { CareerProfile, Job } from "@/types/database";
-
-const COUNTRIES = ["South Africa", "India", "Singapore"];
 
 export const metadata = {
   title: "Find Jobs — Resume Hub",
@@ -99,28 +98,6 @@ export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">)
       <h1 className="mb-1 text-3xl font-bold text-slate-900">Find Jobs</h1>
       <p className="mb-6 text-slate-600">Open roles from employers on Resume Hub.</p>
 
-      <div className="mb-6 flex flex-wrap gap-2">
-        <Link
-          href="/jobs"
-          className={`rounded-full px-3 py-1.5 text-sm font-medium ${
-            !country ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-          }`}
-        >
-          All regions
-        </Link>
-        {COUNTRIES.map((c) => (
-          <Link
-            key={c}
-            href={`/jobs?country=${encodeURIComponent(c)}`}
-            className={`rounded-full px-3 py-1.5 text-sm font-medium ${
-              country === c ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-            }`}
-          >
-            {c}
-          </Link>
-        ))}
-      </div>
-
       {user && !careerProfile && (
         <Card className="mb-6 border-brand-200 bg-brand-50 p-4 text-sm text-slate-700">
           <Link href="/dashboard/career-passport" className="font-medium text-brand-700 hover:underline">
@@ -132,7 +109,17 @@ export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">)
 
       <Card className="mb-6 p-4">
         <form method="get" className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {country && <input type="hidden" name="country" value={country} />}
+          <div>
+            <Label htmlFor="country">Region</Label>
+            <Select id="country" name="country" defaultValue={country}>
+              <option value="">All regions</option>
+              {ADZUNA_COUNTRIES.map((c) => (
+                <option key={c.country} value={c.country}>
+                  {c.country}
+                </option>
+              ))}
+            </Select>
+          </div>
           <div>
             <Label htmlFor="q">Keyword</Label>
             <Input id="q" name="q" defaultValue={keyword} placeholder="Job title or company" />
