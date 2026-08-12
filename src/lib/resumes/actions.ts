@@ -72,6 +72,41 @@ export async function saveResume(
   return { slug: data.slug };
 }
 
+export async function duplicateResume(resumeId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: original } = await supabase
+    .from("resumes")
+    .select("title, template, content")
+    .eq("id", resumeId)
+    .eq("user_id", user.id)
+    .single();
+  if (!original) redirect("/dashboard/resumes");
+
+  const { data: copy, error } = await supabase
+    .from("resumes")
+    .insert({
+      user_id: user.id,
+      title: `${original.title} (Copy)`,
+      template: original.template,
+      content: original.content,
+      slug: `resume-${randomSuffix(8)}`,
+    })
+    .select("id")
+    .single();
+
+  if (error || !copy) {
+    throw new Error(error?.message ?? "Could not duplicate resume.");
+  }
+
+  revalidatePath("/dashboard/resumes");
+  redirect(`/dashboard/resumes/${copy.id}`);
+}
+
 export async function deleteResume(resumeId: string) {
   const supabase = await createClient();
   const {

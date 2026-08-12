@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { saveResume, renameResumeSlug } from "@/lib/resumes/actions";
 import { syncResumeToCareerPassport } from "@/lib/career/actions";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,47 @@ import type {
 
 function newId() {
   return crypto.randomUUID();
+}
+
+function moveItem<T>(items: T[], index: number, direction: -1 | 1): T[] {
+  const target = index + direction;
+  if (target < 0 || target >= items.length) return items;
+  const next = [...items];
+  [next[index], next[target]] = [next[target], next[index]];
+  return next;
+}
+
+function ReorderButtons({
+  index,
+  count,
+  onMove,
+}: {
+  index: number;
+  count: number;
+  onMove: (direction: -1 | 1) => void;
+}) {
+  return (
+    <div className="flex flex-col">
+      <button
+        type="button"
+        onClick={() => onMove(-1)}
+        disabled={index === 0}
+        aria-label="Move up"
+        className="text-slate-400 hover:text-slate-700 disabled:opacity-30"
+      >
+        <ChevronUp className="h-3.5 w-3.5" />
+      </button>
+      <button
+        type="button"
+        onClick={() => onMove(1)}
+        disabled={index === count - 1}
+        aria-label="Move down"
+        className="text-slate-400 hover:text-slate-700 disabled:opacity-30"
+      >
+        <ChevronDown className="h-3.5 w-3.5" />
+      </button>
+    </div>
+  );
 }
 
 export function ResumeEditor({
@@ -91,6 +133,23 @@ export function ResumeEditor({
     !content.summary?.trim() ||
     content.skills.length === 0 ||
     content.experience.some((exp) => (exp.title || exp.company) && !exp.description?.trim());
+
+  const completenessChecks: { label: string; done: boolean }[] = [
+    { label: "Full name", done: !!content.full_name?.trim() },
+    { label: "Email or phone", done: !!(content.email?.trim() || content.phone?.trim()) },
+    { label: "Summary", done: !!content.summary?.trim() },
+    { label: "At least one work experience entry", done: content.experience.length > 0 },
+    { label: "At least one education entry", done: content.education.length > 0 },
+    { label: "At least 3 skills", done: content.skills.length >= 3 },
+    {
+      label: "Every experience entry has a description",
+      done: content.experience.every((exp) => !!exp.description?.trim()),
+    },
+  ];
+  const completenessScore = Math.round(
+    (completenessChecks.filter((c) => c.done).length / completenessChecks.length) * 100
+  );
+  const missingChecks = completenessChecks.filter((c) => !c.done);
 
   async function handleFillGaps() {
     setFillGapsError(null);
@@ -242,6 +301,28 @@ export function ResumeEditor({
           </div>
           {status && <p className="text-sm text-emerald-600">{status}</p>}
           {error && <p className="text-sm text-red-600">{error}</p>}
+
+          <div className="rounded-lg border border-slate-200 p-3">
+            <div className="flex items-center justify-between text-sm">
+              <p className="font-medium text-slate-700">Completeness</p>
+              <p className="font-semibold text-slate-900">{completenessScore}%</p>
+            </div>
+            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+              <div
+                className="h-full rounded-full bg-brand-500 transition-all"
+                style={{ width: `${completenessScore}%` }}
+              />
+            </div>
+            {missingChecks.length > 0 && (
+              <ul className="mt-2 space-y-0.5">
+                {missingChecks.map((check) => (
+                  <li key={check.label} className="text-xs text-slate-500">
+                    · {check.label}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
           {hasGaps && (
             <div className="rounded-lg border border-brand-200 bg-brand-50 p-3">
@@ -441,10 +522,27 @@ export function ResumeEditor({
           items={content.projects}
           onChange={(items) => update("projects", items)}
         />
-        <SkillsEditor skills={content.skills} onChange={(skills) => update("skills", skills)} />
+        <TagsCard
+          title="Skills"
+          placeholder="Add a skill and press Enter"
+          values={content.skills}
+          onChange={(skills) => update("skills", skills)}
+        />
         <LanguagesEditor
           languages={content.languages}
           onChange={(languages) => update("languages", languages)}
+        />
+        <TagsCard
+          title="Certifications"
+          placeholder="e.g. SAP SuccessFactors — press Enter"
+          values={content.certifications}
+          onChange={(certifications) => update("certifications", certifications)}
+        />
+        <TagsCard
+          title="Awards & Honors"
+          placeholder="e.g. Employee of the Year 2023 — press Enter"
+          values={content.awards}
+          onChange={(awards) => update("awards", awards)}
         />
 
         <Card className="space-y-3 p-5">
@@ -643,6 +741,9 @@ function ExperienceEditor({
   function remove(id: string) {
     onChange(items.filter((item) => item.id !== id));
   }
+  function move(index: number, direction: -1 | 1) {
+    onChange(moveItem(items, index, direction));
+  }
 
   async function suggestDuties(item: ResumeExperience) {
     setSuggestions((prev) => ({
@@ -699,8 +800,10 @@ function ExperienceEditor({
     <SectionCard title="Experience" onAdd={add}>
       {items.length === 0 && <p className="text-sm text-slate-500">No experience added yet.</p>}
       <div className="space-y-5">
-        {items.map((item) => (
-          <div key={item.id} className="space-y-2 rounded-lg border border-slate-200 p-3">
+        {items.map((item, index) => (
+          <div key={item.id} className="flex gap-2 rounded-lg border border-slate-200 p-3">
+            <ReorderButtons index={index} count={items.length} onMove={(dir) => move(index, dir)} />
+            <div className="flex-1 space-y-2">
             <div className="grid grid-cols-2 gap-2">
               <Input
                 placeholder="Job title"
@@ -796,6 +899,7 @@ function ExperienceEditor({
             >
               Remove
             </button>
+            </div>
           </div>
         ))}
       </div>
@@ -819,13 +923,18 @@ function EducationEditor({
   function remove(id: string) {
     onChange(items.filter((item) => item.id !== id));
   }
+  function move(index: number, direction: -1 | 1) {
+    onChange(moveItem(items, index, direction));
+  }
 
   return (
     <SectionCard title="Education" onAdd={add}>
       {items.length === 0 && <p className="text-sm text-slate-500">No education added yet.</p>}
       <div className="space-y-5">
-        {items.map((item) => (
-          <div key={item.id} className="space-y-2 rounded-lg border border-slate-200 p-3">
+        {items.map((item, index) => (
+          <div key={item.id} className="flex gap-2 rounded-lg border border-slate-200 p-3">
+            <ReorderButtons index={index} count={items.length} onMove={(dir) => move(index, dir)} />
+            <div className="flex-1 space-y-2">
             <Input
               placeholder="School"
               value={item.school}
@@ -862,6 +971,7 @@ function EducationEditor({
             >
               Remove
             </button>
+            </div>
           </div>
         ))}
       </div>
@@ -885,13 +995,18 @@ function ProjectsEditor({
   function remove(id: string) {
     onChange(items.filter((item) => item.id !== id));
   }
+  function move(index: number, direction: -1 | 1) {
+    onChange(moveItem(items, index, direction));
+  }
 
   return (
     <SectionCard title="Projects" onAdd={add}>
       {items.length === 0 && <p className="text-sm text-slate-500">No projects added yet.</p>}
       <div className="space-y-5">
-        {items.map((item) => (
-          <div key={item.id} className="space-y-2 rounded-lg border border-slate-200 p-3">
+        {items.map((item, index) => (
+          <div key={item.id} className="flex gap-2 rounded-lg border border-slate-200 p-3">
+            <ReorderButtons index={index} count={items.length} onMove={(dir) => move(index, dir)} />
+            <div className="flex-1 space-y-2">
             <div className="grid grid-cols-2 gap-2">
               <Input
                 placeholder="Project name"
@@ -917,6 +1032,7 @@ function ProjectsEditor({
             >
               Remove
             </button>
+            </div>
           </div>
         ))}
       </div>
@@ -924,54 +1040,58 @@ function ProjectsEditor({
   );
 }
 
-function SkillsEditor({
-  skills,
+function TagsCard({
+  title,
+  placeholder,
+  values,
   onChange,
 }: {
-  skills: string[];
-  onChange: (skills: string[]) => void;
+  title: string;
+  placeholder: string;
+  values: string[];
+  onChange: (values: string[]) => void;
 }) {
   const [draft, setDraft] = useState("");
 
-  function addSkill() {
+  function addValue() {
     const value = draft.trim();
-    if (value && !skills.includes(value)) {
-      onChange([...skills, value]);
+    if (value && !values.includes(value)) {
+      onChange([...values, value]);
     }
     setDraft("");
   }
 
   return (
     <Card className="space-y-3 p-5">
-      <h2 className="text-lg font-semibold text-slate-900">Skills</h2>
+      <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
       <div className="flex gap-2">
         <Input
-          placeholder="Add a skill and press Enter"
+          placeholder={placeholder}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
-              addSkill();
+              addValue();
             }
           }}
         />
-        <Button type="button" variant="outline" size="sm" onClick={addSkill}>
+        <Button type="button" variant="outline" size="sm" onClick={addValue}>
           Add
         </Button>
       </div>
       <div className="flex flex-wrap gap-2">
-        {skills.map((skill) => (
+        {values.map((value) => (
           <span
-            key={skill}
+            key={value}
             className="flex items-center gap-1 rounded-full bg-brand-50 px-3 py-1 text-sm text-brand-700"
           >
-            {skill}
+            {value}
             <button
               type="button"
-              onClick={() => onChange(skills.filter((s) => s !== skill))}
+              onClick={() => onChange(values.filter((v) => v !== value))}
               className="text-brand-400 hover:text-brand-700"
-              aria-label={`Remove ${skill}`}
+              aria-label={`Remove ${value}`}
             >
               ×
             </button>

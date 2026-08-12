@@ -110,7 +110,7 @@ function Sections({
           <Heading accent={accent}>Experience</Heading>
           <div className={`mt-2 ${compact ? "space-y-2" : "space-y-4"}`}>
             {content.experience.map((exp) => (
-              <div key={exp.id}>
+              <div key={exp.id} className="break-inside-avoid">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-2">
                   <p className={`${textSize} font-semibold`}>
                     {exp.title || "Role"}
@@ -137,7 +137,7 @@ function Sections({
           <Heading accent={accent}>Education</Heading>
           <div className="mt-2 space-y-3">
             {content.education.map((edu) => (
-              <div key={edu.id}>
+              <div key={edu.id} className="break-inside-avoid">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-2">
                   <p className={`${textSize} font-semibold`}>
                     {edu.school || "School"}
@@ -157,7 +157,7 @@ function Sections({
           <Heading accent={accent}>Projects</Heading>
           <div className="mt-2 space-y-3">
             {content.projects.map((project) => (
-              <div key={project.id}>
+              <div key={project.id} className="break-inside-avoid">
                 <p className={`${textSize} font-semibold`}>
                   {project.name}
                   {project.url && (
@@ -209,6 +209,20 @@ function SingleLayout({ content, config }: { content: ResumeContent; config: Tem
         <section className={config.compact ? "mt-3" : "mt-5"}>
           <Heading accent={config.accent}>Languages</Heading>
           <p className="mt-2 text-sm text-slate-700">{content.languages.join(" · ")}</p>
+        </section>
+      )}
+
+      {content.certifications.length > 0 && (
+        <section className={config.compact ? "mt-3" : "mt-5"}>
+          <Heading accent={config.accent}>Certifications</Heading>
+          <p className="mt-2 text-sm text-slate-700">{content.certifications.join(" · ")}</p>
+        </section>
+      )}
+
+      {content.awards.length > 0 && (
+        <section className={config.compact ? "mt-3" : "mt-5"}>
+          <Heading accent={config.accent}>Awards & Honors</Heading>
+          <p className="mt-2 text-sm text-slate-700">{content.awards.join(" · ")}</p>
         </section>
       )}
     </div>
@@ -269,6 +283,18 @@ function SidebarLayout({ content, config }: { content: ResumeContent; config: Te
           <div>
             <Heading accent={config.accent}>Languages</Heading>
             <p className="mt-2 text-xs text-slate-700">{content.languages.join(" · ")}</p>
+          </div>
+        )}
+        {content.certifications.length > 0 && (
+          <div>
+            <Heading accent={config.accent}>Certifications</Heading>
+            <p className="mt-2 text-xs text-slate-700">{content.certifications.join(" · ")}</p>
+          </div>
+        )}
+        {content.awards.length > 0 && (
+          <div>
+            <Heading accent={config.accent}>Awards & Honors</Heading>
+            <p className="mt-2 text-xs text-slate-700">{content.awards.join(" · ")}</p>
           </div>
         )}
       </aside>

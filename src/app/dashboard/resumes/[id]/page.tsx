@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { ResumeEditor } from "@/components/resume/resume-editor";
-import { deleteResume } from "@/lib/resumes/actions";
+import { deleteResume, duplicateResume } from "@/lib/resumes/actions";
 import { Button } from "@/components/ui/button";
 import { emptyResumeContent, type Resume } from "@/types/database";
 
@@ -65,6 +65,11 @@ export default async function ResumeEditPage({
               Print / PDF
             </Button>
           </Link>
+          <form action={duplicateResume.bind(null, resume.id)}>
+            <Button type="submit" variant="outline" size="sm">
+              Duplicate
+            </Button>
+          </form>
           <form action={deleteResume.bind(null, resume.id)}>
             <Button type="submit" variant="danger" size="sm">
               Delete
