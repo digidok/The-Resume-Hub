@@ -9,7 +9,14 @@ import { Textarea } from "@/components/ui/field";
 import { Card } from "@/components/ui/card";
 import { CvImportReview } from "@/components/resume/cv-import-review";
 import { ACCEPTED_EXTENSIONS } from "@/lib/cv-import/detect";
+import { createClient } from "@/lib/supabase/client";
 import type { CvImportDraft } from "@/lib/cv-import/types";
+
+// Matches Vercel's hard request-body cap on serverless functions (can't be
+// raised via config) — files go straight to Supabase Storage from the
+// browser instead, so this is just an early, friendly heads-up, not the
+// thing actually enforcing the limit.
+const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB
 
 const PROGRESS_STAGES = [
   "Uploading CV…",
@@ -26,6 +33,32 @@ function extOf(file: File): string {
 }
 
 type Stage = "form" | "loading" | "review" | "error";
+
+type UploadedFileRef = { storagePath: string; fileName: string; fileType?: string; fileSize: number };
+
+function safeStorageName(fileName: string): string {
+  return fileName.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-80) || "cv";
+}
+
+/** Uploads straight to Supabase Storage from the browser — see the note on MAX_FILE_BYTES above. */
+async function uploadFilesToStorage(files: File[]): Promise<UploadedFileRef[]> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not signed in.");
+
+  const uploaded: UploadedFileRef[] = [];
+  for (const file of files) {
+    const path = `${user.id}/${crypto.randomUUID().replace(/-/g, "").slice(0, 10)}-${safeStorageName(file.name)}`;
+    const { error } = await supabase.storage
+      .from("cv-uploads")
+      .upload(path, file, { contentType: file.type || "application/octet-stream" });
+    if (error) throw error;
+    uploaded.push({ storagePath: path, fileName: file.name, fileType: file.type, fileSize: file.size });
+  }
+  return uploaded;
+}
 
 export default function ImportProfilePage() {
   const router = useRouter();
@@ -65,6 +98,14 @@ export default function ImportProfilePage() {
       return;
     }
 
+    const tooLarge = list.find((f) => f.size > MAX_FILE_BYTES);
+    if (tooLarge) {
+      setPickError(
+        `"${tooLarge.name}" is too large. Please upload files under ${MAX_FILE_BYTES / (1024 * 1024)}MB.`
+      );
+      return;
+    }
+
     setFiles(list);
     setText("");
   }
@@ -85,14 +126,19 @@ export default function ImportProfilePage() {
     }, 2200);
 
     try {
-      const formData = new FormData();
+      let body: { text: string } | { sourceFiles: UploadedFileRef[] };
+
       if (files.length > 0) {
-        files.forEach((f) => formData.append("files", f));
+        body = { sourceFiles: await uploadFilesToStorage(files) };
       } else {
-        formData.append("text", text.trim());
+        body = { text: text.trim() };
       }
 
-      const res = await fetch("/api/import-profile", { method: "POST", body: formData });
+      const res = await fetch("/api/import-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
       const data = await res.json();
       if (timerRef.current) clearInterval(timerRef.current);
 
@@ -104,9 +150,10 @@ export default function ImportProfilePage() {
 
       setDraft(data.draft as CvImportDraft);
       setStage("review");
-    } catch {
+    } catch (err) {
       if (timerRef.current) clearInterval(timerRef.current);
-      setError("We couldn't reach the import service.");
+      console.error("CV upload failed", err);
+      setError("We couldn't upload your file. Please check your connection and try again.");
       setStage("error");
     }
   }

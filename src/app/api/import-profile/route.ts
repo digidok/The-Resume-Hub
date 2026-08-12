@@ -10,7 +10,6 @@ import {
 } from "@/lib/cv-import/schema";
 import { detectProfilePhoto, runCvExtraction, type ExtractionInput } from "@/lib/cv-import/claude";
 import { buildDraftFromExtraction } from "@/lib/cv-import/build-draft";
-import { uploadCvSourceFile } from "@/lib/cv-import/storage";
 import type { CvSourceFile } from "@/lib/cv-import/types";
 
 export const maxDuration = 60;
@@ -21,6 +20,8 @@ const MAX_IMAGE_FILES = 10;
 function friendlyError(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
 }
+
+type UploadedFileRef = { storagePath: string; fileName: string; fileType?: string; fileSize: number };
 
 export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -36,13 +37,19 @@ export async function POST(request: Request) {
     return friendlyError("Sign in required.", 401);
   }
 
-  const formData = await request.formData().catch(() => null);
-  if (!formData) {
+  // The client uploads the file(s) straight to Supabase Storage and sends us
+  // only the storage paths — never the raw bytes. Vercel enforces a hard
+  // 4.5MB request-body limit on serverless functions that no amount of app
+  // config can raise, so routing real CV files (often several MB once a
+  // scan or embedded photo is involved) through this route's own body would
+  // silently fail for a large share of real uploads.
+  const body = await request.json().catch(() => null);
+  if (!body) {
     return friendlyError("Invalid request.", 400);
   }
 
-  const pastedText = String(formData.get("text") ?? "").trim();
-  const files = formData.getAll("files").filter((f): f is File => f instanceof File);
+  const pastedText = typeof body.text === "string" ? body.text.trim() : "";
+  const uploadedFiles: UploadedFileRef[] = Array.isArray(body.sourceFiles) ? body.sourceFiles : [];
 
   try {
     // --- Pasted text path (LinkedIn export paste) ---
@@ -55,24 +62,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ draft });
     }
 
-    if (files.length === 0) {
+    if (uploadedFiles.length === 0) {
       return friendlyError("Paste your profile text or upload a CV file.", 400);
     }
 
-    if (files.length > 1 && files.length > MAX_IMAGE_FILES) {
+    if (uploadedFiles.length > 1 && uploadedFiles.length > MAX_IMAGE_FILES) {
       return friendlyError(`You can upload up to ${MAX_IMAGE_FILES} page images at once.`, 400);
     }
 
-    for (const file of files) {
-      if (file.size > MAX_FILE_BYTES) {
+    for (const ref of uploadedFiles) {
+      if (ref.fileSize > MAX_FILE_BYTES) {
         return friendlyError(
-          `"${file.name}" is too large. Please upload files under ${MAX_FILE_BYTES / (1024 * 1024)}MB.`,
+          `"${ref.fileName}" is too large. Please upload files under ${MAX_FILE_BYTES / (1024 * 1024)}MB.`,
           413
         );
       }
     }
 
-    const kinds = files.map(detectFileKind);
+    const kinds = uploadedFiles.map((ref) => detectFileKind({ name: ref.fileName, type: ref.fileType }));
     if (kinds.some((k) => k === null)) {
       return friendlyError(
         "Unsupported file type. Please upload a PDF, DOCX, DOC, PNG, JPG, or WEBP file.",
@@ -80,7 +87,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (files.length > 1 && kinds.some((k) => k !== "image")) {
+    if (uploadedFiles.length > 1 && kinds.some((k) => k !== "image")) {
       return friendlyError(
         "Multiple files are only supported for image pages (e.g. photos of each CV page). Upload a single PDF/DOCX/DOC file instead.",
         400
@@ -88,23 +95,32 @@ export async function POST(request: Request) {
     }
 
     const sourceFiles: CvSourceFile[] = [];
-    for (const file of files) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const uploaded = await uploadCvSourceFile(supabase, user.id, file, buffer);
-      if (uploaded) sourceFiles.push(uploaded);
+    const buffers: Buffer[] = [];
+    for (const ref of uploadedFiles) {
+      const { data: blob, error: downloadError } = await supabase.storage
+        .from("cv-uploads")
+        .download(ref.storagePath);
+      if (downloadError || !blob) {
+        console.error("CV source file download failed", downloadError);
+        return friendlyError("We couldn't read your uploaded file. Please try again.", 500);
+      }
+      buffers.push(Buffer.from(await blob.arrayBuffer()));
+      sourceFiles.push({ storagePath: ref.storagePath, fileName: ref.fileName, fileSize: ref.fileSize });
     }
 
     const kind = kinds[0]!;
 
     // --- Images (single or multi-page) — sent straight to Claude vision ---
     if (kind === "image") {
-      const images = await Promise.all(
-        files.map(async (file) => ({
-          base64: Buffer.from(await file.arrayBuffer()).toString("base64"),
-          mediaType: imageMediaType(file),
-        }))
-      );
-      const extractionInput: ExtractionInput = { mode: "image", prompt: buildImageExtractionPrompt(files.length), images };
+      const images = uploadedFiles.map((ref, i) => ({
+        base64: buffers[i]!.toString("base64"),
+        mediaType: imageMediaType({ name: ref.fileName, type: ref.fileType }),
+      }));
+      const extractionInput: ExtractionInput = {
+        mode: "image",
+        prompt: buildImageExtractionPrompt(uploadedFiles.length),
+        images,
+      };
       const [parsed, hasProfilePhoto] = await Promise.all([
         runCvExtraction(apiKey, extractionInput),
         detectProfilePhoto(apiKey, extractionInput),
@@ -113,8 +129,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ draft });
     }
 
-    const file = files[0]!;
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const buffer = buffers[0]!;
 
     // --- PDF: native text first, OCR/vision fallback for scanned PDFs ---
     if (kind === "pdf") {
