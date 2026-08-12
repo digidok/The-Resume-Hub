@@ -2,22 +2,45 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #0f172a;
+  --foreground: #0b1020;
 
-  /* Brand: turquoise — primary actions, headers, interactive accents */
-  --color-brand-50: #eafffc;
-  --color-brand-100: #cbfdf6;
-  --color-brand-200: #99f8ed;
-  --color-brand-300: #5eeade;
-  --color-brand-400: #2dd4c6;
-  --color-brand-500: #14b8a8;
-  --color-brand-600: #0d9488;
-  --color-brand-700: #0f766e;
-  --color-brand-800: #135e58;
-  --color-brand-900: #134945;
-  --color-brand-950: #062825;
+  /* Brand: electric blue — primary actions, headers, interactive accents.
+     Ramp runs from near-white through Electric Blue (#4F7CFF, the 500
+     stop) down to Midnight (#0B1020, the 950 stop) — the premium
+     navy/blue/violet redesign direction, turquoise retired as primary. */
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #dfe6ff;
+  --color-brand-200: #c2cffe;
+  --color-brand-300: #9db0fd;
+  --color-brand-400: #7089ff;
+  --color-brand-500: #4f7cff;
+  --color-brand-600: #3d63e0;
+  --color-brand-700: #2f4dbd;
+  --color-brand-800: #253a8f;
+  --color-brand-900: #1a2a66;
+  --color-brand-950: #0b1020;
 
-  /* Accent: warm coral — pairs with the turquoise for a fun, warm energy */
+  /* Violet: secondary premium accent — pairs with electric blue for
+     gradients, highlights, and secondary CTAs. */
+  --color-violet-50: #f2efff;
+  --color-violet-100: #e5deff;
+  --color-violet-200: #cebfff;
+  --color-violet-300: #ac97ff;
+  --color-violet-400: #9c85ff;
+  --color-violet-500: #7c5cff;
+  --color-violet-600: #6a45f0;
+  --color-violet-700: #5735c9;
+  --color-violet-800: #452aa0;
+  --color-violet-900: #35217a;
+  --color-violet-950: #1f1450;
+
+  /* Deep Navy — secondary dark tone for panels/footers, distinct from the
+     brand-950 Midnight endpoint (gives dark UI a bit of depth/layering). */
+  --color-navy: #111a33;
+
+  /* Accent: warm coral — heritage accent, now used sparingly and never as
+     a primary interface color (see Button's `secondary` variant, which
+     now uses violet instead). */
   --color-accent-50: #fff3ee;
   --color-accent-400: #ff9466;
   --color-accent-500: #ff7a45;
@@ -42,6 +65,20 @@
   --color-brand-800: var(--color-brand-800);
   --color-brand-900: var(--color-brand-900);
   --color-brand-950: var(--color-brand-950);
+
+  --color-violet-50: var(--color-violet-50);
+  --color-violet-100: var(--color-violet-100);
+  --color-violet-200: var(--color-violet-200);
+  --color-violet-300: var(--color-violet-300);
+  --color-violet-400: var(--color-violet-400);
+  --color-violet-500: var(--color-violet-500);
+  --color-violet-600: var(--color-violet-600);
+  --color-violet-700: var(--color-violet-700);
+  --color-violet-800: var(--color-violet-800);
+  --color-violet-900: var(--color-violet-900);
+  --color-violet-950: var(--color-violet-950);
+
+  --color-navy: var(--color-navy);
 
   --color-accent-50: var(--color-accent-50);
   --color-accent-400: var(--color-accent-400);
@@ -137,10 +174,10 @@ button {
 
 @keyframes tour-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(20, 184, 168, 0.5);
+    box-shadow: 0 0 0 0 rgba(79, 124, 255, 0.5);
   }
   100% {
-    box-shadow: 0 0 0 24px rgba(20, 184, 168, 0);
+    box-shadow: 0 0 0 24px rgba(79, 124, 255, 0);
   }
 }
 
@@ -152,7 +189,7 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .tour-highlight {
     animation: none;
-    box-shadow: 0 0 0 4px rgba(20, 184, 168, 0.4);
+    box-shadow: 0 0 0 4px rgba(79, 124, 255, 0.4);
   }
 }
 
