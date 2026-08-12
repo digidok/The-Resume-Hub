@@ -18,10 +18,26 @@ export async function saveCareerProfile(
   } = await supabase.auth.getUser();
   if (!user) return { error: "You must be signed in." };
 
+  // Consent timestamp is stamped server-side, never trusted from the
+  // client — only set once, the first time consent flips to true, and
+  // cleared if consent is withdrawn.
+  let signedAt: string | null = null;
+  if (input.background_consent_given) {
+    const { data: existing } = await supabase
+      .from("career_profiles")
+      .select("background_consent_given, background_consent_signed_at")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    signedAt = existing?.background_consent_given
+      ? (existing.background_consent_signed_at as string | null)
+      : new Date().toISOString();
+  }
+
   const { error } = await supabase.from("career_profiles").upsert(
     {
       user_id: user.id,
       ...input,
+      background_consent_signed_at: signedAt,
       updated_at: new Date().toISOString(),
     },
     { onConflict: "user_id" }
