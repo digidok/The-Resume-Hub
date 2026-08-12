@@ -1,14 +1,30 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { UploadCloud, FilePlus2, ArrowRight } from "lucide-react";
+import {
+  UploadCloud,
+  FilePlus2,
+  ArrowRight,
+  Briefcase,
+  TrendingUp,
+  CalendarClock,
+  Bookmark,
+  Target,
+  Sparkles,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { createResume } from "@/lib/resumes/actions";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { DonutChart } from "@/components/dashboard/donut-chart";
 import { WeeklyBarChart } from "@/components/dashboard/weekly-bar-chart";
+import { RecommendedJobs, type RecommendedJob } from "@/components/dashboard/recommended-jobs";
+import { RecentActivity } from "@/components/dashboard/recent-activity";
+import { getRecentActivity } from "@/lib/dashboard/activity";
+import { computeJobMatch } from "@/lib/matching/job-match";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import type { ApplicationStatus } from "@/types/database";
+import type { ApplicationStatus, CareerProfile, Job } from "@/types/database";
+
+const LOW_CREDITS_THRESHOLD = 10;
 
 function GetStartedChooser({ firstName }: { firstName: string }) {
   return (
@@ -290,29 +306,42 @@ export default async function DashboardPage() {
     );
   }
 
-  const [{ data: applications }, { count: savedJobsCount }, { count: resumeCount }] = await Promise.all([
+  const [
+    { data: applications },
+    { data: savedJobRows },
+    { data: resumes },
+    { data: careerProfileData },
+    { data: openJobs },
+  ] = await Promise.all([
     supabase
       .from("applications")
-      .select("id, status, created_at, interview_scheduled_at")
+      .select("id, job_id, status, created_at, updated_at, interview_scheduled_at")
       .eq("candidate_id", user.id),
-    supabase
-      .from("saved_jobs")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id),
-    supabase
-      .from("resumes")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id),
+    supabase.from("saved_jobs").select("id, job_id").eq("user_id", user.id),
+    supabase.from("resumes").select("id, updated_at").eq("user_id", user.id).order("updated_at", { ascending: false }),
+    supabase.from("career_profiles").select("*").eq("user_id", user.id).maybeSingle(),
+    supabase.from("jobs").select("*").eq("status", "open").order("posted_at", { ascending: false }).limit(30),
   ]);
 
-  if (!resumeCount) {
+  if (!resumes || resumes.length === 0) {
     return <GetStartedChooser firstName={firstName} />;
   }
 
   const apps = applications ?? [];
   const weekStart = startOfWeek(new Date());
+  const lastWeekStart = new Date(weekStart);
+  lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+
   const submittedThisWeek = apps.filter((a) => new Date(a.created_at) >= weekStart).length;
+  const submittedLastWeek = apps.filter(
+    (a) => new Date(a.created_at) >= lastWeekStart && new Date(a.created_at) < weekStart
+  ).length;
+  const submittedThisMonth = apps.filter((a) => new Date(a.created_at) >= monthStart).length;
   const interviewsScheduled = apps.filter((a) => a.interview_scheduled_at).length;
+  const interviewsThisWeek = apps.filter(
+    (a) => a.interview_scheduled_at && new Date(a.interview_scheduled_at) >= weekStart
+  ).length;
 
   const statusCounts: Record<ApplicationStatus, number> = {
     submitted: 0,
@@ -335,8 +364,44 @@ export default async function DashboardPage() {
 
   const weeklyBuckets = buildWeeklyBuckets(apps);
 
+  const resumeIds = resumes.map((r) => r.id);
+  const primaryResumeId = resumes[0]?.id ?? null;
+
+  const { data: latestReviews } = resumeIds.length
+    ? await supabase
+        .from("ai_reviews")
+        .select("score, created_at")
+        .in("resume_id", resumeIds)
+        .not("score", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(2)
+    : { data: [] };
+
+  const profileMatchScore = latestReviews?.[0]?.score ?? null;
+  const previousMatchScore = latestReviews?.[1]?.score ?? null;
+
+  const credits = profile?.credits_remaining ?? 0;
+  const lowCredits = credits < LOW_CREDITS_THRESHOLD;
+
+  const activityItems = await getRecentActivity(supabase, user.id, 7);
+
+  const careerProfile = (careerProfileData as CareerProfile | null) ?? null;
+  const appliedJobIds = new Set(apps.map((a) => a.job_id));
+  const savedJobIds = new Set((savedJobRows ?? []).map((s) => s.job_id).filter(Boolean));
+  const jobs = (openJobs ?? []) as Job[];
+
+  const recommended: RecommendedJob[] = jobs
+    .filter((job) => !appliedJobIds.has(job.id))
+    .map((job) => ({
+      job,
+      matchScore: careerProfile ? computeJobMatch(careerProfile, job).overallScore : null,
+      saved: savedJobIds.has(job.id),
+    }))
+    .sort((a, b) => (b.matchScore ?? 0) - (a.matchScore ?? 0))
+    .slice(0, 4);
+
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">
@@ -351,22 +416,77 @@ export default async function DashboardPage() {
             <Button variant="outline">Find jobs</Button>
           </Link>
           <Link href="/dashboard/ai-generator">
-            <Button>AI generator</Button>
+            <Button>Generate application</Button>
           </Link>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        <StatCard label="Total applications" value={apps.length} />
-        <StatCard label="Submitted this week" value={submittedThisWeek} />
-        <StatCard label="Interviews scheduled" value={interviewsScheduled} />
-        <StatCard label="Saved jobs" value={savedJobsCount ?? 0} />
-        <StatCard label="AI credits" value={profile?.credits_remaining ?? 0} />
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        <StatCard
+          icon={Briefcase}
+          label="Total applications"
+          value={apps.length}
+          href="/dashboard/applications"
+          trend={submittedThisMonth > 0 ? { text: `+${submittedThisMonth} this month` } : undefined}
+        />
+        <StatCard
+          icon={TrendingUp}
+          label="Submitted this week"
+          value={submittedThisWeek}
+          href="/dashboard/applications"
+          trend={
+            submittedThisWeek !== submittedLastWeek
+              ? { text: `${submittedThisWeek >= submittedLastWeek ? "+" : ""}${submittedThisWeek - submittedLastWeek} vs last week` }
+              : undefined
+          }
+        />
+        <StatCard
+          icon={CalendarClock}
+          label="Interviews scheduled"
+          value={interviewsScheduled}
+          href="/dashboard/applications"
+          trend={interviewsThisWeek > 0 ? { text: `${interviewsThisWeek} this week` } : undefined}
+        />
+        <StatCard
+          icon={Bookmark}
+          label="Saved jobs"
+          value={savedJobRows?.length ?? 0}
+          href="/dashboard/saved-jobs"
+        />
+        <StatCard
+          icon={Target}
+          label="Profile match score"
+          value={profileMatchScore != null ? `${profileMatchScore}%` : "—"}
+          href="/dashboard/ats-scanner"
+          trend={
+            profileMatchScore != null && previousMatchScore != null
+              ? {
+                  text: `${profileMatchScore >= previousMatchScore ? "+" : ""}${profileMatchScore - previousMatchScore}% since last review`,
+                }
+              : profileMatchScore == null
+                ? { text: "Run an ATS scan to get scored" }
+                : undefined
+          }
+        />
+        <StatCard
+          icon={Sparkles}
+          label="AI credits remaining"
+          value={credits}
+          href="/dashboard/subscription"
+          trend={lowCredits ? { text: "Low — upgrade plan", tone: "warning" } : undefined}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <DonutChart title="Application status" segments={donutSegments} />
         <WeeklyBarChart title="Weekly application volume" weeks={weeklyBuckets} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <RecommendedJobs jobs={recommended} resumeId={primaryResumeId} />
+        </div>
+        <RecentActivity items={activityItems} />
       </div>
     </div>
   );

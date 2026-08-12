@@ -137,6 +137,7 @@ export type Application = {
   interview_scheduled_at: string | null;
   shortlisted: boolean;
   created_at: string;
+  updated_at: string;
 };
 
 export type ScorecardRecommendation = "strong_yes" | "yes" | "no" | "strong_no";

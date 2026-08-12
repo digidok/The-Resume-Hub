@@ -1,12 +1,10 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ShieldCheck, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { signOut } from "@/lib/auth/actions";
-import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/ui/logo";
+import { SidebarShell } from "@/components/dashboard/sidebar-shell";
+import { SidebarPlanCard } from "@/components/dashboard/sidebar-plan-card";
+import { SidebarFooter } from "@/components/dashboard/sidebar-footer";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { DashboardNav, type NavGroup } from "@/components/dashboard/nav";
-import { NotificationBell } from "@/components/dashboard/notification-bell";
 
 export default async function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
   const supabase = await createClient();
@@ -30,7 +28,21 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       .limit(15),
   ]);
 
-  const role = profile?.role ?? "candidate";
+  const role = (profile?.role ?? "candidate") as "candidate" | "employer" | "admin";
+  const unreadNotifications = (notifications ?? []).filter((n) => !n.read).length;
+
+  let candidateBadges = { applications: 0, savedJobs: 0 };
+  if (role === "candidate") {
+    const [{ count: applicationsCount }, { count: savedJobsCount }] = await Promise.all([
+      supabase
+        .from("applications")
+        .select("id", { count: "exact", head: true })
+        .eq("candidate_id", user.id)
+        .not("status", "in", "(hired,rejected)"),
+      supabase.from("saved_jobs").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+    ]);
+    candidateBadges = { applications: applicationsCount ?? 0, savedJobs: savedJobsCount ?? 0 };
+  }
 
   const candidateNavGroups: NavGroup[] = [
     {
@@ -38,7 +50,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       items: [
         { href: "/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
         { href: "/jobs", label: "Find jobs", icon: "Search" },
-        { href: "/dashboard/applications", label: "Applications", icon: "ClipboardList" },
+        { href: "/dashboard/applications", label: "Applications", icon: "ClipboardList", badge: candidateBadges.applications },
         { href: "/dashboard/bulk-apply", label: "Bulk apply", icon: "Layers" },
         { href: "/dashboard/ai-generator", label: "AI generator", icon: "Sparkles" },
       ],
@@ -50,7 +62,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
         { href: "/dashboard/resumes", label: "My CV", icon: "FileText" },
         { href: "/dashboard/cover-letters", label: "Cover letters", icon: "Mail" },
         { href: "/dashboard/ats-scanner", label: "ATS scanner", icon: "ScanSearch" },
-        { href: "/dashboard/saved-jobs", label: "Saved jobs", icon: "Bookmark" },
+        { href: "/dashboard/saved-jobs", label: "Saved jobs", icon: "Bookmark", badge: candidateBadges.savedJobs },
       ],
     },
     {
@@ -61,6 +73,13 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
         { href: "/dashboard/salary-insights", label: "Salary insights", icon: "DollarSign" },
         { href: "/dashboard/auto-apply", label: "Auto-apply", icon: "Zap" },
         { href: "/dashboard/import", label: "Import CV", icon: "Import" },
+      ],
+    },
+    {
+      label: "Account",
+      items: [
+        { href: "/dashboard/notifications", label: "Notifications", icon: "Bell", badge: unreadNotifications },
+        { href: "/dashboard/subscription", label: "Subscription", icon: "CreditCard" },
         { href: "/dashboard/profile", label: "Profile & visibility", icon: "UserCog" },
       ],
     },
@@ -85,6 +104,13 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
         { href: "/dashboard/analytics", label: "Analytics", icon: "BarChart3" },
       ],
     },
+    {
+      label: "Account",
+      items: [
+        { href: "/dashboard/notifications", label: "Notifications", icon: "Bell", badge: unreadNotifications },
+        { href: "/dashboard/subscription", label: "Subscription", icon: "CreditCard" },
+      ],
+    },
   ];
 
   const adminNavGroups: NavGroup[] = [
@@ -105,62 +131,30 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
 
   return (
     <div className="flex flex-1 flex-col bg-slate-50 md:flex-row">
-      <aside className="flex shrink-0 flex-col border-b border-slate-200 bg-white p-4 md:w-64 md:border-b-0 md:border-r md:overflow-y-auto">
-        <div className="mb-6 flex items-center justify-between">
-          <Link href="/">
-            <Logo />
-          </Link>
-          <NotificationBell notifications={notifications ?? []} />
-        </div>
+      <SidebarShell>
+        <SidebarPlanCard
+          role={role}
+          plan={profile?.plan}
+          creditsRemaining={profile?.credits_remaining}
+          jobPostingCredits={profile?.job_posting_credits}
+        />
         <DashboardNav groups={navGroups} />
-        <div className="mt-6 border-t border-slate-200 pt-4">
-          {role === "candidate" && (
-            <Link
-              href="/dashboard/subscription"
-              className="mb-3 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-2 text-sm"
-            >
-              <span className="font-medium capitalize text-brand-800">{profile?.plan ?? "free"} plan</span>
-              <span className="text-brand-700">{profile?.credits_remaining ?? 0} credits</span>
-            </Link>
-          )}
-          {role === "employer" && (
-            <Link
-              href="/dashboard/subscription"
-              className="mb-3 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-2 text-sm"
-            >
-              <span className="font-medium text-brand-800">Billing</span>
-              <span className="text-brand-700">{profile?.job_posting_credits ?? 0} job posts left</span>
-            </Link>
-          )}
-          {role === "admin" && (
-            <div className="mb-3 flex items-center gap-2 rounded-lg bg-brand-50 px-3 py-2 text-sm text-brand-800">
-              <ShieldCheck className="h-4 w-4" />
-              <span className="font-medium">Admin access</span>
-            </div>
-          )}
-          {role === "candidate" && (
-            <a
-              href="https://wa.me/27693391915"
-              target="_blank"
-              rel="noreferrer"
-              className="mb-3 flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-brand-700"
-            >
-              <MessageCircle className="h-3.5 w-3.5" />
-              Need help? Chat on WhatsApp
-            </a>
-          )}
-          <p className="truncate text-sm font-medium text-slate-900">
-            {profile?.full_name || user.email}
-          </p>
-          <p className="mb-3 text-xs capitalize text-slate-500">{role}</p>
-          <form action={signOut}>
-            <Button type="submit" variant="outline" size="sm" className="w-full">
-              Sign out
-            </Button>
-          </form>
-        </div>
-      </aside>
-      <main className="flex-1 p-6 lg:p-10">{children}</main>
+        <SidebarFooter
+          name={profile?.full_name || user.email || "Account"}
+          role={role}
+          showWhatsApp={role === "candidate"}
+        />
+      </SidebarShell>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <DashboardHeader
+          name={profile?.full_name || user.email || "Account"}
+          email={user.email || ""}
+          role={role}
+          creditsRemaining={role === "candidate" ? (profile?.credits_remaining ?? 0) : null}
+          notifications={notifications ?? []}
+        />
+        <main className="flex-1 p-6 lg:p-10">{children}</main>
+      </div>
     </div>
   );
 }
