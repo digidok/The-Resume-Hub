@@ -25,7 +25,7 @@ const JOB_COUNT_LABEL = "5,000+";
 
 const TRUST_ITEMS = [
   `${JOB_COUNT_LABEL} live jobs`,
-  "Help You Apply while you rest",
+  "Let's Help You Apply while you rest",
   "Verified employers & candidates",
   "Real human support",
 ];
@@ -77,6 +77,10 @@ const STATUS_BADGES = [
     className: "absolute right-16 top-16 hidden lg:flex",
     color: "brand" as const,
     bobDelay: 0,
+    moveDuration: 7,
+    x: [0, 45, -30, 15, 0],
+    y: [0, -35, 20, -25, 0],
+    rotate: [0, -6, 5, -3, 0],
   },
   {
     icon: Send,
@@ -84,6 +88,10 @@ const STATUS_BADGES = [
     className: "absolute left-[53%] top-28 hidden lg:flex",
     color: "accent" as const,
     bobDelay: 0.3,
+    moveDuration: 8.5,
+    x: [0, -40, 25, -15, 0],
+    y: [0, 30, -20, 15, 0],
+    rotate: [0, 5, -6, 4, 0],
   },
   {
     icon: CheckCircle2,
@@ -91,6 +99,10 @@ const STATUS_BADGES = [
     className: "absolute right-4 top-[52%] hidden lg:flex",
     color: "brand" as const,
     bobDelay: 0.6,
+    moveDuration: 6.5,
+    x: [0, -35, 20, -25, 0],
+    y: [0, -25, 30, -15, 0],
+    rotate: [0, -5, 6, -4, 0],
   },
   {
     icon: FileText,
@@ -98,6 +110,10 @@ const STATUS_BADGES = [
     className: "absolute right-4 top-[70%] hidden lg:flex",
     color: "brand" as const,
     bobDelay: 0.9,
+    moveDuration: 9,
+    x: [0, 30, -40, 20, 0],
+    y: [0, 25, -15, 20, 0],
+    rotate: [0, 4, -5, 6, 0],
   },
   {
     icon: ShieldCheck,
@@ -105,6 +121,10 @@ const STATUS_BADGES = [
     className: "absolute right-4 bottom-16 hidden lg:flex",
     color: "emerald" as const,
     bobDelay: 1.2,
+    moveDuration: 7.5,
+    x: [0, -30, 35, -20, 0],
+    y: [0, -20, -30, 15, 0],
+    rotate: [0, -4, 5, -6, 0],
   },
   {
     icon: FileCheck,
@@ -112,6 +132,10 @@ const STATUS_BADGES = [
     className: "absolute left-[53%] bottom-28 hidden lg:flex",
     color: "brand" as const,
     bobDelay: 1.5,
+    moveDuration: 6,
+    x: [0, 35, -25, 30, 0],
+    y: [0, -30, 25, -20, 0],
+    rotate: [0, 6, -4, 5, 0],
   },
 ];
 
@@ -148,22 +172,26 @@ export function AnimatedHero() {
         {STATUS_BADGES.map((badge) => (
           <motion.div
             key={badge.text}
-            initial={{ opacity: 0, y: 10, scale: 0.85 }}
+            initial={{ opacity: 0, scale: 0.85 }}
             animate={{
               opacity: 1,
               scale: 1,
-              y: prefersReducedMotion ? 0 : [10, -8, 10],
-              x: prefersReducedMotion ? 0 : [0, 10, -10, 0],
+              x: prefersReducedMotion ? 0 : badge.x,
+              y: prefersReducedMotion ? 0 : badge.y,
+              rotate: prefersReducedMotion ? 0 : badge.rotate,
             }}
             transition={{
               opacity: { duration: 0.5, delay: 0.9 + badge.bobDelay },
               scale: { duration: 0.5, delay: 0.9 + badge.bobDelay, ease: "backOut" },
-              y: prefersReducedMotion
-                ? { duration: 0.5, delay: 0.9 + badge.bobDelay }
-                : { duration: 4, repeat: Infinity, ease: "easeInOut", delay: badge.bobDelay },
               x: prefersReducedMotion
                 ? { duration: 0.5, delay: 0.9 + badge.bobDelay }
-                : { duration: 6, repeat: Infinity, ease: "easeInOut", delay: badge.bobDelay },
+                : { duration: badge.moveDuration, repeat: Infinity, ease: "easeInOut", delay: badge.bobDelay },
+              y: prefersReducedMotion
+                ? { duration: 0.5, delay: 0.9 + badge.bobDelay }
+                : { duration: badge.moveDuration, repeat: Infinity, ease: "easeInOut", delay: badge.bobDelay },
+              rotate: prefersReducedMotion
+                ? { duration: 0.5, delay: 0.9 + badge.bobDelay }
+                : { duration: badge.moveDuration, repeat: Infinity, ease: "easeInOut", delay: badge.bobDelay },
             }}
             className={`${badge.className} items-center gap-2 rounded-md px-4 py-2.5 text-sm font-bold text-white shadow-xl ring-2 ring-white ${BADGE_COLORS[badge.color]}`}
           >
@@ -184,10 +212,13 @@ export function AnimatedHero() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: EASE }}
-            className="inline-flex items-center gap-1.5 rounded-sm border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brand-800"
+            className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-sm border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brand-800"
           >
-            <Sparkles className="h-3.5 w-3.5" />
-            {JOB_COUNT_LABEL} live jobs · Africa&apos;s first Help You Apply platform
+            <Sparkles className="h-3.5 w-3.5 shrink-0" />
+            {JOB_COUNT_LABEL} live jobs
+            <span className="hidden sm:inline">
+              &nbsp;· Africa&apos;s first Let&apos;s Help You Apply platform
+            </span>
           </motion.span>
 
           <h1 className="mx-auto mt-6 max-w-xl text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl lg:mx-0">
@@ -215,8 +246,8 @@ export function AnimatedHero() {
             transition={{ duration: 0.6, ease: EASE, delay: 0.4 }}
             className="mx-auto mt-5 max-w-xl text-lg text-slate-600 lg:mx-0"
           >
-            Browse {JOB_COUNT_LABEL} live jobs across South Africa, then let Help You
-            Apply submit tailored applications on your behalf while you rest, work, or
+            Browse {JOB_COUNT_LABEL} live jobs across South Africa — Let&apos;s Help You
+            Apply submits tailored applications on your behalf while you rest, work, or
             just get on with your day. Verified employers, verified candidates — one platform.
           </motion.p>
 
