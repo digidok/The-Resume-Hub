@@ -82,6 +82,7 @@ export async function updateUserProfile(
   userId: string,
   input: {
     full_name: string;
+    email: string;
     phone_number: string;
     role: ProfileRole;
     plan: ProfilePlan;
@@ -89,6 +90,17 @@ export async function updateUserProfile(
   }
 ): Promise<{ error?: string }> {
   const supabase = await requireAdmin();
+
+  const email = input.email.trim().toLowerCase();
+  if (!email) return { error: "Email is required." };
+
+  const admin = createAdminClient();
+  const { data: currentUser } = await admin.auth.admin.getUserById(userId);
+  if (currentUser?.user && currentUser.user.email !== email) {
+    const { error: emailError } = await admin.auth.admin.updateUserById(userId, { email, email_confirm: true });
+    if (emailError) return { error: emailError.message };
+  }
+
   const { error } = await supabase
     .from("profiles")
     .update({
@@ -104,6 +116,20 @@ export async function updateUserProfile(
 
   revalidatePath("/dashboard/admin/users");
   revalidatePath(`/dashboard/admin/users/${userId}`);
+  return {};
+}
+
+export async function setUserPassword(
+  userId: string,
+  newPassword: string
+): Promise<{ error?: string }> {
+  await requireAdmin();
+  if (newPassword.length < 8) return { error: "Password must be at least 8 characters." };
+
+  const admin = createAdminClient();
+  const { error } = await admin.auth.admin.updateUserById(userId, { password: newPassword });
+  if (error) return { error: error.message };
+
   return {};
 }
 

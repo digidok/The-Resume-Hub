@@ -3,15 +3,9 @@ import Link from "next/link";
 import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { updateUserProfile } from "@/lib/admin/actions";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input, Select, Label } from "@/components/ui/field";
 import { DeleteUserButton } from "@/components/admin/delete-user-button";
-import type { ProfileRole, ProfilePlan } from "@/types/database";
-
-const ROLE_OPTIONS: ProfileRole[] = ["candidate", "employer", "admin"];
-const PLAN_OPTIONS: ProfilePlan[] = ["free", "pro"];
+import { EditUserForm } from "@/components/admin/edit-user-form";
 
 export default async function AdminUserDetailPage({
   params,
@@ -63,64 +57,15 @@ export default async function AdminUserDetailPage({
         <DeleteUserButton userId={id} userName={profile.full_name || authUser?.user?.email || "this user"} />
       </div>
 
-      <Card className="p-5">
-        <h2 className="mb-4 text-sm font-semibold text-slate-900">Edit profile</h2>
-        <form
-          action={async (formData: FormData) => {
-            "use server";
-            await updateUserProfile(id, {
-              full_name: String(formData.get("full_name") ?? ""),
-              phone_number: String(formData.get("phone_number") ?? ""),
-              role: formData.get("role") as ProfileRole,
-              plan: formData.get("plan") as ProfilePlan,
-              credits_remaining: Number(formData.get("credits_remaining") ?? 0),
-            });
-          }}
-          className="grid grid-cols-1 gap-4 sm:grid-cols-2"
-        >
-          <div>
-            <Label htmlFor="full_name">Full name</Label>
-            <Input id="full_name" name="full_name" defaultValue={profile.full_name ?? ""} />
-          </div>
-          <div>
-            <Label htmlFor="phone_number">Phone number</Label>
-            <Input id="phone_number" name="phone_number" defaultValue={profile.phone_number ?? ""} />
-          </div>
-          <div>
-            <Label htmlFor="role">Role</Label>
-            <Select id="role" name="role" defaultValue={profile.role}>
-              {ROLE_OPTIONS.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="plan">Plan</Label>
-            <Select id="plan" name="plan" defaultValue={profile.plan}>
-              {PLAN_OPTIONS.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="credits_remaining">AI credits</Label>
-            <Input
-              id="credits_remaining"
-              name="credits_remaining"
-              type="number"
-              min={0}
-              defaultValue={profile.credits_remaining}
-            />
-          </div>
-          <div className="flex items-end">
-            <Button type="submit">Save changes</Button>
-          </div>
-        </form>
-      </Card>
+      <EditUserForm
+        userId={id}
+        fullName={profile.full_name ?? ""}
+        email={authUser?.user?.email ?? ""}
+        phoneNumber={profile.phone_number ?? ""}
+        role={profile.role}
+        plan={profile.plan}
+        creditsRemaining={profile.credits_remaining}
+      />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card className="p-4 text-center">
