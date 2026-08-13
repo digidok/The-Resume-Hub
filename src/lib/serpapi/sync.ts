@@ -7,24 +7,18 @@ const COUNTRY = "South Africa";
 const CURRENCY = "ZAR";
 /** External listings this stale are assumed expired/filled — closed automatically. */
 const STALE_AFTER_DAYS = 45;
+/** How many near-stale listings get a real live-check via the Jobs Listing
+ * API per run, instead of being closed blindly — see the budget note below. */
+const LISTING_VERIFY_BUDGET = 2;
 
 /**
- * A small, curated set of broad South African job-seeker search terms —
- * not an attempt to mirror Adzuna's full breadth. SerpApi's free plan is
- * 250 searches/month total; one query = one search. Running this list once
- * daily costs 8/day (~240/month), leaving a small buffer for manual testing
- * in the SerpApi playground.
+ * A small, curated set of broad South African job-seeker search terms.
+ * SerpApi's free plan is a single 250-searches/month pool shared across
+ * this search sync, the company-ratings lookup, and stale-listing
+ * verification — trimmed to 4 terms (~120/month at one run/day) to leave
+ * room for the other two.
  */
-const SEARCH_QUERIES = [
-  "General worker",
-  "Sales representative",
-  "Administrator",
-  "Customer service agent",
-  "Software developer",
-  "Warehouse assistant",
-  "Driver",
-  "Accountant",
-];
+const SEARCH_QUERIES = ["General worker", "Sales representative", "Administrator", "Software developer"];
 
 type SerpApiApplyOption = { title?: string; link?: string };
 
@@ -79,6 +73,21 @@ async function fetchSerpApiJobs(apiKey: string, query: string): Promise<SerpApiJ
   }
   const data = await res.json();
   return (data.jobs_results ?? []) as SerpApiJobResult[];
+}
+
+/** Re-checks a specific Google Jobs listing via the Jobs Listing API
+ * (engine=google_jobs_listing) rather than assuming it's gone just because
+ * our search sync hasn't re-surfaced it recently. */
+async function isListingStillLive(apiKey: string, jobId: string): Promise<boolean> {
+  const url = new URL("https://serpapi.com/search.json");
+  url.searchParams.set("engine", "google_jobs_listing");
+  url.searchParams.set("q", jobId);
+  url.searchParams.set("api_key", apiKey);
+
+  const res = await fetch(url.toString());
+  if (!res.ok) return false;
+  const data = (await res.json()) as { title?: string; error?: string };
+  return Boolean(data.title) && !data.error;
 }
 
 export type SerpApiSyncResult = {
@@ -151,6 +160,7 @@ export async function syncSerpApiJobs(
         industry: null,
         application_url: result.applyUrl,
         source: SERPAPI_SOURCE,
+        serpapi_job_id: result.job_id ?? null,
         posted_at: new Date().toISOString(),
         status: "open" as const,
       }));
@@ -166,18 +176,54 @@ export async function syncSerpApiJobs(
   }
 
   const staleCutoff = new Date(Date.now() - STALE_AFTER_DAYS * 86400000).toISOString();
+  let closed = 0;
+
+  // Listings with a known Google job_id get a real live-check via the Jobs
+  // Listing API before being closed — still live gets its clock reset
+  // instead of getting re-checked (and re-spending budget) every run.
+  const { data: nearStale } = await supabase
+    .from("jobs")
+    .select("id, serpapi_job_id")
+    .eq("source", SERPAPI_SOURCE)
+    .eq("status", "open")
+    .not("serpapi_job_id", "is", null)
+    .lt("posted_at", staleCutoff)
+    .limit(LISTING_VERIFY_BUDGET);
+
+  for (const row of nearStale ?? []) {
+    try {
+      const stillLive = await isListingStillLive(apiKey, row.serpapi_job_id as string);
+      if (stillLive) {
+        await supabase.from("jobs").update({ posted_at: new Date().toISOString() }).eq("id", row.id);
+      } else {
+        await supabase
+          .from("jobs")
+          .update({ status: "closed", updated_at: new Date().toISOString() })
+          .eq("id", row.id);
+        closed++;
+      }
+    } catch (err) {
+      errors.push(err instanceof Error ? err.message : `Listing check failed (${row.id})`);
+    }
+  }
+
+  // Fallback for rows with no job_id to verify (shouldn't happen going
+  // forward, but covers any that predate the serpapi_job_id column) —
+  // closed blindly on the same timer as before.
   const { data: closedRows } = await supabase
     .from("jobs")
     .update({ status: "closed", updated_at: new Date().toISOString() })
     .eq("source", SERPAPI_SOURCE)
     .eq("status", "open")
+    .is("serpapi_job_id", null)
     .lt("posted_at", staleCutoff)
     .select("id");
+  closed += closedRows?.length ?? 0;
 
   return {
     fetched,
     created,
-    closed: closedRows?.length ?? 0,
+    closed,
     errors,
     queriesProcessed,
   };

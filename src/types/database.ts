@@ -106,6 +106,7 @@ export type Job = {
   skills: string[];
   application_url: string | null;
   source: string | null;
+  serpapi_job_id: string | null;
   hiring_manager_name: string | null;
   hiring_manager_title: string | null;
   hiring_manager_email: string | null;
@@ -114,6 +115,15 @@ export type Job = {
   closing_date: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type CompanyRating = {
+  id: string;
+  company: string;
+  country: string;
+  rating: number | null;
+  reviews_count: number | null;
+  fetched_at: string;
 };
 
 export type JobMatch = {
