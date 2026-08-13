@@ -20,7 +20,7 @@ export default async function ProfileSettingsPage() {
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "candidate") {
+  if (profile?.role !== "candidate" && profile?.role !== "admin") {
     redirect("/dashboard");
   }
 

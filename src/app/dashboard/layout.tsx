@@ -32,7 +32,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
   const unreadNotifications = (notifications ?? []).filter((n) => !n.read).length;
 
   let candidateBadges = { applications: 0, savedJobs: 0 };
-  if (role === "candidate") {
+  if (role === "candidate" || role === "admin") {
     const [{ count: applicationsCount }, { count: savedJobsCount }] = await Promise.all([
       supabase
         .from("applications")
@@ -117,13 +117,15 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
     {
       label: "Platform",
       items: [
-        { href: "/dashboard", label: "Overview", icon: "LayoutDashboard" },
+        { href: "/dashboard/admin", label: "Platform overview", icon: "LayoutDashboard" },
         { href: "/dashboard/admin/users", label: "Users", icon: "Users" },
         { href: "/dashboard/admin/jobs", label: "Jobs", icon: "Briefcase" },
         { href: "/dashboard/admin/payments", label: "Payments", icon: "CreditCard" },
         { href: "/dashboard/admin/blog", label: "Blog", icon: "Newspaper" },
       ],
     },
+    // Admins also get full candidate access from the same account.
+    ...candidateNavGroups,
   ];
 
   const navGroups =
@@ -142,7 +144,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
         <SidebarFooter
           name={profile?.full_name || user.email || "Account"}
           role={role}
-          showWhatsApp={role === "candidate"}
+          showWhatsApp={role === "candidate" || role === "admin"}
         />
       </SidebarShell>
       <div className="flex min-w-0 flex-1 flex-col">
@@ -150,7 +152,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
           name={profile?.full_name || user.email || "Account"}
           email={user.email || ""}
           role={role}
-          creditsRemaining={role === "candidate" ? (profile?.credits_remaining ?? 0) : null}
+          creditsRemaining={role === "candidate" || role === "admin" ? (profile?.credits_remaining ?? 0) : null}
           notifications={notifications ?? []}
         />
         <main className="flex-1 p-6 lg:p-10">{children}</main>
