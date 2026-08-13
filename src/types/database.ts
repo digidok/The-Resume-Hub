@@ -6,6 +6,7 @@ export type SubscriptionPlan = "candidate_pro" | "employer_jobs";
 export type Profile = {
   id: string;
   role: ProfileRole;
+  title: string | null;
   full_name: string | null;
   headline: string | null;
   avatar_url: string | null;

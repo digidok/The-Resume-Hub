@@ -17,12 +17,22 @@ export async function signUp(
 ): Promise<AuthActionState> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  const fullName = String(formData.get("full_name") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
+  const firstName = String(formData.get("first_name") ?? "").trim();
+  const surname = String(formData.get("surname") ?? "").trim();
+  const fullName = [firstName, surname].filter(Boolean).join(" ");
+  const phoneNumber = String(formData.get("phone_number") ?? "").trim();
   const role = String(formData.get("role") ?? "candidate") as ProfileRole;
   const redirectTo = String(formData.get("redirect") ?? "/dashboard");
 
   if (!email || !password) {
     return { error: "Email and password are required." };
+  }
+  if (!firstName || !surname) {
+    return { error: "Name and surname are required." };
+  }
+  if (!phoneNumber) {
+    return { error: "Phone number is required." };
   }
   if (password.length < 8) {
     return { error: "Password must be at least 8 characters." };
@@ -47,7 +57,7 @@ export async function signUp(
     email,
     password,
     options: {
-      data: { full_name: fullName, role },
+      data: { full_name: fullName, title: title || null, phone_number: phoneNumber, role },
       emailRedirectTo: `${siteUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,
     },
   });
