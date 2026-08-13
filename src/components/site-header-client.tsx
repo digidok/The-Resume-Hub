@@ -13,7 +13,7 @@ const NAV_LINKS = [
   { href: "/#career-coach", label: "Career Coach" },
   { href: "/#features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/#employers", label: "For Employers" },
+  { href: "/#employers", label: "For Employers", accent: true },
 ];
 
 export function SiteHeaderClient({ isSignedIn }: { isSignedIn: boolean }) {
@@ -54,7 +54,11 @@ export function SiteHeaderClient({ isSignedIn }: { isSignedIn: boolean }) {
             <Link
               key={link.label}
               href={link.href}
-              className="rounded-sm px-3 py-1.5 transition-colors hover:bg-white hover:text-brand-700 hover:shadow-sm"
+              className={
+                link.accent
+                  ? "rounded-sm px-3 py-1.5 text-accent-600 transition-colors hover:bg-white hover:text-accent-700 hover:shadow-sm"
+                  : "rounded-sm px-3 py-1.5 transition-colors hover:bg-white hover:text-brand-700 hover:shadow-sm"
+              }
             >
               {link.label}
             </Link>
@@ -95,7 +99,11 @@ export function SiteHeaderClient({ isSignedIn }: { isSignedIn: boolean }) {
                 key={link.label}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="rounded-lg px-3 py-2.5 hover:bg-brand-50 hover:text-brand-700"
+                className={
+                  link.accent
+                    ? "rounded-lg px-3 py-2.5 text-accent-600 hover:bg-accent-50 hover:text-accent-700"
+                    : "rounded-lg px-3 py-2.5 hover:bg-brand-50 hover:text-brand-700"
+                }
               >
                 {link.label}
               </Link>
