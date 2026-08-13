@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check, MessageCircle } from "lucide-react";
+import { Check, MessageCircle, Minus } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,34 @@ const CANDIDATE_PRO_FEATURES = [
   "Unlimited AI credits — resume review, generation, mock interviews & more",
   "Pro status unlocked",
 ];
+
+type FeatureCell = boolean | string;
+type FeatureRow = { label: string; free: FeatureCell; pro: FeatureCell };
+
+const CANDIDATE_FEATURE_TABLE: FeatureRow[] = [
+  { label: "Resume builder with live preview", free: true, pro: true },
+  { label: "Basic templates (Classic, Minimal, Professional & more)", free: true, pro: true },
+  { label: "All templates, including Executive Portfolio", free: false, pro: true },
+  { label: "AI credits", free: "20 to start", pro: "Unlimited" },
+  { label: "AI resume review & ATS scoring", free: "Uses credits", pro: "Unlimited" },
+  { label: "AI fill gaps, suggest duties & align to a job", free: "Uses credits", pro: "Unlimited" },
+  { label: "Mock interview practice", free: "Uses credits", pro: "Unlimited" },
+  { label: "Resume translation", free: "Uses credits", pro: "Unlimited" },
+  { label: "Salary insights", free: "Uses credits", pro: "Unlimited" },
+  { label: "Scheduled auto-apply", free: "Uses credits", pro: "Unlimited" },
+  { label: "Print / download as PDF", free: false, pro: true },
+  { label: "Public share link", free: "Watermarked", pro: "No watermark" },
+  { label: "Apply to jobs", free: "Unlimited", pro: "Unlimited" },
+  { label: "Save jobs & track applications", free: true, pro: true },
+  { label: "Follow-up reminders", free: true, pro: true },
+  { label: "Career Passport", free: true, pro: true },
+];
+
+function FeatureCellValue({ value }: { value: FeatureCell }) {
+  if (value === true) return <Check className="mx-auto h-4 w-4 text-brand-600" />;
+  if (value === false) return <Minus className="mx-auto h-4 w-4 text-slate-300" />;
+  return <span className="text-slate-700">{value}</span>;
+}
 
 const EMPLOYER_FREE_FEATURES = ["1 free job post", "Applicant tracking & scorecards", "Candidate pool access"];
 
@@ -99,6 +127,36 @@ export default function PricingPage() {
                 </Link>
               </p>
             </Card>
+          </div>
+
+          <h3 className="mt-14 text-center text-lg font-semibold text-slate-900">
+            Free vs. Candidate Pro, feature by feature
+          </h3>
+          <div className="mt-6 overflow-x-auto rounded-xl border border-slate-200">
+            <table className="w-full min-w-[560px] text-sm">
+              <thead>
+                <tr className="border-b border-slate-200 bg-slate-50">
+                  <th className="px-4 py-3 text-left font-semibold text-slate-900">Feature</th>
+                  <th className="px-4 py-3 text-center font-semibold text-slate-900">Free</th>
+                  <th className="px-4 py-3 text-center font-semibold text-brand-700">
+                    {candidatePro.label}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {CANDIDATE_FEATURE_TABLE.map((row) => (
+                  <tr key={row.label} className="border-b border-slate-100 last:border-0">
+                    <td className="px-4 py-3 text-slate-700">{row.label}</td>
+                    <td className="px-4 py-3 text-center">
+                      <FeatureCellValue value={row.free} />
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <FeatureCellValue value={row.pro} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
           <h3 className="mt-10 text-center text-sm font-semibold text-slate-500">
