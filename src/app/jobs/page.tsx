@@ -7,6 +7,7 @@ import { computeJobMatch } from "@/lib/matching/job-match";
 import { formatSalaryFull } from "@/lib/currency";
 import { ADZUNA_COUNTRIES } from "@/lib/adzuna/sync";
 import { RegionJobCounts } from "@/components/jobs/region-job-counts";
+import { ApplyChannelBadge } from "@/components/jobs/apply-channel-badge";
 import type { CareerProfile, Job } from "@/types/database";
 
 export const metadata = {
@@ -211,6 +212,9 @@ export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">)
                   <p className="text-sm text-slate-500">
                     {job.company} {job.location ? `· ${job.location}` : ""}
                   </p>
+                  <div className="mt-1.5">
+                    <ApplyChannelBadge job={job} />
+                  </div>
                 </div>
                 <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
                   {EMPLOYMENT_LABELS[job.employment_type] ?? job.employment_type}

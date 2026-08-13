@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { EmploymentType } from "@/types/database";
+import { KNOWN_AGGREGATOR_NAMES } from "@/lib/jobs/aggregators";
 
 const SERPAPI_SOURCE = "Google Jobs";
 const COUNTRY = "South Africa";
@@ -23,39 +24,6 @@ const SEARCH_QUERIES = [
   "Warehouse assistant",
   "Driver",
   "Accountant",
-];
-
-/**
- * Job boards Google Jobs' "apply_options" routinely surface instead of the
- * employer's own site — an option whose title matches one of these is
- * "via another agent", same complaint as Adzuna's redirect. Anything that
- * *doesn't* match is assumed to be the employer's own listing.
- */
-const KNOWN_AGGREGATOR_NAMES = [
-  "indeed",
-  "linkedin",
-  "ziprecruiter",
-  "glassdoor",
-  "simplyhired",
-  "monster",
-  "careerjet",
-  "jobted",
-  "totaljobs",
-  "reed",
-  "careerbuilder",
-  "snagajob",
-  "talent.com",
-  "jooble",
-  "neuvoo",
-  "adzuna",
-  "pnet",
-  "careers24",
-  "jobmail",
-  "gumtree",
-  "careerjunction",
-  "bestjobs",
-  "jobvine",
-  "jobjack",
 ];
 
 type SerpApiApplyOption = { title?: string; link?: string };
