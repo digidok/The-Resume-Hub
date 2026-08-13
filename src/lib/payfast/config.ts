@@ -30,6 +30,12 @@ export type CreditPackage = {
   amountZar: number;
   credits: number;
   grantsPro: boolean;
+  /** When set, this package's ITN also sets subscription_plan + a 30-day
+   * subscription_expires_at (same mechanism the recurring subscriptions use)
+   * — but since checkout never sends a Payfast subscription_type, no
+   * payfast_token comes back, so it reads as "Active until X — won't
+   * renew" with no cancel button, matching a genuine one-time purchase. */
+  subscriptionPlanTarget?: "candidate_pro" | "employer_jobs";
 };
 
 export const CREDIT_PACKAGES: CreditPackage[] = [
@@ -37,6 +43,21 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
   { id: "growth", label: "Growth", amountZar: 149, credits: 100, grantsPro: true },
   { id: "power", label: "Power", amountZar: 349, credits: 300, grantsPro: true },
 ];
+
+/**
+ * A once-off alternative to the R99/month Candidate Pro subscription: the
+ * same Pro access for 30 days, paid once instead of recurring. Kept out of
+ * CREDIT_PACKAGES so it renders next to the monthly plan rather than in the
+ * credit top-up grid.
+ */
+export const PRO_ONCE_OFF_PACKAGE: CreditPackage = {
+  id: "pro_30day",
+  label: "Pro — 30 Day Pass",
+  amountZar: 150,
+  credits: 0,
+  grantsPro: true,
+  subscriptionPlanTarget: "candidate_pro",
+};
 
 export type SubscriptionPackage = {
   id: "candidate_pro" | "employer_jobs";

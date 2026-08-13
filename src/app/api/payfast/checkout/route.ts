@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { getPayfastConfig, CREDIT_PACKAGES } from "@/lib/payfast/config";
+import { getPayfastConfig, CREDIT_PACKAGES, PRO_ONCE_OFF_PACKAGE } from "@/lib/payfast/config";
 import { buildCheckoutSignature } from "@/lib/payfast/signature";
 
 function escapeHtml(value: string) {
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
   const formData = await request.formData();
   const packageId = String(formData.get("package_id") ?? "");
-  const pkg = CREDIT_PACKAGES.find((p) => p.id === packageId);
+  const pkg = [...CREDIT_PACKAGES, PRO_ONCE_OFF_PACKAGE].find((p) => p.id === packageId);
   if (!pkg) {
     return NextResponse.json({ error: "Unknown package." }, { status: 400 });
   }
@@ -50,14 +50,16 @@ export async function POST(request: Request) {
   const siteUrl = `${protocol}://${host}`;
 
   const mPaymentId = crypto.randomUUID();
+  const itemLabel = pkg.credits > 0 ? `${pkg.label} (${pkg.credits} credits)` : pkg.label;
 
   const { error: insertError } = await supabase.from("payments").insert({
     user_id: user.id,
     m_payment_id: mPaymentId,
     amount: pkg.amountZar,
-    item_name: `Resume Hub — ${pkg.label} (${pkg.credits} credits)`,
+    item_name: `Resume Hub — ${itemLabel}`,
     credits_granted: pkg.credits,
     grants_pro: pkg.grantsPro,
+    subscription_plan_target: pkg.subscriptionPlanTarget ?? null,
     status: "pending",
   });
 
@@ -78,7 +80,7 @@ export async function POST(request: Request) {
     email_address: user.email ?? "",
     m_payment_id: mPaymentId,
     amount: pkg.amountZar.toFixed(2),
-    item_name: `Resume Hub - ${pkg.label} (${pkg.credits} credits)`,
+    item_name: `Resume Hub - ${itemLabel}`,
   };
 
   const signature = await buildCheckoutSignature({ ...fields, passphrase: config.passphrase });
