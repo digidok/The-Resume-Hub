@@ -1,8 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Briefcase, Check, Clock, HeartHandshake, ShieldCheck, Sparkles } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import {
+  Briefcase,
+  Check,
+  CheckCircle2,
+  Clock,
+  FileCheck,
+  HeartHandshake,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AnimatedCounter } from "@/components/motion/animated-counter";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
@@ -26,7 +35,57 @@ const HERO_STATS = [
   { icon: HeartHandshake, value: 100, suffix: "%", label: "Real human support" },
 ];
 
+const DRIFT_SHAPES = [
+  {
+    className: "absolute -right-24 top-10 h-80 w-80 rotate-12 border-2 border-brand-400/40",
+    x: [0, 26, -8, 0],
+    y: [0, -18, 12, 0],
+    duration: 22,
+  },
+  {
+    className: "absolute right-10 top-[42%] h-48 w-48 rotate-45 border-2 border-white/10",
+    x: [0, -22, 10, 0],
+    y: [0, 20, -14, 0],
+    duration: 26,
+  },
+  {
+    className: "absolute -left-14 bottom-6 h-52 w-52 -rotate-6 border-2 border-brand-600/50",
+    x: [0, 18, -14, 0],
+    y: [0, -14, 18, 0],
+    duration: 24,
+  },
+  {
+    className: "absolute left-1/3 top-10 h-20 w-20 rotate-45 border-2 border-slate-300",
+    x: [0, 14, -10, 0],
+    y: [0, 10, -8, 0],
+    duration: 18,
+  },
+];
+
+const STATUS_BADGES = [
+  {
+    icon: FileCheck,
+    text: "Offer letter ready",
+    className: "absolute right-16 top-16 hidden lg:flex",
+    bobDelay: 0,
+  },
+  {
+    icon: CheckCircle2,
+    text: "Interview scheduled",
+    className: "absolute right-4 top-[52%] hidden lg:flex",
+    bobDelay: 0.6,
+  },
+  {
+    icon: ShieldCheck,
+    text: "Application verified",
+    className: "absolute right-4 bottom-16 hidden lg:flex",
+    bobDelay: 1.2,
+  },
+];
+
 export function AnimatedHero() {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
     <>
     <section className="relative overflow-hidden bg-slate-100">
@@ -44,10 +103,36 @@ export function AnimatedHero() {
         }}
       />
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div className="absolute -right-24 top-10 h-80 w-80 rotate-12 border-2 border-brand-400/40" />
-        <div className="absolute right-10 top-1/2 h-48 w-48 -translate-y-1/2 rotate-45 border-2 border-white/10" />
-        <div className="absolute -left-14 bottom-6 h-52 w-52 -rotate-6 border-2 border-brand-600/50" />
-        <div className="absolute left-1/3 top-10 h-20 w-20 rotate-45 border-2 border-slate-300" />
+        {DRIFT_SHAPES.map((shape, i) => (
+          <motion.div
+            key={i}
+            className={shape.className}
+            animate={prefersReducedMotion ? undefined : { x: shape.x, y: shape.y }}
+            transition={{ duration: shape.duration, repeat: Infinity, ease: "easeInOut" }}
+          />
+        ))}
+      </div>
+      <div className="pointer-events-none absolute inset-0 z-10" aria-hidden="true">
+        {STATUS_BADGES.map((badge) => (
+          <motion.div
+            key={badge.text}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{
+              opacity: 1,
+              y: prefersReducedMotion ? 0 : [10, -4, 10],
+            }}
+            transition={{
+              opacity: { duration: 0.6, delay: 0.9 + badge.bobDelay },
+              y: prefersReducedMotion
+                ? { duration: 0.6, delay: 0.9 + badge.bobDelay }
+                : { duration: 4, repeat: Infinity, ease: "easeInOut", delay: badge.bobDelay },
+            }}
+            className={`${badge.className} items-center gap-1.5 rounded-sm border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-md shadow-slate-900/10`}
+          >
+            <badge.icon className="h-3.5 w-3.5 text-brand-600" />
+            {badge.text}
+          </motion.div>
+        ))}
       </div>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-brand-600" aria-hidden="true" />
 
