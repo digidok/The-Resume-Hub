@@ -10,21 +10,25 @@ import { EASE } from "@/components/motion/variants";
 import { DashboardPreview } from "@/components/landing/dashboard-preview";
 import { ProductTour } from "@/components/landing/product-tour";
 
-const TRUST_ITEMS = [
-  "1,000+ live jobs",
-  "Auto Apply while you rest",
-  "Verified employers & candidates",
-  "Real human support",
-];
-
-const HERO_STATS = [
-  { icon: Briefcase, value: 1000, suffix: "+", label: "Live jobs right now" },
+const HERO_STATS_TAIL = [
   { icon: Clock, value: 5, suffix: "+ yrs", label: "Helping SA job seekers get hired" },
   { icon: ShieldCheck, value: 100, suffix: "%", label: "Verified employers & candidates" },
   { icon: HeartHandshake, value: 100, suffix: "%", label: "Real human support" },
 ];
 
-export function AnimatedHero() {
+export function AnimatedHero({ jobCount }: { jobCount: number }) {
+  const jobCountLabel = jobCount.toLocaleString();
+  const trustItems = [
+    `${jobCountLabel} live jobs`,
+    "Auto Apply while you rest",
+    "Verified employers & candidates",
+    "Real human support",
+  ];
+  const heroStats = [
+    { icon: Briefcase, value: jobCount, suffix: "", label: "Live jobs right now" },
+    ...HERO_STATS_TAIL,
+  ];
+
   return (
     <>
     <section className="relative overflow-hidden bg-slate-100">
@@ -58,7 +62,7 @@ export function AnimatedHero() {
             className="inline-flex items-center gap-1.5 rounded-sm border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brand-800"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            1,000+ live jobs · Africa&apos;s first scheduled auto-apply platform
+            {jobCountLabel} live jobs · Africa&apos;s first scheduled auto-apply platform
           </motion.span>
 
           <h1 className="mx-auto mt-6 max-w-xl text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl lg:mx-0">
@@ -86,9 +90,9 @@ export function AnimatedHero() {
             transition={{ duration: 0.6, ease: EASE, delay: 0.4 }}
             className="mx-auto mt-5 max-w-xl text-lg text-slate-600 lg:mx-0"
           >
-            Browse 1,000+ live jobs across South Africa, then let Auto Apply submit
-            tailored applications on your behalf while you rest, work, or just get on
-            with your day. Verified employers, verified candidates — one platform.
+            Browse {jobCountLabel} live jobs across South Africa, then let Auto Apply
+            submit tailored applications on your behalf while you rest, work, or just
+            get on with your day. Verified employers, verified candidates — one platform.
           </motion.p>
 
           <motion.div
@@ -102,7 +106,7 @@ export function AnimatedHero() {
             </Link>
             <Link href="/jobs">
               <Button size="lg" variant="outline">
-                Browse 1,000+ Jobs
+                Browse {jobCountLabel} Jobs
               </Button>
             </Link>
           </motion.div>
@@ -122,7 +126,7 @@ export function AnimatedHero() {
             transition={{ duration: 0.6, ease: EASE, delay: 0.8 }}
             className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-500 lg:justify-start"
           >
-            {TRUST_ITEMS.map((item) => (
+            {trustItems.map((item) => (
               <span key={item} className="flex items-center gap-1.5">
                 <Check className="h-4 w-4 text-brand-700" />
                 {item}
@@ -140,7 +144,7 @@ export function AnimatedHero() {
         <div className="-mx-6 -mt-6 mb-6 h-1 bg-brand-600 sm:-mx-8 sm:-mt-8" />
 
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
-          {HERO_STATS.map((stat) => (
+          {heroStats.map((stat) => (
             <div key={stat.label} className="text-center">
               <stat.icon className="mx-auto h-5 w-5 text-brand-700" />
               <p className="mt-2 text-2xl font-bold text-slate-900">
