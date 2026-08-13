@@ -4,9 +4,11 @@ import { useActionState, useState } from "react";
 import Link from "next/link";
 import { signUp, type AuthActionState } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
-import { Input, Label } from "@/components/ui/field";
+import { Input, Label, Select } from "@/components/ui/field";
 import { OAuthButtons } from "@/components/auth/oauth-buttons";
 import type { ProfileRole } from "@/types/database";
+
+const TITLE_OPTIONS = ["Mr", "Mrs", "Ms", "Miss", "Dr", "Prof"];
 
 const initialState: AuthActionState = {};
 
@@ -52,8 +54,36 @@ export function SignupForm({
       <OAuthButtons redirectTo={redirectTo} role={role as "candidate" | "employer"} />
 
       <div>
-        <Label htmlFor="full_name">Full name</Label>
-        <Input id="full_name" name="full_name" autoComplete="name" required />
+        <Label htmlFor="title">Title</Label>
+        <Select id="title" name="title" defaultValue="">
+          <option value="">Prefer not to say</option>
+          {TITLE_OPTIONS.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </Select>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label htmlFor="first_name">Name</Label>
+          <Input id="first_name" name="first_name" autoComplete="given-name" required />
+        </div>
+        <div>
+          <Label htmlFor="surname">Surname</Label>
+          <Input id="surname" name="surname" autoComplete="family-name" required />
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="phone_number">Phone</Label>
+        <Input
+          id="phone_number"
+          name="phone_number"
+          type="tel"
+          autoComplete="tel"
+          placeholder="e.g. 082 123 4567"
+          required
+        />
       </div>
       <div>
         <Label htmlFor="email">Email</Label>

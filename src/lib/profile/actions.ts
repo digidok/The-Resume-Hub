@@ -15,3 +15,16 @@ export async function setOpenToWork(openToWork: boolean) {
 
   revalidatePath("/dashboard/profile");
 }
+
+export async function updateAvatar(avatarUrl: string | null) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  await supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", user.id);
+
+  revalidatePath("/dashboard/profile");
+  revalidatePath("/dashboard");
+}

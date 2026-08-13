@@ -15,10 +15,12 @@ export function SidebarFooter({
   name,
   role,
   showWhatsApp,
+  avatarUrl,
 }: {
   name: string;
   role: string;
   showWhatsApp: boolean;
+  avatarUrl?: string | null;
 }) {
   const collapsed = useSidebarCollapsed();
 
@@ -37,9 +39,14 @@ export function SidebarFooter({
       )}
 
       <div className={`flex items-center gap-2.5 ${collapsed ? "justify-center" : ""}`}>
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-600 text-xs font-semibold text-white">
-          {initials(name)}
-        </span>
+        {avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={avatarUrl} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
+        ) : (
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-600 text-xs font-semibold text-white">
+            {initials(name)}
+          </span>
+        )}
         {!collapsed && (
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-slate-900">{name}</p>
