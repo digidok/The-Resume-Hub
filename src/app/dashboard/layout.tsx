@@ -31,6 +31,12 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
   const role = (profile?.role ?? "candidate") as "candidate" | "employer" | "admin";
   const unreadNotifications = (notifications ?? []).filter((n) => !n.read).length;
 
+  const { count: pendingConnectionsCount } = await supabase
+    .from("connections")
+    .select("id", { count: "exact", head: true })
+    .eq("recipient_id", user.id)
+    .eq("status", "pending");
+
   let candidateBadges = { applications: 0, savedJobs: 0 };
   if (role === "candidate" || role === "admin") {
     const [{ count: applicationsCount }, { count: savedJobsCount }] = await Promise.all([
@@ -79,6 +85,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       label: "Account",
       items: [
         { href: "/dashboard/notifications", label: "Notifications", icon: "Bell", badge: unreadNotifications },
+        { href: "/dashboard/connections", label: "Connections", icon: "UserPlus", badge: pendingConnectionsCount ?? 0 },
         { href: "/dashboard/subscription", label: "Subscription", icon: "CreditCard" },
         { href: "/dashboard/profile", label: "Profile & visibility", icon: "UserCog" },
       ],
@@ -108,6 +115,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       label: "Account",
       items: [
         { href: "/dashboard/notifications", label: "Notifications", icon: "Bell", badge: unreadNotifications },
+        { href: "/dashboard/connections", label: "Connections", icon: "UserPlus", badge: pendingConnectionsCount ?? 0 },
         { href: "/dashboard/subscription", label: "Subscription", icon: "CreditCard" },
       ],
     },

@@ -302,6 +302,17 @@ export type Notification = {
   created_at: string;
 };
 
+export type ConnectionStatus = "pending" | "accepted";
+
+export type Connection = {
+  id: string;
+  requester_id: string;
+  recipient_id: string;
+  status: ConnectionStatus;
+  created_at: string;
+  updated_at: string;
+};
+
 export type ResumeScoreCategories = {
   ats_compatibility: number;
   keyword_coverage: number;
