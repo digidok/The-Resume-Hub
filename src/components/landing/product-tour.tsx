@@ -64,6 +64,8 @@ const STEPS: TourStep[] = [
   },
 ];
 
+const TOUR_SEEN_KEY = "resume-hub-tour-seen";
+
 function goToSection(targetId: string | null) {
   if (!targetId) {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -106,6 +108,15 @@ export function ProductTour({ triggerClassName }: { triggerClassName?: string })
     setStepIndex(0);
     setOpen(true);
   }
+
+  useEffect(() => {
+    if (localStorage.getItem(TOUR_SEEN_KEY)) return;
+    const timer = window.setTimeout(() => {
+      localStorage.setItem(TOUR_SEEN_KEY, "1");
+      launch();
+    }, 1600);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   function close() {
     setOpen(false);

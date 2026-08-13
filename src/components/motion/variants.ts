@@ -7,8 +7,8 @@ export const TRANSITION_MD: Transition = { duration: 0.6, ease: EASE };
 export const TRANSITION_SM: Transition = { duration: 0.4, ease: EASE };
 
 export const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: TRANSITION_MD },
+  hidden: { opacity: 0, y: 36, scale: 0.98 },
+  show: { opacity: 1, y: 0, scale: 1, transition: TRANSITION_MD },
 };
 
 export const fadeIn: Variants = {
@@ -22,13 +22,13 @@ export const scaleIn: Variants = {
 };
 
 export const slideInRight: Variants = {
-  hidden: { opacity: 0, x: 24 },
-  show: { opacity: 1, x: 0, transition: TRANSITION_MD },
+  hidden: { opacity: 0, x: 48, y: 12 },
+  show: { opacity: 1, x: 0, y: 0, transition: TRANSITION_MD },
 };
 
 export const slideInLeft: Variants = {
-  hidden: { opacity: 0, x: -24 },
-  show: { opacity: 1, x: 0, transition: TRANSITION_MD },
+  hidden: { opacity: 0, x: -48, y: 12 },
+  show: { opacity: 1, x: 0, y: 0, transition: TRANSITION_MD },
 };
 
 /** Wrap a set of children in a parent to stagger their entrance. */

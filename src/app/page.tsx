@@ -48,7 +48,7 @@ import { SaveJobBookmarklet } from "@/components/landing/save-job-bookmarklet";
 import { JobTrackerTable } from "@/components/landing/job-tracker-table";
 import { ScrollReveal, ScrollStagger } from "@/components/motion/scroll-reveal";
 import { MotionCard } from "@/components/motion/motion-card";
-import { fadeUp } from "@/components/motion/variants";
+import { slideInLeft, slideInRight } from "@/components/motion/variants";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -390,7 +390,7 @@ export default function Home() {
               </p>
             </ScrollReveal>
             <div className="mt-12 grid grid-cols-1 gap-10 lg:grid-cols-5 lg:items-center">
-              <div className="lg:col-span-2">
+              <ScrollReveal variants={slideInLeft} className="lg:col-span-2">
                 <ul className="space-y-5">
                   {CAREER_PASSPORT_POINTS.map((point) => (
                     <li key={point.title} className="flex items-start gap-3">
@@ -405,10 +405,10 @@ export default function Home() {
                 <Link href="/dashboard/career-passport">
                   <Button className="mt-6">Build your Career Passport</Button>
                 </Link>
-              </div>
-              <div className="lg:col-span-3">
+              </ScrollReveal>
+              <ScrollReveal variants={slideInRight} delay={0.15} className="lg:col-span-3">
                 <CareerPassportPreview />
-              </div>
+              </ScrollReveal>
             </div>
           </div>
         </section>
@@ -539,7 +539,7 @@ export default function Home() {
 
         <section className="mx-auto max-w-5xl px-4 py-20">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-            <ScrollReveal variants={fadeUp}>
+            <ScrollReveal variants={slideInLeft}>
               <ScanSearch className="h-7 w-7 text-brand-600" />
               <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">
                 Know exactly where your resume stands
@@ -563,7 +563,7 @@ export default function Home() {
                 </Button>
               </Link>
             </ScrollReveal>
-            <ScrollReveal delay={0.15}>
+            <ScrollReveal variants={slideInRight} delay={0.15}>
               <Card className="p-6">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-semibold text-slate-900">ATS review</p>
@@ -592,7 +592,7 @@ export default function Home() {
         <section className="border-y border-slate-200 bg-slate-50 py-20">
           <div className="mx-auto max-w-5xl px-4">
             <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-              <ScrollReveal className="order-2 lg:order-1">
+              <ScrollReveal variants={slideInLeft} className="order-2 lg:order-1">
                 <Card className="p-6">
                   <div className="flex items-center gap-2">
                     <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-500 text-white">
@@ -627,7 +627,7 @@ export default function Home() {
                   </div>
                 </Card>
               </ScrollReveal>
-              <ScrollReveal delay={0.15} className="order-1 lg:order-2">
+              <ScrollReveal variants={slideInRight} delay={0.15} className="order-1 lg:order-2">
                 <Zap className="h-7 w-7 text-brand-600" />
                 <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">
                   Let auto-apply do the searching for you
