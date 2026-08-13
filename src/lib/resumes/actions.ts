@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { randomSuffix, slugify } from "@/lib/slug";
 import { emptyResumeContent, type ResumeContent } from "@/types/database";
+import { RESUME_TEMPLATES } from "@/components/resume/resume-preview";
+import { hasUnlimitedCredits } from "@/lib/credits";
 
 export async function createResume() {
   const supabase = await createClient();
@@ -47,6 +49,18 @@ export async function saveResume(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "You must be signed in." };
+
+  const templateConfig = RESUME_TEMPLATES.find((t) => t.id === input.template);
+  if (templateConfig?.tier === "pro") {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan, subscription_plan, subscription_expires_at")
+      .eq("id", user.id)
+      .single();
+    if (!profile || !hasUnlimitedCredits(profile)) {
+      return { error: `"${templateConfig.label}" is a Pro template — upgrade to use it.` };
+    }
+  }
 
   const { data, error } = await supabase
     .from("resumes")
