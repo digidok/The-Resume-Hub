@@ -47,7 +47,7 @@ export function SiteHeaderClient({ isSignedIn }: { isSignedIn: boolean }) {
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4">
         <Link href="/" onClick={() => setMenuOpen(false)}>
-          <Logo />
+          <Logo tagline />
         </Link>
         <nav className="hidden items-center gap-1 rounded-md border border-slate-200 bg-slate-50 p-1 text-sm font-semibold text-slate-700 md:flex">
           {NAV_LINKS.map((link) => (

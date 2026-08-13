@@ -24,7 +24,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-5xl px-4">
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
           <div className="col-span-2 sm:col-span-1">
-            <Logo />
+            <Logo variant="inverse" tagline />
             <p className="mt-3 max-w-[16rem] text-sm text-slate-400">
               CVs, job matching, and AI-assisted applications for candidates across South Africa,
               the Middle East, Asia, and beyond.
