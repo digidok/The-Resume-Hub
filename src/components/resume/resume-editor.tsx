@@ -70,11 +70,21 @@ export function ResumeEditor({
   siteUrl,
   initialJobDescription,
   isPro,
+  isAdminEditing = false,
+  saveAction = saveResume,
+  renameSlugAction = renameResumeSlug,
 }: {
   resume: Resume;
   siteUrl: string;
   initialJobDescription?: string;
   isPro: boolean;
+  /** True when staff are editing this CV on a candidate's behalf. Hides
+   * features scoped to the logged-in caller's own account (AI review credit
+   * history, Career Passport sync, translate-to-new-resume) since those
+   * would otherwise silently act on the admin's account instead. */
+  isAdminEditing?: boolean;
+  saveAction?: typeof saveResume;
+  renameSlugAction?: typeof renameResumeSlug;
 }) {
   const router = useRouter();
   const [title, setTitle] = useState(resume.title);
@@ -261,7 +271,7 @@ export function ResumeEditor({
   function handleSave() {
     setError(null);
     startTransition(async () => {
-      const result = await saveResume(resume.id, {
+      const result = await saveAction(resume.id, {
         title,
         template,
         is_public: isPublic,
@@ -280,7 +290,7 @@ export function ResumeEditor({
 
   function handleSlugSave() {
     startTransition(async () => {
-      const result = await renameResumeSlug(resume.id, slug);
+      const result = await renameSlugAction(resume.id, slug);
       if (result.error) {
         setError(result.error);
       } else if (result.slug) {
@@ -294,6 +304,13 @@ export function ResumeEditor({
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
       <div className="space-y-6">
+        {isAdminEditing && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            You&apos;re editing this candidate&apos;s CV on their behalf. Changes save directly to their
+            account. AI review, Career Passport sync, and translation are only available from the
+            candidate&apos;s own account.
+          </div>
+        )}
         <Card className="space-y-4 p-5">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-slate-900">Resume settings</h2>
@@ -646,51 +663,55 @@ export function ResumeEditor({
           )}
         </Card>
 
-        <Card className="space-y-3 p-5">
-          <div>
-            <h2 className="text-lg font-semibold text-slate-900">Sync to Career Passport</h2>
-            <p className="text-sm text-slate-500">
-              Add this resume&apos;s skills and languages to your Career Passport. Never
-              overwrites anything you&apos;ve already added there.
-            </p>
-          </div>
-          <Button type="button" variant="outline" disabled={syncPending} onClick={handleSyncToCareerPassport}>
-            {syncPending ? "Syncing…" : "Sync to Career Passport"}
-          </Button>
-          {syncStatus && <p className="text-sm text-emerald-600">{syncStatus}</p>}
-          {syncError && <p className="text-sm text-red-600">{syncError}</p>}
-        </Card>
+        {!isAdminEditing && (
+          <>
+            <Card className="space-y-3 p-5">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">Sync to Career Passport</h2>
+                <p className="text-sm text-slate-500">
+                  Add this resume&apos;s skills and languages to your Career Passport. Never
+                  overwrites anything you&apos;ve already added there.
+                </p>
+              </div>
+              <Button type="button" variant="outline" disabled={syncPending} onClick={handleSyncToCareerPassport}>
+                {syncPending ? "Syncing…" : "Sync to Career Passport"}
+              </Button>
+              {syncStatus && <p className="text-sm text-emerald-600">{syncStatus}</p>}
+              {syncError && <p className="text-sm text-red-600">{syncError}</p>}
+            </Card>
 
-        <Card className="space-y-3 p-5">
-          <div>
-            <h2 className="text-lg font-semibold text-slate-900">Translate this resume</h2>
-            <p className="text-sm text-slate-500">
-              Creates a new resume with your summary, skills, and experience translated — handy for
-              applying across Africa, the Middle East, and Asia. Save any pending edits first.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Select
-              value={targetLanguage}
-              onChange={(e) => setTargetLanguage(e.target.value)}
-              className="w-auto"
-            >
-              {["Arabic", "French", "Portuguese", "Swahili", "Mandarin Chinese", "Hindi", "Amharic", "Zulu"].map(
-                (lang) => (
-                  <option key={lang} value={lang}>
-                    {lang}
-                  </option>
-                )
-              )}
-            </Select>
-            <Button type="button" variant="outline" disabled={translatePending} onClick={handleTranslate}>
-              {translatePending ? "Translating…" : "Translate"}
-            </Button>
-          </div>
-          {translateError && <p className="text-sm text-red-600">{translateError}</p>}
-        </Card>
+            <Card className="space-y-3 p-5">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">Translate this resume</h2>
+                <p className="text-sm text-slate-500">
+                  Creates a new resume with your summary, skills, and experience translated — handy for
+                  applying across Africa, the Middle East, and Asia. Save any pending edits first.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Select
+                  value={targetLanguage}
+                  onChange={(e) => setTargetLanguage(e.target.value)}
+                  className="w-auto"
+                >
+                  {["Arabic", "French", "Portuguese", "Swahili", "Mandarin Chinese", "Hindi", "Amharic", "Zulu"].map(
+                    (lang) => (
+                      <option key={lang} value={lang}>
+                        {lang}
+                      </option>
+                    )
+                  )}
+                </Select>
+                <Button type="button" variant="outline" disabled={translatePending} onClick={handleTranslate}>
+                  {translatePending ? "Translating…" : "Translate"}
+                </Button>
+              </div>
+              {translateError && <p className="text-sm text-red-600">{translateError}</p>}
+            </Card>
 
-        <AiReviewPanel resumeId={resume.id} />
+            <AiReviewPanel resumeId={resume.id} />
+          </>
+        )}
       </div>
 
       <div className="lg:sticky lg:top-6 lg:self-start">

@@ -5,7 +5,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import type { ProfileRole, ProfilePlan } from "@/types/database";
+import { slugify, randomSuffix } from "@/lib/slug";
+import type { ProfileRole, ProfilePlan, ResumeContent } from "@/types/database";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -184,4 +185,69 @@ export async function createCandidate(input: {
 
   revalidatePath("/dashboard/admin/users");
   return { candidateId: createdUser.user.id };
+}
+
+/**
+ * Same shape as saveResume/renameResumeSlug in lib/resumes/actions.ts, but
+ * without the `user_id = caller` ownership filter — for staff editing a
+ * candidate's CV on their behalf (e.g. a WhatsApp support request). Relies
+ * on the "Admins can update all resumes" RLS policy for enforcement.
+ */
+export async function adminSaveResume(
+  resumeId: string,
+  input: {
+    title: string;
+    template: string;
+    is_public: boolean;
+    content: ResumeContent;
+  }
+): Promise<{ error?: string; slug?: string }> {
+  const supabase = await requireAdmin();
+
+  const { data, error } = await supabase
+    .from("resumes")
+    .update({
+      title: input.title || "Untitled Resume",
+      template: input.template,
+      is_public: input.is_public,
+      content: input.content,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", resumeId)
+    .select("slug, user_id")
+    .single();
+
+  if (error || !data) {
+    return { error: error?.message ?? "Could not save resume." };
+  }
+
+  revalidatePath(`/dashboard/admin/users/${data.user_id}`);
+  revalidatePath(`/dashboard/admin/users/${data.user_id}/resumes/${resumeId}`);
+  revalidatePath(`/r/${data.slug}`);
+  return { slug: data.slug };
+}
+
+export async function adminRenameResumeSlug(
+  resumeId: string,
+  desiredSlug: string
+): Promise<{ error?: string; slug?: string }> {
+  const supabase = await requireAdmin();
+  const cleanSlug = slugify(desiredSlug) || `resume-${randomSuffix(8)}`;
+
+  const { data, error } = await supabase
+    .from("resumes")
+    .update({ slug: cleanSlug })
+    .eq("id", resumeId)
+    .select("slug, user_id")
+    .single();
+
+  if (error) {
+    if (error.code === "23505") {
+      return { error: "That link is already taken. Try another." };
+    }
+    return { error: error.message };
+  }
+
+  revalidatePath(`/dashboard/admin/users/${data?.user_id}/resumes/${resumeId}`);
+  return { slug: data?.slug };
 }
