@@ -20,7 +20,7 @@ export function AnimatedHero({ jobCount }: { jobCount: number }) {
   const jobCountLabel = jobCount.toLocaleString();
   const trustItems = [
     `${jobCountLabel} live jobs`,
-    "Auto Apply while you rest",
+    "Help You Apply while you rest",
     "Verified employers & candidates",
     "Real human support",
   ];
@@ -62,7 +62,7 @@ export function AnimatedHero({ jobCount }: { jobCount: number }) {
             className="inline-flex items-center gap-1.5 rounded-sm border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brand-800"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            {jobCountLabel} live jobs · Africa&apos;s first scheduled auto-apply platform
+            {jobCountLabel} live jobs · Africa&apos;s first Help You Apply platform
           </motion.span>
 
           <h1 className="mx-auto mt-6 max-w-xl text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl lg:mx-0">
@@ -90,9 +90,9 @@ export function AnimatedHero({ jobCount }: { jobCount: number }) {
             transition={{ duration: 0.6, ease: EASE, delay: 0.4 }}
             className="mx-auto mt-5 max-w-xl text-lg text-slate-600 lg:mx-0"
           >
-            Browse {jobCountLabel} live jobs across South Africa, then let Auto Apply
-            submit tailored applications on your behalf while you rest, work, or just
-            get on with your day. Verified employers, verified candidates — one platform.
+            Browse {jobCountLabel} live jobs across South Africa, then let Help You
+            Apply submit tailored applications on your behalf while you rest, work, or
+            just get on with your day. Verified employers, verified candidates — one platform.
           </motion.p>
 
           <motion.div
@@ -102,7 +102,7 @@ export function AnimatedHero({ jobCount }: { jobCount: number }) {
             className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start"
           >
             <Link href="/signup">
-              <Button size="lg">Start Auto Apply Free</Button>
+              <Button size="lg">Build My CV Free</Button>
             </Link>
             <Link href="/jobs">
               <Button size="lg" variant="outline">
