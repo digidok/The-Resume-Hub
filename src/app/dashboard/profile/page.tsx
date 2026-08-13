@@ -63,7 +63,7 @@ export default async function ProfileSettingsPage() {
           <Card className="space-y-4 p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="font-medium text-slate-900">Open to work</p>
+                <p className="font-medium text-slate-900">In the market</p>
                 <p className="text-sm text-slate-500">
                   When on, employers can browse your profile and public resumes in the Candidate Pool.
                 </p>
@@ -81,8 +81,8 @@ export default async function ProfileSettingsPage() {
             </div>
             {profile.open_to_work && (publicResumeCount ?? 0) === 0 && (
               <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-700">
-                You&apos;re open to work, but none of your resumes are public yet. Mark a resume
-                public from the Resumes page so employers have something to view.
+                You&apos;re marked as in the market, but none of your resumes are public yet. Mark a
+                resume public from the Resumes page so employers have something to view.
               </p>
             )}
           </Card>

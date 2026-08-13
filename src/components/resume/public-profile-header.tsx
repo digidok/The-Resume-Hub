@@ -48,7 +48,7 @@ export function PublicProfileHeader({
           {openToWork && (
             <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700 ring-1 ring-green-200 sm:mb-1">
               <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-              Open to work
+              In the market
             </span>
           )}
         </div>
