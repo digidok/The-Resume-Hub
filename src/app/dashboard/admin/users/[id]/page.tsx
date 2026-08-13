@@ -95,12 +95,16 @@ export default async function AdminUserDetailPage({
         {resumes && resumes.length > 0 ? (
           <div className="space-y-2">
             {resumes.map((r) => (
-              <div key={r.id} className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2 text-sm">
-                <span className="font-medium text-slate-900">{r.title || "Untitled"}</span>
+              <Link
+                key={r.id}
+                href={`/dashboard/admin/users/${id}/resumes/${r.id}`}
+                className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2 text-sm hover:border-brand-200 hover:bg-brand-50/40"
+              >
+                <span className="font-medium text-slate-900 hover:underline">{r.title || "Untitled"}</span>
                 <span className="text-xs text-slate-400">
                   {r.is_public ? "Public" : "Private"} · Updated {new Date(r.updated_at).toLocaleDateString()}
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (
