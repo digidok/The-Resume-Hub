@@ -8,7 +8,8 @@ import { formatSalaryFull } from "@/lib/currency";
 import { ADZUNA_COUNTRIES } from "@/lib/adzuna/sync";
 import { RegionJobCounts } from "@/components/jobs/region-job-counts";
 import { ApplyChannelBadge } from "@/components/jobs/apply-channel-badge";
-import type { CareerProfile, Job } from "@/types/database";
+import { CompanyRatingBadge } from "@/components/jobs/company-rating-badge";
+import type { CareerProfile, CompanyRating, Job } from "@/types/database";
 
 export const metadata = {
   title: "Find Jobs — Resume Hub",
@@ -68,6 +69,17 @@ export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">)
 
   const { data: jobsData } = await query.order("posted_at", { ascending: false });
   const jobs = (jobsData ?? []) as Job[];
+
+  const companyNames = [...new Set(jobs.map((j) => j.company))];
+  const { data: ratingsData } = companyNames.length
+    ? await supabase.from("company_ratings").select("company, rating, reviews_count").in("company", companyNames)
+    : { data: [] };
+  const ratingByCompany = new Map(
+    ((ratingsData ?? []) as Pick<CompanyRating, "company" | "rating" | "reviews_count">[]).map((r) => [
+      r.company,
+      r,
+    ])
+  );
 
   const {
     data: { user },
@@ -212,8 +224,12 @@ export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">)
                   <p className="text-sm text-slate-500">
                     {job.company} {job.location ? `· ${job.location}` : ""}
                   </p>
-                  <div className="mt-1.5">
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
                     <ApplyChannelBadge job={job} />
+                    <CompanyRatingBadge
+                      rating={ratingByCompany.get(job.company)?.rating}
+                      reviewsCount={ratingByCompany.get(job.company)?.reviews_count}
+                    />
                   </div>
                 </div>
                 <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ApplyForm } from "@/components/jobs/apply-form";
 import { ExternalApplyLink } from "@/components/jobs/external-apply-link";
 import { ApplyChannelBadge } from "@/components/jobs/apply-channel-badge";
+import { CompanyRatingBadge } from "@/components/jobs/company-rating-badge";
 import { QualificationCheck } from "@/components/jobs/qualification-check";
 import { toggleSavedJob } from "@/lib/savedjobs/actions";
 import { computeJobMatch } from "@/lib/matching/job-match";
@@ -72,6 +73,13 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
     .single();
 
   if (!job) notFound();
+
+  const { data: companyRating } = await supabase
+    .from("company_ratings")
+    .select("rating, reviews_count")
+    .eq("company", job.company)
+    .eq("country", job.country)
+    .maybeSingle();
 
   const {
     data: { user },
@@ -197,6 +205,11 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
           {job.company} {job.location ? `· ${job.location}` : ""} ·{" "}
           {EMPLOYMENT_LABELS[job.employment_type] ?? job.employment_type}
         </p>
+        {companyRating && (
+          <div className="mt-1">
+            <CompanyRatingBadge rating={companyRating.rating} reviewsCount={companyRating.reviews_count} />
+          </div>
+        )}
         {(job.salary_min || job.salary_max) && (
           <p className="mt-1 text-sm text-slate-500">
             {formatSalaryFull(job.salary_min, job.salary_max, job.currency)}
