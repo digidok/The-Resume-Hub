@@ -26,14 +26,6 @@ function GoogleIcon() {
   );
 }
 
-function LinkedInIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="#0A66C2" aria-hidden="true">
-      <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.61 0 4.28 2.38 4.28 5.47v6.27zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z" />
-    </svg>
-  );
-}
-
 export function OAuthButtons({
   redirectTo,
   role,
@@ -42,9 +34,11 @@ export function OAuthButtons({
   role?: "candidate" | "employer";
 }) {
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<"google" | "linkedin_oidc" | null>(null);
+  const [loading, setLoading] = useState<"google" | null>(null);
 
-  async function handleOAuth(provider: "google" | "linkedin_oidc") {
+  // LinkedIn sign-in is temporarily removed from the UI (provider isn't
+  // configured yet) — re-add the button and widen this union to bring it back.
+  async function handleOAuth(provider: "google") {
     setError(null);
     setLoading(provider);
     const supabase = createClient();
@@ -65,26 +59,15 @@ export function OAuthButtons({
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
-        <button
-          type="button"
-          onClick={() => handleOAuth("google")}
-          disabled={loading !== null}
-          className="flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
-        >
-          <GoogleIcon />
-          {loading === "google" ? "Redirecting…" : "Google"}
-        </button>
-        <button
-          type="button"
-          onClick={() => handleOAuth("linkedin_oidc")}
-          disabled={loading !== null}
-          className="flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
-        >
-          <LinkedInIcon />
-          {loading === "linkedin_oidc" ? "Redirecting…" : "LinkedIn"}
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={() => handleOAuth("google")}
+        disabled={loading !== null}
+        className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+      >
+        <GoogleIcon />
+        {loading === "google" ? "Redirecting…" : "Continue with Google"}
+      </button>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex items-center gap-3 text-xs text-slate-400">
         <div className="h-px flex-1 bg-slate-200" />
