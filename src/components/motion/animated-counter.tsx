@@ -39,7 +39,7 @@ export function AnimatedCounter({
   return (
     <span ref={ref} className={className}>
       {prefix}
-      {display}
+      {display.toLocaleString()}
       {suffix}
     </span>
   );
