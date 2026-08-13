@@ -3,13 +3,13 @@ import type { ResumeContent } from "@/types/database";
 type TemplateConfig = {
   id: string;
   label: string;
-  layout: "single" | "sidebar" | "executive";
+  layout: "single" | "sidebar" | "executive" | "portfolio";
   photo: boolean;
   font: "font-serif" | "font-sans";
   compact?: boolean;
   accent: string;
   accentSoft: string;
-  /** Secondary accent (e.g. a gold highlight) — only used by the executive layout. */
+  /** Secondary accent (e.g. a gold highlight) — only used by the executive/portfolio layouts. */
   accent2?: string;
   /** "pro" templates are only selectable on a Pro subscription — see hasUnlimitedCredits. */
   tier: "free" | "pro";
@@ -17,8 +17,8 @@ type TemplateConfig = {
 
 export const RESUME_TEMPLATES: TemplateConfig[] = [
   {
-    id: "executive-navy",
-    label: "Executive Navy (Recommended)",
+    id: "katali",
+    label: "Katali",
     layout: "executive",
     photo: true,
     font: "font-serif",
@@ -27,16 +27,38 @@ export const RESUME_TEMPLATES: TemplateConfig[] = [
     accent2: "#b8933f",
     tier: "free",
   },
-  { id: "classic", label: "Classic", layout: "single", photo: false, font: "font-serif", accent: "#0f172a", accentSoft: "#f1f5f9", tier: "free" },
-  { id: "classic-photo", label: "Classic with Photo", layout: "single", photo: true, font: "font-serif", accent: "#0f172a", accentSoft: "#f1f5f9", tier: "free" },
-  { id: "minimal", label: "Minimal", layout: "single", photo: false, font: "font-sans", accent: "#64748b", accentSoft: "#f8fafc", tier: "free" },
-  { id: "modern", label: "Modern Turquoise", layout: "single", photo: false, font: "font-sans", accent: "#0d9488", accentSoft: "#eafffc", tier: "pro" },
-  { id: "modern-photo", label: "Modern Turquoise with Photo", layout: "single", photo: true, font: "font-sans", accent: "#0d9488", accentSoft: "#eafffc", tier: "pro" },
-  { id: "bold-coral", label: "Bold Coral", layout: "single", photo: false, font: "font-sans", accent: "#f2602c", accentSoft: "#fff3ee", tier: "pro" },
-  { id: "compact", label: "Compact", layout: "single", photo: false, font: "font-sans", compact: true, accent: "#334155", accentSoft: "#f8fafc", tier: "pro" },
-  { id: "sidebar-professional", label: "Sidebar Professional", layout: "sidebar", photo: true, font: "font-sans", accent: "#0d9488", accentSoft: "#eafffc", tier: "pro" },
-  { id: "sidebar-charcoal", label: "Sidebar Charcoal", layout: "sidebar", photo: true, font: "font-sans", accent: "#1e293b", accentSoft: "#f1f5f9", tier: "pro" },
-  { id: "sidebar-coral", label: "Sidebar Coral", layout: "sidebar", photo: true, font: "font-sans", accent: "#f2602c", accentSoft: "#fff3ee", tier: "pro" },
+  { id: "classic", label: "Katali Classic", layout: "single", photo: false, font: "font-serif", accent: "#0f172a", accentSoft: "#f1f5f9", tier: "free" },
+  { id: "classic-photo", label: "Katali Classic with Photo", layout: "single", photo: true, font: "font-serif", accent: "#0f172a", accentSoft: "#f1f5f9", tier: "free" },
+  { id: "minimal", label: "Katali Minimal", layout: "single", photo: false, font: "font-sans", accent: "#64748b", accentSoft: "#f8fafc", tier: "free" },
+  { id: "modern", label: "Katali Modern Turquoise", layout: "single", photo: false, font: "font-sans", accent: "#0d9488", accentSoft: "#eafffc", tier: "pro" },
+  { id: "modern-photo", label: "Katali Modern Turquoise with Photo", layout: "single", photo: true, font: "font-sans", accent: "#0d9488", accentSoft: "#eafffc", tier: "pro" },
+  { id: "bold-coral", label: "Katali Bold Coral", layout: "single", photo: false, font: "font-sans", accent: "#f2602c", accentSoft: "#fff3ee", tier: "pro" },
+  { id: "compact", label: "Katali Compact", layout: "single", photo: false, font: "font-sans", compact: true, accent: "#334155", accentSoft: "#f8fafc", tier: "pro" },
+  { id: "sidebar-professional", label: "Katali Sidebar Professional", layout: "sidebar", photo: true, font: "font-sans", accent: "#0d9488", accentSoft: "#eafffc", tier: "pro" },
+  { id: "sidebar-charcoal", label: "Katali Sidebar Charcoal", layout: "sidebar", photo: true, font: "font-sans", accent: "#1e293b", accentSoft: "#f1f5f9", tier: "pro" },
+  { id: "sidebar-coral", label: "Katali Sidebar Coral", layout: "sidebar", photo: true, font: "font-sans", accent: "#f2602c", accentSoft: "#fff3ee", tier: "pro" },
+  {
+    id: "katali-pro-portfolio",
+    label: "Katali Pro — Executive Portfolio",
+    layout: "portfolio",
+    photo: true,
+    font: "font-serif",
+    accent: "#0f1e38",
+    accentSoft: "#f3ead9",
+    accent2: "#b8933f",
+    tier: "pro",
+  },
+  {
+    id: "katali-pro-portfolio-no-photo",
+    label: "Katali Pro — Executive Portfolio (No Photo)",
+    layout: "portfolio",
+    photo: false,
+    font: "font-serif",
+    accent: "#0f1e38",
+    accentSoft: "#f3ead9",
+    accent2: "#b8933f",
+    tier: "pro",
+  },
 ];
 
 function formatRange(start?: string, end?: string, current?: boolean) {
@@ -70,6 +92,15 @@ function getCareerHighlights(experience: ResumeContent["experience"], max = 4): 
     .map((exp) => exp.description?.split("\n").map((l) => l.trim()).find(Boolean))
     .filter((line): line is string => Boolean(line))
     .slice(0, max);
+}
+
+/** Splits a summary paragraph into standalone sentences for a bulleted "profile" list —
+ * never rewrites or invents text, only breaks it at existing sentence boundaries. */
+function splitIntoSentences(text: string): string[] {
+  return text
+    .split(/(?<=[.!?])\s+(?=[A-Z0-9])/)
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 function Photo({ url, size = 80 }: { url?: string; size?: number }) {
@@ -578,6 +609,238 @@ function ExecutiveLayout({ content, config }: { content: ResumeContent; config: 
   );
 }
 
+function PortfolioLayout({ content, config }: { content: ResumeContent; config: TemplateConfig }) {
+  const navy = config.accent;
+  const gold = config.accent2 ?? "#b8933f";
+  const cream = config.accentSoft;
+
+  const roleTags = [...new Set(content.experience.map((e) => e.title).filter(Boolean))].slice(
+    0,
+    3
+  ) as string[];
+  const yearsExperience = computeYearsExperience(content.experience);
+  const profileBullets = content.summary ? splitIntoSentences(content.summary) : [];
+  const highlights = getCareerHighlights(content.experience);
+  const credentials = [...content.certifications, ...content.awards];
+
+  return (
+    <div
+      id="resume-preview"
+      className={`mx-auto w-full max-w-[8.5in] bg-white text-slate-900 print:p-0 ${config.font}`}
+    >
+      <header className="flex flex-wrap items-center justify-between gap-5 px-10 pb-6 pt-10">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: gold }}>
+            Executive Portfolio
+          </p>
+          <h1 className="mt-1 text-3xl font-bold uppercase tracking-wide" style={{ color: navy }}>
+            {content.full_name || "Your Name"}
+          </h1>
+          {roleTags.length > 0 && (
+            <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-slate-500">
+              {roleTags.join("  •  ")}
+            </p>
+          )}
+        </div>
+        {config.photo && content.photo_url && (
+          <div className="shrink-0 rounded-full p-1" style={{ backgroundColor: gold }}>
+            <Photo url={content.photo_url} size={88} />
+          </div>
+        )}
+      </header>
+
+      <div className="border-t" style={{ borderColor: gold }} />
+
+      {content.skills.length > 0 && (
+        <div className="px-10 py-5" style={{ backgroundColor: cream }}>
+          <div className="grid grid-cols-1 gap-x-6 gap-y-1.5 text-center text-sm font-semibold sm:grid-cols-3" style={{ color: navy }}>
+            {content.skills.slice(0, 9).map((skill) => (
+              <span key={skill}>{skill}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {yearsExperience !== null && (
+        <div className="px-10 py-4 text-center" style={{ backgroundColor: gold }}>
+          <p className="text-sm font-bold uppercase tracking-[0.15em] text-white">
+            {yearsExperience}+ Years of Professional Experience
+          </p>
+        </div>
+      )}
+
+      <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 px-10 py-3 text-center text-sm text-slate-600">
+        {[content.location, content.phone, content.email, content.website]
+          .filter(Boolean)
+          .map((item, i) => (
+            <span key={i}>{item}</span>
+          ))}
+      </div>
+
+      <div className="space-y-6 px-10 pb-8">
+        {profileBullets.length > 0 && (
+          <section>
+            <ExecutiveHeading gold={gold}>Executive Profile</ExecutiveHeading>
+            <ul className="mt-3 space-y-1.5">
+              {profileBullets.map((line, i) => (
+                <li key={i} className="flex gap-2 text-sm leading-relaxed text-slate-700">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: gold }} />
+                  {line}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {highlights.length > 0 && (
+          <section className="border-l-4 py-3 pl-4" style={{ backgroundColor: cream, borderColor: gold }}>
+            <h2 className="text-xs font-bold uppercase tracking-wide" style={{ color: navy }}>
+              Career Highlights
+            </h2>
+            <ul className="mt-2 space-y-1.5">
+              {highlights.map((line, i) => (
+                <li key={i} className="flex gap-2 text-sm leading-relaxed text-slate-700">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: gold }} />
+                  {line}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {content.skills.length > 0 && (
+          <section>
+            <ExecutiveHeading gold={gold}>Core Competencies</ExecutiveHeading>
+            <div
+              className="mt-3 grid grid-cols-1 gap-x-6 gap-y-2 rounded-md border p-4 text-center text-sm sm:grid-cols-3"
+              style={{ borderColor: gold, color: navy }}
+            >
+              {content.skills.map((skill) => (
+                <span key={skill} className="font-medium">
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {content.experience.length > 0 && (
+          <section>
+            <ExecutiveHeading gold={gold}>Professional Experience</ExecutiveHeading>
+            <div className="mt-3 space-y-5">
+              {content.experience.map((exp) => (
+                <div key={exp.id} className="border-l-4 pl-4 break-inside-avoid" style={{ borderColor: gold }}>
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-2">
+                    <p className="text-sm font-bold" style={{ color: navy }}>
+                      {exp.title || "Role"}
+                    </p>
+                    <p className="text-xs font-semibold" style={{ color: gold }}>
+                      {formatRange(exp.start_date, exp.end_date, exp.current)}
+                    </p>
+                  </div>
+                  {exp.company && (
+                    <p className="text-sm italic text-slate-600">
+                      {exp.company}
+                      {exp.location ? ` — ${exp.location}` : ""}
+                    </p>
+                  )}
+                  {exp.description && (
+                    <ul className="mt-1.5 space-y-1">
+                      {exp.description
+                        .split("\n")
+                        .map((l) => l.trim())
+                        .filter(Boolean)
+                        .map((line, i) => (
+                          <li key={i} className="flex gap-2 text-sm leading-relaxed text-slate-700">
+                            <span style={{ color: gold }}>—</span>
+                            {line}
+                          </li>
+                        ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {content.education.length > 0 && (
+          <section>
+            <ExecutiveHeading gold={gold}>Education</ExecutiveHeading>
+            <div className="mt-3 space-y-2">
+              {content.education.map((edu) => (
+                <div key={edu.id} className="flex flex-wrap items-baseline justify-between gap-x-2">
+                  <p className="text-sm font-semibold">
+                    {edu.degree ? `${edu.degree}${edu.field ? `: ${edu.field}` : ""}` : edu.school}
+                  </p>
+                  <p className="text-xs font-semibold" style={{ color: gold }}>
+                    {formatRange(edu.start_date, edu.end_date)}
+                  </p>
+                  {edu.degree && <p className="w-full text-xs text-slate-500">{edu.school}</p>}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {credentials.length > 0 && (
+          <section className="border-l-4 py-3 pl-4" style={{ backgroundColor: cream, borderColor: gold }}>
+            <h2 className="text-xs font-bold uppercase tracking-wide" style={{ color: navy }}>
+              Certifications &amp; Awards
+            </h2>
+            <ul className="mt-2 space-y-1">
+              {credentials.map((item, i) => (
+                <li key={i} className="text-sm font-semibold text-slate-700">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {(content.languages.length > 0 ||
+          content.nationality ||
+          content.visa_status ||
+          content.marital_status) && (
+          <section>
+            <ExecutiveHeading gold={gold}>Additional Information</ExecutiveHeading>
+            <div className="mt-3 space-y-1 text-sm text-slate-700">
+              {content.languages.length > 0 && (
+                <p>
+                  <span className="font-semibold">Languages: </span>
+                  {content.languages.join(", ")}
+                </p>
+              )}
+              {content.nationality && (
+                <p>
+                  <span className="font-semibold">Nationality: </span>
+                  {content.nationality}
+                </p>
+              )}
+              {content.visa_status && (
+                <p>
+                  <span className="font-semibold">Visa status: </span>
+                  {content.visa_status}
+                </p>
+              )}
+              {content.marital_status && (
+                <p>
+                  <span className="font-semibold">Marital status: </span>
+                  {content.marital_status}
+                </p>
+              )}
+            </div>
+          </section>
+        )}
+      </div>
+
+      <div className="border-t-2 px-10 py-3 text-center text-xs text-slate-500" style={{ borderColor: gold }}>
+        {[content.full_name, content.phone, content.email].filter(Boolean).join("  |  ")}
+      </div>
+    </div>
+  );
+}
+
 export function ResumePreview({
   content,
   template,
@@ -592,6 +855,9 @@ export function ResumePreview({
   }
   if (config.layout === "executive") {
     return <ExecutiveLayout content={content} config={config} />;
+  }
+  if (config.layout === "portfolio") {
+    return <PortfolioLayout content={content} config={config} />;
   }
   return <SingleLayout content={content} config={config} />;
 }
