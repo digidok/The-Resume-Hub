@@ -39,28 +39,44 @@ const HERO_STATS = [
 
 const DRIFT_SHAPES = [
   {
-    className: "absolute -right-24 top-10 h-80 w-80 rotate-12 border-2 border-brand-400/40",
-    x: [0, 26, -8, 0],
-    y: [0, -18, 12, 0],
+    className: "absolute -right-24 top-10 h-80 w-80 border-2 border-brand-400/20",
+    x: [0, 30, -10, 0],
+    y: [0, -20, 15, 0],
     duration: 22,
+    spinDuration: 50,
+    spinDirection: 1,
+    radius: ["12%", "50%", "12%"],
+    radiusDuration: 14,
   },
   {
-    className: "absolute right-10 top-[42%] h-48 w-48 rotate-45 border-2 border-white/10",
-    x: [0, -22, 10, 0],
-    y: [0, 20, -14, 0],
+    className: "absolute right-10 top-[42%] h-48 w-48 border-2 border-white/8",
+    x: [0, -25, 12, 0],
+    y: [0, 22, -16, 0],
     duration: 26,
+    spinDuration: 65,
+    spinDirection: -1,
+    radius: ["0%", "50%", "0%"],
+    radiusDuration: 18,
   },
   {
-    className: "absolute -left-14 bottom-6 h-52 w-52 -rotate-6 border-2 border-brand-600/50",
-    x: [0, 18, -14, 0],
-    y: [0, -14, 18, 0],
+    className: "absolute -left-14 bottom-6 h-52 w-52 border-2 border-brand-600/25",
+    x: [0, 20, -16, 0],
+    y: [0, -16, 20, 0],
     duration: 24,
+    spinDuration: 40,
+    spinDirection: 1,
+    radius: ["16%", "50%", "16%"],
+    radiusDuration: 12,
   },
   {
-    className: "absolute left-1/3 top-10 h-20 w-20 rotate-45 border-2 border-slate-300",
-    x: [0, 14, -10, 0],
-    y: [0, 10, -8, 0],
+    className: "absolute left-1/3 top-10 h-20 w-20 border-2 border-slate-300/50",
+    x: [0, 16, -12, 0],
+    y: [0, 12, -10, 0],
     duration: 18,
+    spinDuration: 30,
+    spinDirection: -1,
+    radius: ["0%", "50%", "0%"],
+    radiusDuration: 10,
   },
 ];
 
@@ -163,8 +179,31 @@ export function AnimatedHero() {
           <motion.div
             key={i}
             className={shape.className}
-            animate={prefersReducedMotion ? undefined : { x: shape.x, y: shape.y }}
-            transition={{ duration: shape.duration, repeat: Infinity, ease: "easeInOut" }}
+            style={prefersReducedMotion ? { borderRadius: shape.radius[0] } : undefined}
+            animate={
+              prefersReducedMotion
+                ? undefined
+                : {
+                    x: shape.x,
+                    y: shape.y,
+                    rotate: 360 * shape.spinDirection,
+                    borderRadius: shape.radius,
+                  }
+            }
+            transition={
+              prefersReducedMotion
+                ? undefined
+                : {
+                    x: { duration: shape.duration, repeat: Infinity, ease: "easeInOut" },
+                    y: { duration: shape.duration, repeat: Infinity, ease: "easeInOut" },
+                    rotate: { duration: shape.spinDuration, repeat: Infinity, ease: "linear" },
+                    borderRadius: {
+                      duration: shape.radiusDuration,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    },
+                  }
+            }
           />
         ))}
       </div>
@@ -258,7 +297,7 @@ export function AnimatedHero() {
             className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start"
           >
             <Link href="/signup">
-              <Button size="lg">Build My CV Free</Button>
+              <Button size="lg">Build or Upload My CV</Button>
             </Link>
             <Link href="/jobs">
               <Button size="lg" variant="outline">
