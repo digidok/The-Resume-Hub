@@ -8,7 +8,9 @@ import {
   CheckCircle2,
   Clock,
   FileCheck,
+  FileText,
   HeartHandshake,
+  Send,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
@@ -62,24 +64,54 @@ const DRIFT_SHAPES = [
   },
 ];
 
+const BADGE_COLORS = {
+  brand: "bg-brand-600 shadow-brand-950/40",
+  accent: "bg-accent-500 shadow-accent-900/30",
+  emerald: "bg-emerald-600 shadow-emerald-900/30",
+};
+
 const STATUS_BADGES = [
   {
     icon: FileCheck,
     text: "Offer letter ready",
     className: "absolute right-16 top-16 hidden lg:flex",
+    color: "brand" as const,
     bobDelay: 0,
+  },
+  {
+    icon: Send,
+    text: "20 applications sent automatically",
+    className: "absolute left-[53%] top-28 hidden lg:flex",
+    color: "accent" as const,
+    bobDelay: 0.3,
   },
   {
     icon: CheckCircle2,
     text: "Interview scheduled",
     className: "absolute right-4 top-[52%] hidden lg:flex",
+    color: "brand" as const,
     bobDelay: 0.6,
+  },
+  {
+    icon: FileText,
+    text: "Unlimited Cover Letters",
+    className: "absolute right-4 top-[70%] hidden lg:flex",
+    color: "brand" as const,
+    bobDelay: 0.9,
   },
   {
     icon: ShieldCheck,
     text: "Application verified",
     className: "absolute right-4 bottom-16 hidden lg:flex",
+    color: "emerald" as const,
     bobDelay: 1.2,
+  },
+  {
+    icon: FileCheck,
+    text: "Unlimited CVs",
+    className: "absolute left-[53%] bottom-28 hidden lg:flex",
+    color: "brand" as const,
+    bobDelay: 1.5,
   },
 ];
 
@@ -120,23 +152,27 @@ export function AnimatedHero() {
             animate={{
               opacity: 1,
               scale: 1,
-              y: prefersReducedMotion ? 0 : [10, -6, 10],
+              y: prefersReducedMotion ? 0 : [10, -8, 10],
+              x: prefersReducedMotion ? 0 : [0, 10, -10, 0],
             }}
             transition={{
               opacity: { duration: 0.5, delay: 0.9 + badge.bobDelay },
               scale: { duration: 0.5, delay: 0.9 + badge.bobDelay, ease: "backOut" },
               y: prefersReducedMotion
                 ? { duration: 0.5, delay: 0.9 + badge.bobDelay }
-                : { duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: badge.bobDelay },
+                : { duration: 4, repeat: Infinity, ease: "easeInOut", delay: badge.bobDelay },
+              x: prefersReducedMotion
+                ? { duration: 0.5, delay: 0.9 + badge.bobDelay }
+                : { duration: 6, repeat: Infinity, ease: "easeInOut", delay: badge.bobDelay },
             }}
-            className={`${badge.className} items-center gap-2 rounded-md bg-brand-600 px-4 py-2.5 text-sm font-bold text-white shadow-xl shadow-brand-950/40 ring-2 ring-white`}
+            className={`${badge.className} items-center gap-2 rounded-md px-4 py-2.5 text-sm font-bold text-white shadow-xl ring-2 ring-white ${BADGE_COLORS[badge.color]}`}
           >
-            <span className="relative flex h-2.5 w-2.5">
+            <span className="relative flex h-2.5 w-2.5 shrink-0">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/90" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
             </span>
-            <badge.icon className="h-4 w-4 text-white" />
-            {badge.text}
+            <badge.icon className="h-4 w-4 shrink-0 text-white" />
+            <span className="whitespace-nowrap">{badge.text}</span>
           </motion.div>
         ))}
       </div>
