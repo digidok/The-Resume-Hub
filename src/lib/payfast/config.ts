@@ -63,7 +63,7 @@ export const SUBSCRIPTION_PACKAGES: SubscriptionPackage[] = [
   {
     id: "employer_jobs",
     label: "Employer Job Package",
-    amountZar: 999,
+    amountZar: 2999,
     role: "employer",
     jobCredits: 5,
     description: "Recurring monthly billing, unlocks 5 job posts per cycle.",

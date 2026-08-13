@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, MessageCircle } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
@@ -158,9 +158,19 @@ export default function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/signup">
+                <a
+                  href="https://wa.me/27693391915?text=Hi%2C%20I%27d%20like%20to%20book%20a%20demo%20of%20Resume%20Hub%20for%20Employers"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   <Button variant="secondary" className="mt-6 w-full">
-                    Get the Job Package
+                    <MessageCircle className="h-4 w-4" />
+                    Book a Demo
+                  </Button>
+                </a>
+                <Link href="/signup">
+                  <Button variant="outline" className="mt-2 w-full">
+                    Subscribe directly
                   </Button>
                 </Link>
               </Card>

@@ -9,9 +9,13 @@ export const metadata = {
 export default async function SignupPage({
   searchParams,
 }: PageProps<"/signup">) {
-  const { redirect: redirectParam } = await searchParams;
+  const { redirect: redirectParam, error } = await searchParams;
   const redirectTo =
     typeof redirectParam === "string" ? redirectParam : "/dashboard";
+  const oauthError =
+    error === "work_email_required"
+      ? "Employer accounts need a company email address — personal email addresses (Gmail, Yahoo, Outlook, etc.) aren't allowed. Please sign up with your work email."
+      : undefined;
 
   return (
     <div className="flex flex-1 items-center justify-center bg-slate-50 px-4 py-16">
@@ -23,7 +27,7 @@ export default async function SignupPage({
           <h1 className="mt-2 text-2xl font-semibold text-slate-900">Create your account</h1>
         </div>
         <Card className="p-6">
-          <SignupForm redirectTo={redirectTo} />
+          <SignupForm redirectTo={redirectTo} initialError={oauthError} />
         </Card>
       </div>
     </div>
