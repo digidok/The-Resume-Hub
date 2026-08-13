@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
+import { ConnectButton } from "@/components/connections/connect-button";
+import { deriveRelation, type ConnectionRelation } from "@/lib/connections/queries";
 import type { ResumeContent } from "@/types/database";
 
 export default async function CandidatePoolPage() {
@@ -51,6 +53,20 @@ export default async function CandidatePoolPage() {
 
   const rows = (candidates ?? []).filter((c) => resumeByUser.has(c.id));
 
+  const { data: existingConnections } = candidateIds.length
+    ? await supabase
+        .from("connections")
+        .select("id, requester_id, recipient_id, status")
+        .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+    : { data: [] };
+
+  const relationByCandidate = new Map<string, ConnectionRelation>();
+  for (const c of existingConnections ?? []) {
+    const otherId = c.requester_id === user.id ? c.recipient_id : c.requester_id;
+    if (!candidateIds.includes(otherId)) continue;
+    relationByCandidate.set(otherId, deriveRelation(c, user.id));
+  }
+
   return (
     <div className="mx-auto max-w-6xl">
       <BackLink href="/dashboard" label="Dashboard" />
@@ -95,6 +111,12 @@ export default async function CandidatePoolPage() {
               >
                 View resume: {resume.title} →
               </a>
+              <div className="mt-3">
+                <ConnectButton
+                  targetUserId={candidate.id}
+                  relation={relationByCandidate.get(candidate.id) ?? { status: "none" }}
+                />
+              </div>
             </Card>
           );
         })}

@@ -13,11 +13,13 @@ export function PublicProfileHeader({
   photoUrl,
   headline,
   openToWork,
+  connectButton,
 }: {
   content: ResumeContent;
   photoUrl?: string | null;
   headline?: string | null;
   openToWork?: boolean;
+  connectButton?: React.ReactNode;
 }) {
   const name = content.full_name || "Candidate";
   const mostRecentRole = content.experience[0];
@@ -62,6 +64,7 @@ export function PublicProfileHeader({
               {content.location}
             </p>
           )}
+          {connectButton && <div className="mt-4">{connectButton}</div>}
         </div>
 
         {content.summary && (

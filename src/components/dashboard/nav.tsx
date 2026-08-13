@@ -28,6 +28,7 @@ import {
   IdCard,
   CreditCard,
   Newspaper,
+  UserPlus,
 } from "lucide-react";
 import { useSidebarCollapsed } from "@/components/dashboard/sidebar-context";
 
@@ -61,6 +62,7 @@ const ICONS = {
   IdCard,
   CreditCard,
   Newspaper,
+  UserPlus,
 } as const;
 
 export type NavIconName = keyof typeof ICONS;

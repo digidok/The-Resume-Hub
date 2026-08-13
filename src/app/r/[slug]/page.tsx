@@ -4,6 +4,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { ResumePreview } from "@/components/resume/resume-preview";
 import { PrintButton } from "@/components/resume/print-button";
 import { PublicProfileHeader } from "@/components/resume/public-profile-header";
+import { ConnectButton } from "@/components/connections/connect-button";
+import { deriveRelation, type ConnectionRelation } from "@/lib/connections/queries";
 import { emptyResumeContent, type ResumeContent } from "@/types/database";
 import { hasUnlimitedCredits } from "@/lib/credits";
 
@@ -50,6 +52,21 @@ export default async function PublicResumePage({
     console.error("Public resume: owner profile lookup failed, defaulting to gated", err);
   }
 
+  let relation: ConnectionRelation = { status: "none" };
+  const {
+    data: { user: viewer },
+  } = await supabase.auth.getUser();
+  if (viewer && viewer.id !== resume.user_id) {
+    const { data: existingConnection } = await supabase
+      .from("connections")
+      .select("id, requester_id, status")
+      .or(
+        `and(requester_id.eq.${viewer.id},recipient_id.eq.${resume.user_id}),and(requester_id.eq.${resume.user_id},recipient_id.eq.${viewer.id})`
+      )
+      .maybeSingle();
+    relation = deriveRelation(existingConnection, viewer.id);
+  }
+
   return (
     <div className="min-h-full bg-slate-100 py-8">
       <div className="mx-auto mb-4 flex max-w-[8.5in] items-center justify-between px-4 print:hidden">
@@ -61,6 +78,11 @@ export default async function PublicResumePage({
         photoUrl={avatarUrl}
         headline={headline}
         openToWork={openToWork}
+        connectButton={
+          viewer && viewer.id !== resume.user_id ? (
+            <ConnectButton targetUserId={resume.user_id} relation={relation} />
+          ) : undefined
+        }
       />
       <div className="mx-auto max-w-[8.5in] px-0 pt-6 print:pt-0">
         <p className="mb-2 px-1 text-xs font-bold uppercase tracking-wide text-slate-400 print:hidden">
