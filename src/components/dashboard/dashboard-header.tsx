@@ -12,12 +12,14 @@ export function DashboardHeader({
   role,
   creditsRemaining,
   notifications,
+  avatarUrl,
 }: {
   name: string;
   email: string;
   role: string;
   creditsRemaining: number | null;
   notifications: Notification[];
+  avatarUrl?: string | null;
 }) {
   const low = creditsRemaining != null && creditsRemaining < LOW_CREDITS_THRESHOLD;
 
@@ -38,7 +40,7 @@ export function DashboardHeader({
           </span>
         )}
         <NotificationBell notifications={notifications} />
-        <AvatarMenu name={name} email={email} role={role} />
+        <AvatarMenu name={name} email={email} role={role} avatarUrl={avatarUrl} />
       </div>
     </header>
   );

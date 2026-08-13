@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { setOpenToWork } from "@/lib/profile/actions";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { AvatarUploader } from "@/components/profile/avatar-uploader";
 
 export default async function ProfileSettingsPage() {
   const supabase = await createClient();
@@ -16,7 +17,7 @@ export default async function ProfileSettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, open_to_work")
+    .select("role, open_to_work, full_name, avatar_url")
     .eq("id", user.id)
     .single();
 
@@ -45,7 +46,15 @@ export default async function ProfileSettingsPage() {
       </p>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+        <div className="space-y-6 lg:col-span-2">
+          <Card className="p-6">
+            <p className="mb-3 font-medium text-slate-900">Profile photo</p>
+            <AvatarUploader
+              userId={user.id}
+              name={profile.full_name || user.email || "?"}
+              avatarUrl={profile.avatar_url}
+            />
+          </Card>
           <Card className="space-y-4 p-6">
             <div className="flex items-start justify-between gap-4">
               <div>

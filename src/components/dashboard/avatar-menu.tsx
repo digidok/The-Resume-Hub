@@ -16,10 +16,12 @@ export function AvatarMenu({
   name,
   email,
   role,
+  avatarUrl,
 }: {
   name: string;
   email: string;
   role: string;
+  avatarUrl?: string | null;
 }) {
   const [open, setOpen] = useState(false);
   const firstName = name.split(" ")[0] || name;
@@ -31,9 +33,14 @@ export function AvatarMenu({
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 text-sm hover:bg-slate-100"
       >
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-600 text-xs font-semibold text-white">
-          {initials(name)}
-        </span>
+        {avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={avatarUrl} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
+        ) : (
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-600 text-xs font-semibold text-white">
+            {initials(name)}
+          </span>
+        )}
         <span className="hidden font-medium text-slate-700 sm:inline">{firstName}</span>
         <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
       </button>

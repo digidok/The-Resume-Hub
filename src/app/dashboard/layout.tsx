@@ -17,7 +17,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
   const [{ data: profile }, { data: notifications }] = await Promise.all([
     supabase
       .from("profiles")
-      .select("role, full_name, plan, credits_remaining, job_posting_credits")
+      .select("role, full_name, plan, credits_remaining, job_posting_credits, avatar_url")
       .eq("id", user.id)
       .single(),
     supabase
@@ -145,6 +145,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
           name={profile?.full_name || user.email || "Account"}
           role={role}
           showWhatsApp={role === "candidate" || role === "admin"}
+          avatarUrl={profile?.avatar_url}
         />
       </SidebarShell>
       <div className="flex min-w-0 flex-1 flex-col">
@@ -154,6 +155,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
           role={role}
           creditsRemaining={role === "candidate" || role === "admin" ? (profile?.credits_remaining ?? 0) : null}
           notifications={notifications ?? []}
+          avatarUrl={profile?.avatar_url}
         />
         <main className="flex-1 p-6 lg:p-10">{children}</main>
       </div>
