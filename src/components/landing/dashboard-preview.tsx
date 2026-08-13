@@ -114,22 +114,22 @@ export function DashboardPreview() {
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: -8, scale: 0.95 }}
+        initial={{ opacity: 0, y: -8, scale: 0.85 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.5, ease: EASE, delay: 0.9 }}
-        className="absolute -right-4 -top-4 flex items-center gap-1.5 whitespace-nowrap rounded-sm border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-brand-700 shadow-md shadow-black/10 sm:-right-6"
+        transition={{ duration: 0.5, ease: "backOut", delay: 0.9 }}
+        className="absolute -right-4 -top-4 flex items-center gap-2 whitespace-nowrap rounded-md bg-accent-500 px-3.5 py-2 text-sm font-bold text-white shadow-xl shadow-accent-900/30 ring-2 ring-white sm:-right-6"
       >
-        <Sparkles className="h-3.5 w-3.5 text-brand-500" />
+        <Sparkles className="h-4 w-4 text-white" />
         CV enhanced by AI
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+        initial={{ opacity: 0, y: 10, scale: 0.85 }}
         animate={showToast ? { opacity: 1, y: 0, scale: 1 } : {}}
-        transition={{ duration: 0.4, ease: EASE }}
-        className="absolute -bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-sm bg-slate-900 px-4 py-2 text-xs font-medium text-white shadow-md shadow-black/20"
+        transition={{ duration: 0.4, ease: "backOut" }}
+        className="absolute -bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-md bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-xl shadow-emerald-900/30 ring-2 ring-white"
       >
-        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+        <CheckCircle2 className="h-4 w-4 text-white" />
         Application sent to Meridian Mining
       </motion.div>
     </div>

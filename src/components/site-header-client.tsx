@@ -49,12 +49,12 @@ export function SiteHeaderClient({ isSignedIn }: { isSignedIn: boolean }) {
         <Link href="/" onClick={() => setMenuOpen(false)}>
           <Logo />
         </Link>
-        <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
+        <nav className="hidden items-center gap-1 rounded-md border border-slate-200 bg-slate-50 p-1 text-sm font-semibold text-slate-700 md:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className="relative py-1 transition-colors hover:text-brand-700"
+              className="rounded-sm px-3 py-1.5 transition-colors hover:bg-white hover:text-brand-700 hover:shadow-sm"
             >
               {link.label}
             </Link>

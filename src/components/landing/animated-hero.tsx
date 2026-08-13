@@ -116,20 +116,26 @@ export function AnimatedHero() {
         {STATUS_BADGES.map((badge) => (
           <motion.div
             key={badge.text}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 10, scale: 0.85 }}
             animate={{
               opacity: 1,
-              y: prefersReducedMotion ? 0 : [10, -4, 10],
+              scale: 1,
+              y: prefersReducedMotion ? 0 : [10, -6, 10],
             }}
             transition={{
-              opacity: { duration: 0.6, delay: 0.9 + badge.bobDelay },
+              opacity: { duration: 0.5, delay: 0.9 + badge.bobDelay },
+              scale: { duration: 0.5, delay: 0.9 + badge.bobDelay, ease: "backOut" },
               y: prefersReducedMotion
-                ? { duration: 0.6, delay: 0.9 + badge.bobDelay }
-                : { duration: 4, repeat: Infinity, ease: "easeInOut", delay: badge.bobDelay },
+                ? { duration: 0.5, delay: 0.9 + badge.bobDelay }
+                : { duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: badge.bobDelay },
             }}
-            className={`${badge.className} items-center gap-1.5 rounded-sm border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-md shadow-slate-900/10`}
+            className={`${badge.className} items-center gap-2 rounded-md bg-brand-600 px-4 py-2.5 text-sm font-bold text-white shadow-xl shadow-brand-950/40 ring-2 ring-white`}
           >
-            <badge.icon className="h-3.5 w-3.5 text-brand-600" />
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/90" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
+            </span>
+            <badge.icon className="h-4 w-4 text-white" />
             {badge.text}
           </motion.div>
         ))}
