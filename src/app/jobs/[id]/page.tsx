@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ApplyForm } from "@/components/jobs/apply-form";
 import { ExternalApplyLink } from "@/components/jobs/external-apply-link";
+import { ApplyChannelBadge } from "@/components/jobs/apply-channel-badge";
 import { QualificationCheck } from "@/components/jobs/qualification-check";
 import { toggleSavedJob } from "@/lib/savedjobs/actions";
 import { computeJobMatch } from "@/lib/matching/job-match";
@@ -188,7 +189,10 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
         )}
       </div>
       <div className="mt-2 mb-6">
-        <h1 className="text-3xl font-bold text-slate-900">{job.title}</h1>
+        <div className="flex flex-wrap items-center gap-2">
+          <h1 className="text-3xl font-bold text-slate-900">{job.title}</h1>
+          <ApplyChannelBadge job={job} />
+        </div>
         <p className="mt-1 text-slate-600">
           {job.company} {job.location ? `· ${job.location}` : ""} ·{" "}
           {EMPLOYMENT_LABELS[job.employment_type] ?? job.employment_type}
