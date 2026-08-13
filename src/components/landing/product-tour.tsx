@@ -34,7 +34,7 @@ const STEPS: TourStep[] = [
     title: "AI CV analysis",
     description:
       "See exactly how Resume Hub reads your CV and scores it — ATS compatibility, keywords, achievements — before you ever apply.",
-    targetId: "cv-scanner",
+    targetId: null,
   },
   {
     icon: Target,

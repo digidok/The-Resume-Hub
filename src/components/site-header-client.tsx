@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 
 const NAV_LINKS = [
-  { href: "/#cv-scanner", label: "CV Builder" },
+  { href: "/signup", label: "CV Builder" },
   { href: "/jobs", label: "Jobs" },
   { href: "/#job-match", label: "Matching" },
   { href: "/#career-coach", label: "Career Coach" },
