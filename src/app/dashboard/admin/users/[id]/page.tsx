@@ -23,8 +23,16 @@ export default async function AdminUserDetailPage({
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", id).single();
   if (!profile) notFound();
 
-  const admin = createAdminClient();
-  const { data: authUser } = await admin.auth.admin.getUserById(id);
+  // Best-effort — the rest of the page (profile, resumes, applications, etc.)
+  // should still render even if the service-role lookup fails for any reason.
+  let authUserEmail = "";
+  try {
+    const admin = createAdminClient();
+    const { data: authUser } = await admin.auth.admin.getUserById(id);
+    authUserEmail = authUser?.user?.email ?? "";
+  } catch (err) {
+    console.error("Admin user detail: getUserById failed", err);
+  }
 
   const [{ data: resumes }, { data: applications }, { data: coverLetters }, { data: savedJobs }, { data: careerProfile }, { data: payments }] =
     await Promise.all([
@@ -49,18 +57,18 @@ export default async function AdminUserDetailPage({
         <div>
           <h1 className="text-3xl font-bold text-slate-900">{profile.full_name || "Unnamed"}</h1>
           <p className="text-sm text-slate-500">
-            {authUser?.user?.email ?? "No email"} · Joined{" "}
+            {authUserEmail || "No email"} · Joined{" "}
             {new Date(profile.created_at).toLocaleDateString()}
             {profile.source && profile.source !== "app" ? ` · via ${profile.source}` : ""}
           </p>
         </div>
-        <DeleteUserButton userId={id} userName={profile.full_name || authUser?.user?.email || "this user"} />
+        <DeleteUserButton userId={id} userName={profile.full_name || authUserEmail || "this user"} />
       </div>
 
       <EditUserForm
         userId={id}
         fullName={profile.full_name ?? ""}
-        email={authUser?.user?.email ?? ""}
+        email={authUserEmail}
         phoneNumber={profile.phone_number ?? ""}
         role={profile.role}
         plan={profile.plan}
