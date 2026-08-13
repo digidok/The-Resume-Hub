@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ResumePreview } from "@/components/resume/resume-preview";
 import { PrintButton } from "@/components/resume/print-button";
 import { emptyResumeContent, type ResumeContent } from "@/types/database";
+import { hasUnlimitedCredits } from "@/lib/credits";
 
 export default async function ResumePrintPage({
   params,
@@ -13,6 +14,16 @@ export default async function ResumePrintPage({
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan, subscription_plan, subscription_expires_at")
+    .eq("id", user.id)
+    .single();
+  const isPro = profile ? hasUnlimitedCredits(profile) : false;
+  if (!isPro) {
+    redirect("/dashboard/subscription?upgrade=print");
+  }
 
   const { data: resume } = await supabase
     .from("resumes")

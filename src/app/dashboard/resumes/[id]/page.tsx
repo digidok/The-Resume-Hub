@@ -68,9 +68,9 @@ export default async function ResumeEditPage({
           <h1 className="mt-1 text-3xl font-bold text-slate-900">Edit resume</h1>
         </div>
         <div className="flex gap-2">
-          <Link href={`/dashboard/resumes/${resume.id}/print`}>
+          <Link href={isPro ? `/dashboard/resumes/${resume.id}/print` : "/dashboard/subscription?upgrade=print"}>
             <Button variant="outline" size="sm">
-              Print / PDF
+              {isPro ? "Print / PDF" : "🔒 Print / PDF (Pro)"}
             </Button>
           </Link>
           <form action={duplicateResume.bind(null, resume.id)}>

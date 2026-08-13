@@ -720,7 +720,7 @@ export function ResumeEditor({
             Live preview
           </div>
           <div className="max-h-[calc(100vh-8rem)] overflow-y-auto">
-            <ResumePreview content={content} template={template} />
+            <ResumePreview content={content} template={template} watermark={!isPro} />
           </div>
         </Card>
       </div>

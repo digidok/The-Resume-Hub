@@ -841,23 +841,55 @@ function PortfolioLayout({ content, config }: { content: ResumeContent; config: 
   );
 }
 
+function PreviewWatermark() {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 z-10 flex flex-wrap content-around justify-around overflow-hidden opacity-[0.08]"
+    >
+      {Array.from({ length: 24 }).map((_, i) => (
+        <span
+          key={i}
+          className="-rotate-[30deg] whitespace-nowrap text-lg font-bold uppercase tracking-widest text-slate-900"
+        >
+          Upgrade to download
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export function ResumePreview({
   content,
   template,
+  watermark = false,
 }: {
   content: ResumeContent;
   template: string;
+  /** Shown for free-plan candidates on the live preview, since print/PDF
+   * export is Pro-gated but the on-screen preview still can't be stopped
+   * from being screenshotted — this makes a screenshot low-value instead. */
+  watermark?: boolean;
 }) {
   const config = RESUME_TEMPLATES.find((t) => t.id === template) ?? RESUME_TEMPLATES[0];
 
-  if (config.layout === "sidebar") {
-    return <SidebarLayout content={content} config={config} />;
-  }
-  if (config.layout === "executive") {
-    return <ExecutiveLayout content={content} config={config} />;
-  }
-  if (config.layout === "portfolio") {
-    return <PortfolioLayout content={content} config={config} />;
-  }
-  return <SingleLayout content={content} config={config} />;
+  const layout =
+    config.layout === "sidebar" ? (
+      <SidebarLayout content={content} config={config} />
+    ) : config.layout === "executive" ? (
+      <ExecutiveLayout content={content} config={config} />
+    ) : config.layout === "portfolio" ? (
+      <PortfolioLayout content={content} config={config} />
+    ) : (
+      <SingleLayout content={content} config={config} />
+    );
+
+  if (!watermark) return layout;
+
+  return (
+    <div className="relative">
+      {layout}
+      <PreviewWatermark />
+    </div>
+  );
 }
