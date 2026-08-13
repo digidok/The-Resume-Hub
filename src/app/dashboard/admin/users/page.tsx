@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import { BackLink } from "@/components/ui/back-link";
@@ -7,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/field";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { AddCandidateForm } from "@/components/admin/add-candidate-form";
 import type { ProfileRole } from "@/types/database";
 
 const ROLE_OPTIONS: ProfileRole[] = ["candidate", "employer", "admin"];
@@ -61,18 +63,23 @@ export default async function AdminUsersPage({
         />
       </div>
 
-      <form method="get" className="mb-6 flex gap-2">
-        <Input name="q" defaultValue={query} placeholder="Search by name…" className="max-w-xs" />
-        <Button type="submit" size="sm" variant="outline">
-          Search
-        </Button>
-      </form>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <form method="get" className="flex gap-2">
+          <Input name="q" defaultValue={query} placeholder="Search by name…" className="max-w-xs" />
+          <Button type="submit" size="sm" variant="outline">
+            Search
+          </Button>
+        </form>
+        <AddCandidateForm />
+      </div>
 
       <div className="space-y-3">
         {(users ?? []).map((u) => (
           <Card key={u.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
             <div>
-              <p className="font-medium text-slate-900">{u.full_name || "Unnamed"}</p>
+              <Link href={`/dashboard/admin/users/${u.id}`} className="font-medium text-slate-900 hover:underline">
+                {u.full_name || "Unnamed"}
+              </Link>
               <div className="mt-1 flex items-center gap-2">
                 <span
                   className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${roleStyles[u.role as ProfileRole]}`}

@@ -77,7 +77,7 @@ ${job.title} at ${job.company}
 ${(job.description ?? "").slice(0, 6000)}
 
 TASK — return JSON with:
-1. "summary": a rewritten professional summary (2-4 sentences) emphasizing the real experience most relevant to this job.
+1. "summary": a rewritten professional summary (2-4 sentences) emphasizing the real experience most relevant to this job. Write it in first person (e.g. "I am...", "I have...") — never third person or referring to the candidate by name.
 2. "skills": the candidate's skill list, reordered to put job-relevant skills first — only skills already in their resume, do not add new ones.
 3. "experience_descriptions": exactly ${content.experience?.length ?? 0} entries, one per experience item above in the same order, each a rewritten description emphasizing what's relevant to this job. Keep facts unchanged — rewrite emphasis and phrasing only.
 4. "cover_letter": a tailored, specific cover letter (3-4 short paragraphs, professional, no placeholder brackets) referencing this job and company by name.`;

@@ -61,7 +61,7 @@ TARGET JOB POSTING:
 ${jobDescription.slice(0, 6000)}
 
 TASK:
-1. "tailored_summary": rewrite the candidate's professional summary (2-4 sentences) to emphasize the parts of their real background most relevant to this job. Do not fabricate anything.
+1. "tailored_summary": rewrite the candidate's professional summary (2-4 sentences) to emphasize the parts of their real background most relevant to this job. Write it in first person (e.g. "I am...", "I have...") — never third person or referring to the candidate by name. Do not fabricate anything.
 2. "suggested_skills": list skills from the candidate's own experience/skills that match this job but aren't already in their skills list, worth adding (max 8). Only suggest skills reasonably implied by their existing resume content.
 3. "keyword_gaps": list important keywords/requirements from the job posting that the candidate's resume doesn't currently address at all, so they know what's missing (max 6).`;
 

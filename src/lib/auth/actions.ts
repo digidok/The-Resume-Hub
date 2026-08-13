@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { isFreeEmailDomain } from "@/lib/auth/free-email-domains";
 import type { ProfileRole } from "@/types/database";
 
 export type AuthActionState = {
@@ -28,6 +29,12 @@ export async function signUp(
   }
   if (role !== "candidate" && role !== "employer") {
     return { error: "Invalid account type." };
+  }
+  if (role === "employer" && isFreeEmailDomain(email)) {
+    return {
+      error:
+        "Please sign up with your company email address — personal email addresses (Gmail, Yahoo, Outlook, etc.) aren't allowed for employer accounts.",
+    };
   }
 
   const headerList = await headers();

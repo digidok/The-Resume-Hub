@@ -32,6 +32,9 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const title = (body?.title as string | undefined)?.trim();
   const company = (body?.company as string | undefined)?.trim();
+  const skills = Array.isArray(body?.skills)
+    ? (body.skills as unknown[]).filter((s): s is string => typeof s === "string" && s.trim().length > 0)
+    : [];
   if (!title) {
     return NextResponse.json({ error: "title is required." }, { status: 400 });
   }
@@ -46,14 +49,18 @@ export async function POST(request: Request) {
   try {
     const message = await anthropic.messages.create({
       model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
-      max_tokens: 768,
+      max_tokens: 1400,
       output_config: { format: { type: "json_schema", schema: DUTIES_SCHEMA } },
       messages: [
         {
           role: "user",
-          content: `Suggest 6 realistic, achievement-focused resume bullet points for someone working as a "${title}"${
+          content: `Suggest 8 detailed, achievement-focused resume bullet points for someone working as a "${title}"${
             company ? ` at ${company}` : ""
-          }. Each bullet should describe a typical duty or accomplishment for this role, start with a strong action verb, and be a single sentence with no bullet character or leading dash. Keep them generic enough to be plausible for most people in this role, but specific in wording, not vague.`,
+          }.${
+            skills.length > 0
+              ? ` They've listed these skills elsewhere on their resume, so lean on them where relevant: ${skills.join(", ")}.`
+              : ""
+          } Each bullet should describe a specific, concrete duty or accomplishment typical for this role — go beyond generic filler ("responsible for X") and include realistic detail: the tools/systems used, the scale or scope of the work, and a plausible quantified outcome (a percentage, count, timeframe, or amount) wherever it's reasonable for the role, without inventing anything wildly implausible. Start each with a strong action verb. Each bullet is one to two sentences, with no bullet character or leading dash. Vary sentence structure across the 8 bullets so they don't all read the same.`,
         },
       ],
     });

@@ -69,10 +69,12 @@ export function ResumeEditor({
   resume,
   siteUrl,
   initialJobDescription,
+  isPro,
 }: {
   resume: Resume;
   siteUrl: string;
   initialJobDescription?: string;
+  isPro: boolean;
 }) {
   const router = useRouter();
   const [title, setTitle] = useState(resume.title);
@@ -355,11 +357,21 @@ export function ResumeEditor({
             <Label htmlFor="template">Template</Label>
             <Select id="template" value={template} onChange={(e) => setTemplate(e.target.value)}>
               {RESUME_TEMPLATES.map((t) => (
-                <option key={t.id} value={t.id}>
+                <option key={t.id} value={t.id} disabled={t.tier === "pro" && !isPro}>
                   {t.label}
+                  {t.tier === "pro" && !isPro ? " — Pro" : ""}
                 </option>
               ))}
             </Select>
+            {!isPro && (
+              <p className="mt-1 text-xs text-slate-500">
+                Free plan includes a curated set of templates.{" "}
+                <a href="/pricing" className="text-brand-600 hover:underline">
+                  Upgrade to Pro
+                </a>{" "}
+                to unlock every template.
+              </p>
+            )}
           </div>
 
           <div className="flex items-center justify-between rounded-lg border border-slate-200 p-3">
@@ -512,6 +524,7 @@ export function ResumeEditor({
 
         <ExperienceEditor
           items={content.experience}
+          skills={content.skills}
           onChange={(items) => update("experience", items)}
         />
         <EducationEditor
@@ -725,9 +738,11 @@ type DutySuggestion = {
 
 function ExperienceEditor({
   items,
+  skills,
   onChange,
 }: {
   items: ResumeExperience[];
+  skills: string[];
   onChange: (items: ResumeExperience[]) => void;
 }) {
   const [suggestions, setSuggestions] = useState<Record<string, DutySuggestion>>({});
@@ -754,7 +769,7 @@ function ExperienceEditor({
       const res = await fetch("/api/resume/suggest-duties", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: item.title, company: item.company }),
+        body: JSON.stringify({ title: item.title, company: item.company, skills }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -764,9 +779,11 @@ function ExperienceEditor({
         }));
         return;
       }
+      // Pre-select everything — a single "Insert" click covers the common case,
+      // and unchecking a couple you don't want is easier than checking each one.
       setSuggestions((prev) => ({
         ...prev,
-        [item.id]: { loading: false, duties: data.duties, selected: [], error: null },
+        [item.id]: { loading: false, duties: data.duties, selected: [...data.duties], error: null },
       }));
     } catch {
       setSuggestions((prev) => ({
@@ -850,13 +867,17 @@ function ExperienceEditor({
               onChange={(e) => update(item.id, { description: e.target.value })}
             />
 
-            <div className="rounded-lg border border-dashed border-slate-200 p-2">
+            <div className="rounded-lg border border-brand-200 bg-brand-50/60 p-3">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-xs text-slate-500">Stuck on what to write?</p>
+                <div>
+                  <p className="text-sm font-medium text-slate-800">Not sure what to write?</p>
+                  <p className="text-xs text-slate-500">
+                    AI drafts detailed bullet points for this role — one click to add them all.
+                  </p>
+                </div>
                 <Button
                   type="button"
                   size="sm"
-                  variant="outline"
                   disabled={!item.title || suggestions[item.id]?.loading}
                   onClick={() => suggestDuties(item)}
                 >
@@ -867,7 +888,32 @@ function ExperienceEditor({
                 <p className="mt-1 text-xs text-red-600">{suggestions[item.id]?.error}</p>
               )}
               {!!suggestions[item.id]?.duties.length && (
-                <div className="mt-2 space-y-1">
+                <div className="mt-3 space-y-2 border-t border-brand-200 pt-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-medium text-slate-600">
+                      All {suggestions[item.id]!.duties.length} selected — uncheck any you don&apos;t want
+                    </p>
+                    <button
+                      type="button"
+                      className="text-xs font-medium text-brand-700 hover:underline"
+                      onClick={() =>
+                        setSuggestions((prev) => ({
+                          ...prev,
+                          [item.id]: {
+                            ...prev[item.id]!,
+                            selected:
+                              prev[item.id]!.selected.length === prev[item.id]!.duties.length
+                                ? []
+                                : [...prev[item.id]!.duties],
+                          },
+                        }))
+                      }
+                    >
+                      {suggestions[item.id]!.selected.length === suggestions[item.id]!.duties.length
+                        ? "Deselect all"
+                        : "Select all"}
+                    </button>
+                  </div>
                   {suggestions[item.id]!.duties.map((duty) => (
                     <label key={duty} className="flex items-start gap-2 text-xs text-slate-700">
                       <input
@@ -882,11 +928,10 @@ function ExperienceEditor({
                   <Button
                     type="button"
                     size="sm"
-                    variant="secondary"
                     disabled={suggestions[item.id]?.selected.length === 0}
                     onClick={() => insertDuties(item)}
                   >
-                    Insert selected
+                    Insert {suggestions[item.id]?.selected.length || ""} duties
                   </Button>
                 </div>
               )}

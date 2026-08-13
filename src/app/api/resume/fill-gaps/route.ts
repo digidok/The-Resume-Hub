@@ -67,7 +67,10 @@ export async function POST(request: Request) {
   const anthropic = new Anthropic({ apiKey });
 
   const asks: string[] = [];
-  if (needsSummary) asks.push('- Write a 2-3 sentence professional summary in "summary".');
+  if (needsSummary)
+    asks.push(
+      '- Write a 2-3 sentence professional summary in "summary", in first person (e.g. "I am...", "I have...") — never third person or referring to the candidate by name.'
+    );
   if (needsSkills) asks.push('- List 8-12 relevant skills (as an array of short strings) in "skills".');
   if (experienceGaps.length > 0) {
     asks.push(

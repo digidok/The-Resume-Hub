@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { isFreeEmailDomain } from "@/lib/auth/free-email-domains";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -16,6 +17,10 @@ export async function GET(request: Request) {
 
   if (error || !data.user) {
     return NextResponse.redirect(`${origin}/login?error=oauth_failed`);
+  }
+
+  if (role === "employer" && isFreeEmailDomain(data.user.email ?? "")) {
+    return NextResponse.redirect(`${origin}/signup?error=work_email_required`);
   }
 
   if (role === "candidate" || role === "employer") {

@@ -6,6 +6,7 @@ import { ResumeEditor } from "@/components/resume/resume-editor";
 import { deleteResume, duplicateResume } from "@/lib/resumes/actions";
 import { Button } from "@/components/ui/button";
 import { emptyResumeContent, type Resume } from "@/types/database";
+import { hasUnlimitedCredits } from "@/lib/credits";
 
 export default async function ResumeEditPage({
   params,
@@ -39,6 +40,13 @@ export default async function ResumeEditPage({
     .single();
 
   if (!resume) notFound();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan, subscription_plan, subscription_expires_at")
+    .eq("id", user.id)
+    .single();
+  const isPro = profile ? hasUnlimitedCredits(profile) : false;
 
   const headerList = await headers();
   const host = headerList.get("host");
@@ -77,7 +85,12 @@ export default async function ResumeEditPage({
           </form>
         </div>
       </div>
-      <ResumeEditor resume={normalized} siteUrl={siteUrl} initialJobDescription={initialJobDescription} />
+      <ResumeEditor
+        resume={normalized}
+        siteUrl={siteUrl}
+        initialJobDescription={initialJobDescription}
+        isPro={isPro}
+      />
     </div>
   );
 }

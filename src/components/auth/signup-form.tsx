@@ -10,9 +10,16 @@ import type { ProfileRole } from "@/types/database";
 
 const initialState: AuthActionState = {};
 
-export function SignupForm({ redirectTo }: { redirectTo: string }) {
+export function SignupForm({
+  redirectTo,
+  initialError,
+}: {
+  redirectTo: string;
+  initialError?: string;
+}) {
   const [state, formAction, pending] = useActionState(signUp, initialState);
   const [role, setRole] = useState<ProfileRole>("candidate");
+  const error = state.error ?? initialError;
 
   if (state.message) {
     return <p className="rounded-lg bg-emerald-50 p-4 text-sm text-emerald-800">{state.message}</p>;
@@ -64,7 +71,7 @@ export function SignupForm({ redirectTo }: { redirectTo: string }) {
         />
         <p className="mt-1 text-xs text-slate-500">At least 8 characters.</p>
       </div>
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {error && <p className="text-sm text-red-600">{error}</p>}
       <Button type="submit" disabled={pending} className="w-full">
         {pending ? "Creating account…" : "Create account"}
       </Button>

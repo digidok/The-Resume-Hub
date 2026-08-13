@@ -153,6 +153,20 @@ export default async function SubscriptionPage({
               and enter it above before subscribing.
             </p>
           )}
+          {!isSubscribed && role === "employer" && (
+            <p className="mt-2 text-xs text-slate-500">
+              Want a walkthrough first?{" "}
+              <a
+                href="https://wa.me/27693391915?text=Hi%2C%20I%27d%20like%20to%20book%20a%20demo%20of%20Resume%20Hub%20for%20Employers"
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium text-brand-600 hover:underline"
+              >
+                Book a demo on WhatsApp
+              </a>{" "}
+              before subscribing.
+            </p>
+          )}
         </div>
       )}
 
