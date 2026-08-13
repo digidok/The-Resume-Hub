@@ -1,7 +1,12 @@
 import { redirect } from "next/navigation";
 import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
-import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGES, getPayfastConfig } from "@/lib/payfast/config";
+import {
+  CREDIT_PACKAGES,
+  SUBSCRIPTION_PACKAGES,
+  PRO_ONCE_OFF_PACKAGE,
+  getPayfastConfig,
+} from "@/lib/payfast/config";
 import { hasUnlimitedCredits } from "@/lib/credits";
 import { Card } from "@/components/ui/card";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -105,45 +110,68 @@ export default async function SubscriptionPage({
 
       {subscriptionPkg && (
         <div>
-          <h2 className="mb-3 text-sm font-semibold text-slate-900">Monthly subscription</h2>
-          <Card className="flex flex-wrap items-center justify-between gap-4 p-5">
-            <div>
-              <p className="font-semibold text-slate-900">{subscriptionPkg.label}</p>
-              <p className="text-sm text-slate-500">{subscriptionPkg.description}</p>
-              {isSubscribed && profile?.subscription_expires_at && (
-                <p className="mt-1 text-xs font-medium text-emerald-600">
-                  {profile.payfast_token
-                    ? `Active — renews ${new Date(profile.subscription_expires_at).toLocaleDateString()}`
-                    : `Active until ${new Date(profile.subscription_expires_at).toLocaleDateString()} — won't renew`}
-                </p>
-              )}
-            </div>
-            {isSubscribed ? (
-              profile?.payfast_token && (
-                <form action="/api/payfast/cancel" method="POST">
-                  <SubmitButton variant="outline" size="sm" pendingLabel="Cancelling…">
-                    Cancel subscription
+          <h2 className="mb-3 text-sm font-semibold text-slate-900">
+            {role === "candidate" ? "Get Pro" : "Monthly subscription"}
+          </h2>
+          <div className={role === "candidate" ? "grid grid-cols-1 gap-4 sm:grid-cols-2" : ""}>
+            {role === "candidate" && !isSubscribed && (
+              <Card className="flex flex-col justify-between gap-4 p-5">
+                <div>
+                  <p className="font-semibold text-slate-900">{PRO_ONCE_OFF_PACKAGE.label}</p>
+                  <p className="text-sm text-slate-500">
+                    Pay once, no recurring billing — Pro access for 30 days.
+                  </p>
+                </div>
+                <form action="/api/payfast/checkout" method="POST" className="flex items-center gap-3">
+                  <span className="text-2xl font-bold text-slate-900">
+                    R{PRO_ONCE_OFF_PACKAGE.amountZar}
+                  </span>
+                  <input type="hidden" name="package_id" value={PRO_ONCE_OFF_PACKAGE.id} />
+                  <SubmitButton disabled={!config.configured} variant="outline">
+                    Buy once-off
                   </SubmitButton>
                 </form>
-              )
-            ) : (
-              <form
-                action="/api/payfast/subscribe"
-                method="POST"
-                className="flex flex-wrap items-center gap-3"
-              >
-                <span className="text-2xl font-bold text-slate-900">R{subscriptionPkg.amountZar}</span>
-                <input type="hidden" name="package_id" value={subscriptionPkg.id} />
-                <input
-                  type="text"
-                  name="promo_code"
-                  placeholder="Promo code (optional)"
-                  className="w-40 rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm placeholder:text-slate-400"
-                />
-                <SubmitButton disabled={!config.configured}>Subscribe</SubmitButton>
-              </form>
+              </Card>
             )}
-          </Card>
+            <Card className="flex flex-wrap items-center justify-between gap-4 p-5">
+              <div>
+                <p className="font-semibold text-slate-900">{subscriptionPkg.label}</p>
+                <p className="text-sm text-slate-500">{subscriptionPkg.description}</p>
+                {isSubscribed && profile?.subscription_expires_at && (
+                  <p className="mt-1 text-xs font-medium text-emerald-600">
+                    {profile.payfast_token
+                      ? `Active — renews ${new Date(profile.subscription_expires_at).toLocaleDateString()}`
+                      : `Active until ${new Date(profile.subscription_expires_at).toLocaleDateString()} — won't renew`}
+                  </p>
+                )}
+              </div>
+              {isSubscribed ? (
+                profile?.payfast_token && (
+                  <form action="/api/payfast/cancel" method="POST">
+                    <SubmitButton variant="outline" size="sm" pendingLabel="Cancelling…">
+                      Cancel subscription
+                    </SubmitButton>
+                  </form>
+                )
+              ) : (
+                <form
+                  action="/api/payfast/subscribe"
+                  method="POST"
+                  className="flex flex-wrap items-center gap-3"
+                >
+                  <span className="text-2xl font-bold text-slate-900">R{subscriptionPkg.amountZar}</span>
+                  <input type="hidden" name="package_id" value={subscriptionPkg.id} />
+                  <input
+                    type="text"
+                    name="promo_code"
+                    placeholder="Promo code (optional)"
+                    className="w-40 rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm placeholder:text-slate-400"
+                  />
+                  <SubmitButton disabled={!config.configured}>Subscribe</SubmitButton>
+                </form>
+              )}
+            </Card>
+          </div>
           {!isSubscribed && role === "candidate" && (
             <p className="mt-2 text-xs text-slate-400">
               Studying? Get a{" "}

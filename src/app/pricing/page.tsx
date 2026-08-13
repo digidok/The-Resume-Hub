@@ -10,7 +10,7 @@ export const metadata = {
     "Simple, transparent pricing for candidates and employers on Resume Hub — free to start, pay only for the AI credits and job posts you need.",
 };
 import { Card } from "@/components/ui/card";
-import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGES } from "@/lib/payfast/config";
+import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGES, PRO_ONCE_OFF_PACKAGE } from "@/lib/payfast/config";
 
 const candidatePro = SUBSCRIPTION_PACKAGES.find((p) => p.role === "candidate")!;
 const employerPlan = SUBSCRIPTION_PACKAGES.find((p) => p.role === "employer")!;
@@ -84,7 +84,7 @@ export default function PricingPage() {
           <h2 className="text-center text-sm font-semibold uppercase tracking-wide text-brand-600">
             For job seekers
           </h2>
-          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-3">
             <Card className="p-6">
               <p className="font-semibold text-slate-900">Free</p>
               <p className="mt-2 text-3xl font-bold text-slate-900">R0</p>
@@ -99,6 +99,28 @@ export default function PricingPage() {
               <Link href="/signup">
                 <Button variant="outline" className="mt-6 w-full">
                   Get started free
+                </Button>
+              </Link>
+            </Card>
+
+            <Card className="p-6">
+              <p className="font-semibold text-slate-900">{PRO_ONCE_OFF_PACKAGE.label}</p>
+              <p className="mt-2 text-3xl font-bold text-slate-900">
+                R{PRO_ONCE_OFF_PACKAGE.amountZar}
+                <span className="text-base font-medium text-slate-500"> once-off</span>
+              </p>
+              <p className="mt-1 text-xs text-slate-500">No recurring billing — Pro for 30 days.</p>
+              <ul className="mt-5 space-y-2.5">
+                {CANDIDATE_PRO_FEATURES.map((f) => (
+                  <li key={f} className="flex items-start gap-2.5 text-sm text-slate-700">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/signup">
+                <Button variant="outline" className="mt-6 w-full">
+                  Get the 30-Day Pass
                 </Button>
               </Link>
             </Card>
