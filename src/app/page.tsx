@@ -31,7 +31,6 @@ import {
   Wand2,
   RefreshCw,
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { MatchShowcase } from "@/components/landing/match-showcase";
@@ -261,18 +260,12 @@ const CAREER_RESOURCES = [
   },
 ];
 
-export default async function Home() {
-  const supabase = await createClient();
-  const { count: jobCount } = await supabase
-    .from("jobs")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "open");
-
+export default function Home() {
   return (
     <div className="flex flex-1 flex-col bg-white">
       <SiteHeader />
       <main className="flex-1">
-        <AnimatedHero jobCount={jobCount ?? 0} />
+        <AnimatedHero />
 
         <section className="mx-auto max-w-5xl px-4 pb-20 pt-24 sm:pt-28">
           <ScrollReveal className="mx-auto max-w-2xl text-center">

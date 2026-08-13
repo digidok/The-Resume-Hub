@@ -10,25 +10,23 @@ import { EASE } from "@/components/motion/variants";
 import { DashboardPreview } from "@/components/landing/dashboard-preview";
 import { ProductTour } from "@/components/landing/product-tour";
 
-const HERO_STATS_TAIL = [
+const JOB_COUNT_LABEL = "5,000+";
+
+const TRUST_ITEMS = [
+  `${JOB_COUNT_LABEL} live jobs`,
+  "Help You Apply while you rest",
+  "Verified employers & candidates",
+  "Real human support",
+];
+
+const HERO_STATS = [
+  { icon: Briefcase, value: 5000, suffix: "+", label: "Live jobs right now" },
   { icon: Clock, value: 5, suffix: "+ yrs", label: "Helping SA job seekers get hired" },
   { icon: ShieldCheck, value: 100, suffix: "%", label: "Verified employers & candidates" },
   { icon: HeartHandshake, value: 100, suffix: "%", label: "Real human support" },
 ];
 
-export function AnimatedHero({ jobCount }: { jobCount: number }) {
-  const jobCountLabel = jobCount.toLocaleString();
-  const trustItems = [
-    `${jobCountLabel} live jobs`,
-    "Help You Apply while you rest",
-    "Verified employers & candidates",
-    "Real human support",
-  ];
-  const heroStats = [
-    { icon: Briefcase, value: jobCount, suffix: "", label: "Live jobs right now" },
-    ...HERO_STATS_TAIL,
-  ];
-
+export function AnimatedHero() {
   return (
     <>
     <section className="relative overflow-hidden bg-slate-100">
@@ -62,7 +60,7 @@ export function AnimatedHero({ jobCount }: { jobCount: number }) {
             className="inline-flex items-center gap-1.5 rounded-sm border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brand-800"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            {jobCountLabel} live jobs · Africa&apos;s first Help You Apply platform
+            {JOB_COUNT_LABEL} live jobs · Africa&apos;s first Help You Apply platform
           </motion.span>
 
           <h1 className="mx-auto mt-6 max-w-xl text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl lg:mx-0">
@@ -90,7 +88,7 @@ export function AnimatedHero({ jobCount }: { jobCount: number }) {
             transition={{ duration: 0.6, ease: EASE, delay: 0.4 }}
             className="mx-auto mt-5 max-w-xl text-lg text-slate-600 lg:mx-0"
           >
-            Browse {jobCountLabel} live jobs across South Africa, then let Help You
+            Browse {JOB_COUNT_LABEL} live jobs across South Africa, then let Help You
             Apply submit tailored applications on your behalf while you rest, work, or
             just get on with your day. Verified employers, verified candidates — one platform.
           </motion.p>
@@ -106,7 +104,7 @@ export function AnimatedHero({ jobCount }: { jobCount: number }) {
             </Link>
             <Link href="/jobs">
               <Button size="lg" variant="outline">
-                Browse {jobCountLabel} Jobs
+                Browse {JOB_COUNT_LABEL} Jobs
               </Button>
             </Link>
           </motion.div>
@@ -126,7 +124,7 @@ export function AnimatedHero({ jobCount }: { jobCount: number }) {
             transition={{ duration: 0.6, ease: EASE, delay: 0.8 }}
             className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-500 lg:justify-start"
           >
-            {trustItems.map((item) => (
+            {TRUST_ITEMS.map((item) => (
               <span key={item} className="flex items-center gap-1.5">
                 <Check className="h-4 w-4 text-brand-700" />
                 {item}
@@ -144,7 +142,7 @@ export function AnimatedHero({ jobCount }: { jobCount: number }) {
         <div className="-mx-6 -mt-6 mb-6 h-1 bg-brand-600 sm:-mx-8 sm:-mt-8" />
 
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
-          {heroStats.map((stat) => (
+          {HERO_STATS.map((stat) => (
             <div key={stat.label} className="text-center">
               <stat.icon className="mx-auto h-5 w-5 text-brand-700" />
               <p className="mt-2 text-2xl font-bold text-slate-900">
