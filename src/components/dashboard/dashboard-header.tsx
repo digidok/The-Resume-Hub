@@ -2,6 +2,7 @@ import { Sparkles } from "lucide-react";
 import { CommandSearch } from "@/components/dashboard/command-search";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { AvatarMenu } from "@/components/dashboard/avatar-menu";
+import { AskElsButton } from "@/components/ask-els/ask-els-button";
 import type { Notification } from "@/types/database";
 
 const LOW_CREDITS_THRESHOLD = 10;
@@ -39,6 +40,7 @@ export function DashboardHeader({
             {creditsRemaining} credits
           </span>
         )}
+        <AskElsButton />
         <NotificationBell notifications={notifications} />
         <AvatarMenu name={name} email={email} role={role} avatarUrl={avatarUrl} />
       </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
+import { AskElsButton } from "@/components/ask-els/ask-els-button";
 
 const NAV_LINKS = [
   { href: "/signup", label: "CV Builder" },
@@ -65,6 +66,7 @@ export function SiteHeaderClient({ isSignedIn }: { isSignedIn: boolean }) {
           ))}
         </nav>
         <div className="flex items-center gap-3 text-sm font-medium text-slate-600 sm:gap-4">
+          <AskElsButton />
           {isSignedIn ? (
             <Link href="/dashboard" className="hidden sm:block">
               <Button size="sm">Dashboard</Button>
