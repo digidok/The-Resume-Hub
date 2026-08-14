@@ -46,11 +46,17 @@ export const CHECKOUT_FIELD_ORDER = [
   "subscription_notify_buyer",
 ] as const;
 
-/** PHP's urlencode(): spaces become '+', percent-encoding uses uppercase hex. */
+/**
+ * PHP's urlencode(): spaces become '+', percent-encoding uses uppercase hex.
+ * encodeURIComponent's RFC 3986 unreserved set (A-Za-z0-9-_.!~*'()) is wider
+ * than PHP's (A-Za-z0-9-_. only) — the six extra characters PHP still
+ * percent-encodes are re-escaped here so the two implementations agree
+ * byte-for-byte on every input, not just the common case.
+ */
 export function phpUrlEncode(value: string): string {
   return encodeURIComponent(value)
     .replace(/%20/g, "+")
-    .replace(/[!'()*]/g, (c) => "%" + c.charCodeAt(0).toString(16).toUpperCase());
+    .replace(/[!'()*~]/g, (c) => "%" + c.charCodeAt(0).toString(16).toUpperCase());
 }
 
 async function md5Hex(input: string): Promise<string> {
