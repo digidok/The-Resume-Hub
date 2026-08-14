@@ -128,5 +128,5 @@ export async function POST(request: Request) {
 </body>
 </html>`;
 
-  return new NextResponse(html, { headers: { "Content-Type": "text/html" } });
+  return new NextResponse(html, { headers: { "Content-Type": "text/html; charset=utf-8" } });
 }
