@@ -3,8 +3,14 @@
  * algorithm exactly (field order, PHP-style urlencode, passphrase placement).
  *
  * Checkout signature: only these fields, in this exact order, non-empty
- * values only. `passphrase` sits at its natural position in this list (NOT
- * appended at the end — that's a common but incorrect simplification).
+ * values only. `passphrase` is NOT in this list — Payfast's own reference
+ * implementation (and this file's own verifyItnSignature below) always
+ * appends it last, after every other present field, regardless of where a
+ * "passphrase" slot might otherwise fall in a full field table. An earlier
+ * version of this list placed it mid-order instead, which produced a wrong
+ * signature (and a real "signature does not match" rejection from Payfast)
+ * for any checkout — like a recurring subscription — with fields present
+ * after that slot.
  */
 export const CHECKOUT_FIELD_ORDER = [
   "merchant_id",
@@ -36,7 +42,6 @@ export const CHECKOUT_FIELD_ORDER = [
   "currency",
   "payment_method",
   "subscription_type",
-  "passphrase",
   "billing_date",
   "recurring_amount",
   "frequency",
@@ -65,7 +70,7 @@ async function md5Hex(input: string): Promise<string> {
 }
 
 export async function buildCheckoutSignature(
-  fields: Partial<Record<(typeof CHECKOUT_FIELD_ORDER)[number], string>>
+  fields: Partial<Record<(typeof CHECKOUT_FIELD_ORDER)[number], string>> & { passphrase?: string }
 ): Promise<string> {
   const parts: string[] = [];
   for (const key of CHECKOUT_FIELD_ORDER) {
@@ -73,6 +78,9 @@ export async function buildCheckoutSignature(
     if (value !== undefined && value !== null && value !== "") {
       parts.push(`${key}=${phpUrlEncode(String(value).trim())}`);
     }
+  }
+  if (fields.passphrase) {
+    parts.push(`passphrase=${phpUrlEncode(fields.passphrase.trim())}`);
   }
   return md5Hex(parts.join("&"));
 }
