@@ -10,6 +10,15 @@ import {
 import { hasUnlimitedCredits } from "@/lib/credits";
 import { Card } from "@/components/ui/card";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { InvoiceRequestForm } from "@/components/subscription/invoice-request-form";
+import Link from "next/link";
+
+const INVOICE_STATUS_STYLES: Record<string, string> = {
+  requested: "bg-amber-100 text-amber-700",
+  invoiced: "bg-blue-100 text-blue-700",
+  paid: "bg-emerald-100 text-emerald-700",
+  cancelled: "bg-slate-200 text-slate-600",
+};
 
 export default async function SubscriptionPage({
   searchParams,
@@ -35,6 +44,15 @@ export default async function SubscriptionPage({
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(10);
+
+  const { data: invoiceRequests } =
+    profile?.role === "employer"
+      ? await supabase
+          .from("invoice_requests")
+          .select("id, package_id, amount_zar, status, invoice_number, created_at")
+          .eq("employer_id", user.id)
+          .order("created_at", { ascending: false })
+      : { data: null };
 
   const config = getPayfastConfig();
   const role = profile?.role ?? "candidate";
@@ -172,6 +190,9 @@ export default async function SubscriptionPage({
               )}
             </Card>
           </div>
+          {!isSubscribed && role === "employer" && (
+            <InvoiceRequestForm packageId={subscriptionPkg.id} />
+          )}
           {!isSubscribed && role === "candidate" && (
             <p className="mt-2 text-xs text-slate-400">
               Studying? Get a{" "}
@@ -195,6 +216,38 @@ export default async function SubscriptionPage({
               before subscribing.
             </p>
           )}
+        </div>
+      )}
+
+      {invoiceRequests && invoiceRequests.length > 0 && (
+        <div>
+          <h2 className="mb-3 text-sm font-semibold text-slate-900">Invoice requests</h2>
+          <div className="space-y-2">
+            {invoiceRequests.map((inv) => (
+              <Card key={inv.id} className="flex items-center justify-between p-3 text-sm">
+                <span className="text-slate-700">
+                  {inv.invoice_number ? `Invoice ${inv.invoice_number}` : "Awaiting invoice number"} ·{" "}
+                  {new Date(inv.created_at).toLocaleDateString()}
+                </span>
+                <span className="flex items-center gap-3">
+                  <span className="text-slate-500">R{Number(inv.amount_zar).toFixed(2)}</span>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${INVOICE_STATUS_STYLES[inv.status]}`}
+                  >
+                    {inv.status}
+                  </span>
+                  {(inv.status === "invoiced" || inv.status === "paid") && (
+                    <Link
+                      href={`/dashboard/invoices/${inv.id}/print`}
+                      className="font-medium text-brand-600 hover:underline"
+                    >
+                      View invoice
+                    </Link>
+                  )}
+                </span>
+              </Card>
+            ))}
+          </div>
         </div>
       )}
 

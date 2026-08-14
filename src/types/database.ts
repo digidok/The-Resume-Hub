@@ -3,6 +3,27 @@ export type ProfilePlan = "free" | "pro";
 
 export type SubscriptionPlan = "candidate_pro" | "employer_jobs";
 
+export type InvoiceRequestStatus = "requested" | "invoiced" | "paid" | "cancelled";
+
+export type InvoiceRequest = {
+  id: string;
+  employer_id: string;
+  package_id: string;
+  amount_zar: number;
+  company_name: string;
+  contact_person: string;
+  billing_email: string;
+  vat_number: string | null;
+  billing_address: string | null;
+  notes: string | null;
+  status: InvoiceRequestStatus;
+  invoice_number: string | null;
+  issued_at: string | null;
+  paid_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Profile = {
   id: string;
   role: ProfileRole;

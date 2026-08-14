@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { slugify, randomSuffix } from "@/lib/slug";
+import { SUBSCRIPTION_PACKAGES } from "@/lib/payfast/config";
 import type { ProfileRole, ProfilePlan, ResumeContent } from "@/types/database";
 
 async function requireAdmin() {
@@ -71,6 +72,113 @@ export async function markPaymentRefunded(paymentId: string) {
   const supabase = await requireAdmin();
   await supabase.from("payments").update({ status: "refunded" }).eq("id", paymentId);
   revalidatePath("/dashboard/admin/payments");
+}
+
+/** Issues an invoice number for an employer's invoice request — the point
+ * at which admin has actually generated/sent the invoice for them to pay. */
+export async function markInvoiceIssued(invoiceRequestId: string): Promise<{ error?: string }> {
+  const supabase = await requireAdmin();
+
+  const { data: invoice } = await supabase
+    .from("invoice_requests")
+    .select("status")
+    .eq("id", invoiceRequestId)
+    .single();
+  if (!invoice || invoice.status !== "requested") {
+    return { error: "This request has already been issued or handled." };
+  }
+
+  const invoiceNumber = `INV-${new Date().getFullYear()}-${randomUUID().slice(0, 8).toUpperCase()}`;
+
+  const { error } = await supabase
+    .from("invoice_requests")
+    .update({ status: "invoiced", invoice_number: invoiceNumber, issued_at: new Date().toISOString() })
+    .eq("id", invoiceRequestId);
+
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/admin/invoices");
+  return {};
+}
+
+/**
+ * Marks an invoice as paid once the EFT has actually landed — grants the
+ * same profile benefits a successful Payfast subscription payment would
+ * (subscription_plan, a 30-day subscription_expires_at, job posting
+ * credits), and logs it in the same payments ledger so it shows up
+ * consistently in both the employer's own Payment history and the admin
+ * Payments page.
+ */
+export async function markInvoicePaid(invoiceRequestId: string): Promise<{ error?: string }> {
+  const supabase = await requireAdmin();
+
+  const { data: invoice } = await supabase
+    .from("invoice_requests")
+    .select("*")
+    .eq("id", invoiceRequestId)
+    .single();
+  if (!invoice) return { error: "Invoice request not found." };
+  if (invoice.status === "paid") return { error: "Already marked paid." };
+  if (invoice.status === "cancelled") return { error: "This request was cancelled." };
+
+  const pkg = SUBSCRIPTION_PACKAGES.find((p) => p.id === invoice.package_id);
+  if (!pkg) return { error: "Unknown product on this invoice." };
+
+  const { error: paymentError } = await supabase.from("payments").insert({
+    user_id: invoice.employer_id,
+    m_payment_id: `invoice-${invoice.id}`,
+    amount: invoice.amount_zar,
+    item_name: `Resume Hub — ${pkg.label} (invoice ${invoice.invoice_number ?? invoice.id})`,
+    credits_granted: 0,
+    grants_pro: false,
+    status: "complete",
+    payment_type: "invoice",
+    subscription_plan_target: pkg.id,
+    job_credits_granted: pkg.jobCredits,
+  });
+  if (paymentError) return { error: paymentError.message };
+
+  const { data: employerProfile } = await supabase
+    .from("profiles")
+    .select("subscription_expires_at")
+    .eq("id", invoice.employer_id)
+    .single();
+
+  const currentExpiry = employerProfile?.subscription_expires_at
+    ? new Date(employerProfile.subscription_expires_at)
+    : null;
+  const base = currentExpiry && currentExpiry > new Date() ? currentExpiry : new Date();
+  const newExpiry = new Date(base.getTime() + 30 * 86400000).toISOString();
+
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({
+      subscription_plan: pkg.id,
+      subscription_expires_at: newExpiry,
+      job_posting_credits: pkg.jobCredits,
+    })
+    .eq("id", invoice.employer_id);
+  if (profileError) return { error: profileError.message };
+
+  const { error: statusError } = await supabase
+    .from("invoice_requests")
+    .update({ status: "paid", paid_at: new Date().toISOString() })
+    .eq("id", invoiceRequestId);
+  if (statusError) return { error: statusError.message };
+
+  revalidatePath("/dashboard/admin/invoices");
+  revalidatePath("/dashboard/subscription");
+  return {};
+}
+
+export async function cancelInvoiceRequest(invoiceRequestId: string): Promise<{ error?: string }> {
+  const supabase = await requireAdmin();
+  const { error } = await supabase
+    .from("invoice_requests")
+    .update({ status: "cancelled" })
+    .eq("id", invoiceRequestId);
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/admin/invoices");
+  return {};
 }
 
 export async function setJobStatus(jobId: string, status: "open" | "closed") {
