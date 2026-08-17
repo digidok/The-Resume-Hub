@@ -10,9 +10,11 @@ import type { AutoApplySettings } from "@/types/database";
 export function AutoApplyForm({
   resumes,
   initialSettings,
+  suggestedKeywords = [],
 }: {
   resumes: { id: string; title: string }[];
   initialSettings: AutoApplySettings | null;
+  suggestedKeywords?: string[];
 }) {
   const [resumeId, setResumeId] = useState(initialSettings?.resume_id ?? "");
   const [keywords, setKeywords] = useState(initialSettings?.keywords ?? "");
@@ -37,6 +39,15 @@ export function AutoApplyForm({
         setResult(res);
       }
     });
+  }
+
+  function addKeyword(keyword: string) {
+    const current = keywords
+      .split(",")
+      .map((k) => k.trim())
+      .filter(Boolean);
+    if (current.some((k) => k.toLowerCase() === keyword.toLowerCase())) return;
+    setKeywords([...current, keyword].join(", "));
   }
 
   function saveSchedule(nextEnabled: boolean) {
@@ -79,6 +90,21 @@ export function AutoApplyForm({
             onChange={(e) => setKeywords(e.target.value)}
             placeholder="React, frontend, TypeScript"
           />
+          {suggestedKeywords.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              <span className="text-xs text-slate-400">From your Career Passport:</span>
+              {suggestedKeywords.map((kw) => (
+                <button
+                  key={kw}
+                  type="button"
+                  onClick={() => addKeyword(kw)}
+                  className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 hover:bg-brand-50 hover:text-brand-700"
+                >
+                  + {kw}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         <div>
           <Label htmlFor="location">Location contains (optional)</Label>
@@ -86,16 +112,19 @@ export function AutoApplyForm({
         </div>
         {error && <p className="text-sm text-red-600">{error}</p>}
         {result && (
-          <p className="text-sm text-emerald-600">
-            Found {result.matched} matching job{result.matched === 1 ? "" : "s"}, applied to{" "}
-            {result.applied}.
+          <p className={`text-sm ${result.matched === 0 ? "text-slate-500" : "text-emerald-600"}`}>
+            {result.matched === 0
+              ? "No open jobs matched those keywords — try broader terms (just the job title works well), or clear the location filter. No credit was used."
+              : `Found ${result.matched} matching job${result.matched === 1 ? "" : "s"}, applied to ${result.applied}.`}
           </p>
         )}
         <Button onClick={run} disabled={isPending || !resumeId}>
           {isPending ? "Running…" : "Run auto-apply now (1 credit)"}
         </Button>
+        {!resumeId && <p className="text-xs text-amber-600">Select a resume above to run auto-apply.</p>}
         <p className="text-xs text-slate-400">
-          Only matches open jobs posted on Resume Hub — this does not apply on other job boards.
+          Only matches open jobs posted on Resume Hub — this does not apply on other job boards. You&apos;re
+          only charged a credit when at least one job matches.
         </p>
       </Card>
 

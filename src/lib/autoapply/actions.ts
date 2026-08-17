@@ -29,11 +29,6 @@ export async function runAutoApply(input: {
     return { matched: 0, applied: 0, error: "Enter at least one keyword." };
   }
 
-  const spend = await spendCredits(supabase, user.id, "auto_apply");
-  if (!spend.ok) {
-    return { matched: 0, applied: 0, error: spend.error };
-  }
-
   const [{ data: jobs }, { data: existingApplications }] = await Promise.all([
     supabase.from("jobs").select("id, title, description, location").eq("status", "open"),
     supabase.from("applications").select("job_id").eq("candidate_id", user.id),
@@ -53,6 +48,13 @@ export async function runAutoApply(input: {
 
   if (matches.length === 0) {
     return { matched: 0, applied: 0 };
+  }
+
+  // Only charge once we know there's at least one job to apply to — a
+  // keyword search that comes up empty shouldn't cost the candidate anything.
+  const spend = await spendCredits(supabase, user.id, "auto_apply");
+  if (!spend.ok) {
+    return { matched: 0, applied: 0, error: spend.error };
   }
 
   const rows = matches.map((job) => ({

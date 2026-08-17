@@ -3,6 +3,7 @@ import { CommandSearch } from "@/components/dashboard/command-search";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { AvatarMenu } from "@/components/dashboard/avatar-menu";
 import { AskElsButton } from "@/components/ask-els/ask-els-button";
+import { UpgradeButton } from "@/components/subscription/upgrade-button";
 import type { Notification } from "@/types/database";
 
 const LOW_CREDITS_THRESHOLD = 10;
@@ -14,6 +15,7 @@ export function DashboardHeader({
   creditsRemaining,
   notifications,
   avatarUrl,
+  showUpgrade,
 }: {
   name: string;
   email: string;
@@ -21,6 +23,7 @@ export function DashboardHeader({
   creditsRemaining: number | null;
   notifications: Notification[];
   avatarUrl?: string | null;
+  showUpgrade?: boolean;
 }) {
   const low = creditsRemaining != null && creditsRemaining < LOW_CREDITS_THRESHOLD;
 
@@ -40,6 +43,7 @@ export function DashboardHeader({
             {creditsRemaining} credits
           </span>
         )}
+        {showUpgrade && <UpgradeButton />}
         <AskElsButton />
         <NotificationBell notifications={notifications} />
         <AvatarMenu name={name} email={email} role={role} avatarUrl={avatarUrl} />
