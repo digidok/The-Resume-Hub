@@ -3,6 +3,8 @@ import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { BulkApplyForm } from "@/components/dashboard/bulk-apply-form";
 import { computeJobMatch } from "@/lib/matching/job-match";
+import { hasUnlimitedCredits } from "@/lib/credits";
+import { UpgradePrompt } from "@/components/subscription/upgrade-prompt";
 import type { CareerProfile, Job } from "@/types/database";
 
 export default async function BulkApplyPage() {
@@ -11,6 +13,21 @@ export default async function BulkApplyPage() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan, subscription_plan, subscription_expires_at")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || !hasUnlimitedCredits(profile)) {
+    return (
+      <UpgradePrompt
+        feature="Bulk Apply"
+        description="Select multiple open roles and apply to all of them at once with the same resume — unlocked with Resume Hub Pro."
+      />
+    );
+  }
 
   const [{ data: resumes }, { data: jobs }, { data: existingApplications }, { data: careerProfileData }] =
     await Promise.all([

@@ -5,6 +5,7 @@ import { SidebarPlanCard } from "@/components/dashboard/sidebar-plan-card";
 import { SidebarFooter } from "@/components/dashboard/sidebar-footer";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { DashboardNav, type NavGroup } from "@/components/dashboard/nav";
+import { hasUnlimitedCredits } from "@/lib/credits";
 
 export default async function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
   const supabase = await createClient();
@@ -17,7 +18,9 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
   const [{ data: profile }, { data: notifications }] = await Promise.all([
     supabase
       .from("profiles")
-      .select("role, full_name, plan, credits_remaining, job_posting_credits, avatar_url")
+      .select(
+        "role, full_name, plan, credits_remaining, job_posting_credits, avatar_url, subscription_plan, subscription_expires_at"
+      )
       .eq("id", user.id)
       .single(),
     supabase
@@ -30,6 +33,19 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
 
   const role = (profile?.role ?? "candidate") as "candidate" | "employer" | "admin";
   const unreadNotifications = (notifications ?? []).filter((n) => !n.read).length;
+
+  const isSubscribedOrPro =
+    role === "admin"
+      ? true
+      : role === "employer"
+        ? Boolean(
+            profile?.subscription_plan === "employer_jobs" &&
+              profile?.subscription_expires_at &&
+              new Date(profile.subscription_expires_at) > new Date()
+          )
+        : profile
+          ? hasUnlimitedCredits(profile)
+          : false;
 
   const { count: pendingConnectionsCount } = await supabase
     .from("connections")
@@ -165,6 +181,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
           creditsRemaining={role === "candidate" || role === "admin" ? (profile?.credits_remaining ?? 0) : null}
           notifications={notifications ?? []}
           avatarUrl={profile?.avatar_url}
+          showUpgrade={!isSubscribedOrPro}
         />
         <main className="flex-1 p-6 lg:p-10">{children}</main>
       </div>
