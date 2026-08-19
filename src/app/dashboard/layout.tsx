@@ -53,6 +53,15 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
     .eq("recipient_id", user.id)
     .eq("status", "pending");
 
+  let pendingWhatsAppReviewCount = 0;
+  if (role === "admin") {
+    const { count } = await supabase
+      .from("whatsapp_review_queue")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "pending");
+    pendingWhatsAppReviewCount = count ?? 0;
+  }
+
   let candidateBadges = { applications: 0, savedJobs: 0 };
   if (role === "candidate" || role === "admin") {
     const [{ count: applicationsCount }, { count: savedJobsCount }] = await Promise.all([
@@ -142,6 +151,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       label: "Platform",
       items: [
         { href: "/dashboard/admin", label: "Platform overview", icon: "LayoutDashboard" },
+        { href: "/dashboard/admin/whatsapp-orders", label: "WhatsApp orders", icon: "MessageCircle", badge: pendingWhatsAppReviewCount ?? 0 },
         { href: "/dashboard/admin/users", label: "Users", icon: "Users" },
         { href: "/dashboard/admin/jobs", label: "Jobs", icon: "Briefcase" },
         { href: "/dashboard/admin/payments", label: "Payments", icon: "CreditCard" },

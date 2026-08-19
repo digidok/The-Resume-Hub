@@ -510,6 +510,25 @@ export type BlogPost = {
   updated_at: string;
 };
 
+export type WhatsAppServiceType = "cv_cover_letter" | "linkedin_revamp";
+export type WhatsAppReviewStatus = "pending" | "approved" | "rejected" | "changes_requested";
+
+export type WhatsAppReviewQueueItem = {
+  id: string;
+  customer_phone: string;
+  customer_name: string | null;
+  service_type: WhatsAppServiceType;
+  template: string | null;
+  client_brief: string | null;
+  preview_storage_path: string;
+  status: WhatsAppReviewStatus;
+  admin_notes: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export const emptyResumeContent = (): ResumeContent => ({
   full_name: "",
   email: "",
