@@ -114,8 +114,8 @@ export function AutoApplyForm({
         {result && (
           <p className={`text-sm ${result.matched === 0 ? "text-slate-500" : "text-emerald-600"}`}>
             {result.matched === 0
-              ? "No open jobs matched those keywords — try broader terms (just the job title works well), or clear the location filter. No credit was used."
-              : `Found ${result.matched} matching job${result.matched === 1 ? "" : "s"}, applied to ${result.applied}.`}
+              ? "No open jobs matched those keywords at 80%+ against your Career Passport — try broader keywords, clear the location filter, or fill in more of your Career Passport for better matching. No credit was used."
+              : `Found ${result.matched} strong match${result.matched === 1 ? "" : "es"} (80%+ against your Career Passport), applied to ${result.applied}.`}
           </p>
         )}
         <Button onClick={run} disabled={isPending || !resumeId}>
@@ -123,8 +123,9 @@ export function AutoApplyForm({
         </Button>
         {!resumeId && <p className="text-xs text-amber-600">Select a resume above to run auto-apply.</p>}
         <p className="text-xs text-slate-400">
-          Only matches open jobs posted on Resume Hub — this does not apply on other job boards. You&apos;re
-          only charged a credit when at least one job matches.
+          Only applies to open Resume Hub jobs that score 80%+ against your Career Passport — this
+          does not apply on other job boards. You&apos;re only charged a credit when at least one job
+          matches.
         </p>
       </Card>
 

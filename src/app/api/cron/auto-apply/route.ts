@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { findAutoApplyMatches } from "@/lib/autoapply/match";
 import { sendAutoApplyEmail } from "@/lib/notifications/email";
-
-type ScheduledResult = { user_id: string; email: string | null; applied: number };
 
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
@@ -11,21 +10,71 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc("run_scheduled_auto_apply", { p_secret: secret });
+  const supabase = createAdminClient();
 
-  if (error) {
-    console.error("Scheduled auto-apply failed", error.message);
+  const { data: settings, error: settingsError } = await supabase
+    .from("auto_apply_settings")
+    .select("*")
+    .eq("enabled", true);
+
+  if (settingsError) {
+    console.error("Scheduled auto-apply: could not load settings", settingsError.message);
     return NextResponse.json({ error: "Scheduled run failed." }, { status: 500 });
   }
 
-  const results = (data?.results ?? []) as ScheduledResult[];
+  let candidatesMatched = 0;
 
-  await Promise.all(
-    results
-      .filter((r) => r.email && r.applied > 0)
-      .map((r) => sendAutoApplyEmail(r.email as string, r.applied))
-  );
+  for (const setting of settings ?? []) {
+    const { jobs: matches } = await findAutoApplyMatches(
+      supabase,
+      setting.user_id,
+      setting.keywords,
+      setting.location ?? ""
+    );
 
-  return NextResponse.json({ ok: true, ranAt: data?.ran_at, candidatesMatched: results.length });
+    await supabase
+      .from("auto_apply_settings")
+      .update({ last_run_at: new Date().toISOString() })
+      .eq("user_id", setting.user_id);
+
+    if (matches.length === 0) continue;
+
+    const rows = matches.map((job) => ({
+      job_id: job.id,
+      candidate_id: setting.user_id,
+      resume_id: setting.resume_id,
+      cover_note: "Submitted automatically by Resume Hub Auto-Apply based on your saved keywords.",
+    }));
+
+    const { data: inserted, error: insertError } = await supabase
+      .from("applications")
+      .upsert(rows, { onConflict: "job_id,candidate_id", ignoreDuplicates: true })
+      .select("id");
+
+    if (insertError) {
+      console.error("Scheduled auto-apply: insert failed", insertError.message, {
+        userId: setting.user_id,
+      });
+      continue;
+    }
+
+    const appliedCount = inserted?.length ?? 0;
+    if (appliedCount === 0) continue;
+
+    candidatesMatched += 1;
+
+    await supabase.from("notifications").insert({
+      user_id: setting.user_id,
+      type: "auto_apply",
+      title: "Auto-apply found new matches",
+      body: `Resume Hub auto-applied to ${appliedCount} new job${appliedCount === 1 ? "" : "s"} for you.`,
+    });
+
+    const { data: userData } = await supabase.auth.admin.getUserById(setting.user_id);
+    if (userData.user?.email) {
+      await sendAutoApplyEmail(userData.user.email, appliedCount);
+    }
+  }
+
+  return NextResponse.json({ ok: true, ranAt: new Date().toISOString(), candidatesMatched });
 }

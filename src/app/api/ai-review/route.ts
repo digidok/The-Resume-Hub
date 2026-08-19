@@ -114,11 +114,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Resume not found." }, { status: 404 });
   }
 
-  const spend = await spendCredits(supabase, user.id, "ai_review");
-  if (!spend.ok) {
-    return NextResponse.json({ error: spend.error }, { status: 402 });
-  }
-
   const resumeText = contentToPlainText(resume.content as ResumeContent);
   const anthropic = new Anthropic({ apiKey });
 
@@ -152,6 +147,13 @@ export async function POST(request: Request) {
     }
 
     const review = JSON.parse(textBlock.text);
+
+    // Only charge once the scan has actually produced a result — a failed
+    // AI call shouldn't cost the candidate a credit for nothing.
+    const spend = await spendCredits(supabase, user.id, "ai_review");
+    if (!spend.ok) {
+      return NextResponse.json({ error: spend.error }, { status: 402 });
+    }
 
     await supabase.from("ai_reviews").insert({
       resume_id: resumeId,

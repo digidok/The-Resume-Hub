@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { spendCredits } from "@/lib/credits";
+import { findAutoApplyMatches } from "@/lib/autoapply/match";
 
 export async function runAutoApply(input: {
   resumeId: string;
@@ -20,31 +21,20 @@ export async function runAutoApply(input: {
     return { matched: 0, applied: 0, error: "Choose a resume first." };
   }
 
-  const keywordList = input.keywords
-    .split(",")
-    .map((k) => k.trim().toLowerCase())
-    .filter(Boolean);
-
-  if (keywordList.length === 0) {
+  if (!input.keywords.trim()) {
     return { matched: 0, applied: 0, error: "Enter at least one keyword." };
   }
 
-  const [{ data: jobs }, { data: existingApplications }] = await Promise.all([
-    supabase.from("jobs").select("id, title, description, location").eq("status", "open"),
-    supabase.from("applications").select("job_id").eq("candidate_id", user.id),
-  ]);
+  const { jobs: matches, error: matchError } = await findAutoApplyMatches(
+    supabase,
+    user.id,
+    input.keywords,
+    input.location
+  );
 
-  const appliedJobIds = new Set((existingApplications ?? []).map((a) => a.job_id));
-  const locationFilter = input.location.trim().toLowerCase();
-
-  const matches = (jobs ?? []).filter((job) => {
-    if (appliedJobIds.has(job.id)) return false;
-    if (locationFilter && !(job.location ?? "").toLowerCase().includes(locationFilter)) {
-      return false;
-    }
-    const haystack = `${job.title} ${job.description}`.toLowerCase();
-    return keywordList.some((keyword) => haystack.includes(keyword));
-  });
+  if (matchError) {
+    return { matched: 0, applied: 0, error: matchError };
+  }
 
   if (matches.length === 0) {
     return { matched: 0, applied: 0 };
