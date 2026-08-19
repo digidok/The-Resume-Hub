@@ -71,6 +71,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       label: "Main",
       items: [
         { href: "/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
+        { href: "/dashboard/connections", label: "Connections", icon: "UserPlus", badge: pendingConnectionsCount ?? 0 },
         { href: "/jobs", label: "Find jobs", icon: "Search" },
         { href: "/dashboard/applications", label: "Applications", icon: "ClipboardList", badge: candidateBadges.applications },
         { href: "/dashboard/bulk-apply", label: "Bulk apply", icon: "Layers" },
@@ -101,7 +102,6 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       label: "Account",
       items: [
         { href: "/dashboard/notifications", label: "Notifications", icon: "Bell", badge: unreadNotifications },
-        { href: "/dashboard/connections", label: "Connections", icon: "UserPlus", badge: pendingConnectionsCount ?? 0 },
         { href: "/dashboard/subscription", label: "Subscription", icon: "CreditCard" },
         { href: "/dashboard/profile", label: "Profile & visibility", icon: "UserCog" },
       ],
@@ -113,6 +113,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       label: "Main",
       items: [
         { href: "/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
+        { href: "/dashboard/connections", label: "Connections", icon: "UserPlus", badge: pendingConnectionsCount ?? 0 },
         { href: "/dashboard/jobs", label: "My job posts", icon: "Briefcase" },
         { href: "/dashboard/jobs/new", label: "Post a job", icon: "PlusSquare" },
         { href: "/jobs", label: "Public job board", icon: "Globe" },
@@ -131,7 +132,6 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       label: "Account",
       items: [
         { href: "/dashboard/notifications", label: "Notifications", icon: "Bell", badge: unreadNotifications },
-        { href: "/dashboard/connections", label: "Connections", icon: "UserPlus", badge: pendingConnectionsCount ?? 0 },
         { href: "/dashboard/subscription", label: "Subscription", icon: "CreditCard" },
       ],
     },

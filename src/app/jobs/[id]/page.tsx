@@ -10,6 +10,7 @@ import { ApplyChannelBadge } from "@/components/jobs/apply-channel-badge";
 import { CompanyRatingBadge } from "@/components/jobs/company-rating-badge";
 import { QualificationCheck } from "@/components/jobs/qualification-check";
 import { toggleSavedJob } from "@/lib/savedjobs/actions";
+import { ShareJobButton } from "@/components/jobs/share-job-button";
 import { computeJobMatch } from "@/lib/matching/job-match";
 import { formatSalaryFull } from "@/lib/currency";
 import { ADZUNA_COUNTRIES } from "@/lib/adzuna/sync";
@@ -90,6 +91,7 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
   let isEmployer = false;
   let isSaved = false;
   let careerProfile: CareerProfile | null = null;
+  let shareableConnections: { connectionId: string; name: string }[] = [];
 
   if (user) {
     const { data: profile } = await supabase
@@ -129,6 +131,25 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
         .eq("user_id", user.id)
         .maybeSingle();
       careerProfile = (careerProfileData as CareerProfile) ?? null;
+
+      const { data: acceptedConnections } = await supabase
+        .from("connections")
+        .select("id, requester_id, recipient_id")
+        .eq("status", "accepted")
+        .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`);
+
+      const counterpartIds = (acceptedConnections ?? []).map((c) =>
+        c.requester_id === user.id ? c.recipient_id : c.requester_id
+      );
+      const { data: counterpartProfiles } = counterpartIds.length
+        ? await supabase.from("profiles").select("id, full_name").in("id", counterpartIds)
+        : { data: [] };
+      const nameById = new Map((counterpartProfiles ?? []).map((p) => [p.id, p.full_name || "Someone"]));
+
+      shareableConnections = (acceptedConnections ?? []).map((c) => {
+        const counterpartId = c.requester_id === user.id ? c.recipient_id : c.requester_id;
+        return { connectionId: c.id, name: nameById.get(counterpartId) ?? "Someone" };
+      });
     }
   }
 
@@ -189,11 +210,14 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
           ← All jobs
         </Link>
         {user && !isEmployer && (
-          <form action={toggleSavedJob.bind(null, job.id, !isSaved)}>
-            <Button type="submit" size="sm" variant={isSaved ? "secondary" : "outline"}>
-              {isSaved ? "★ Saved" : "☆ Save job"}
-            </Button>
-          </form>
+          <div className="flex items-center gap-2">
+            <form action={toggleSavedJob.bind(null, job.id, !isSaved)}>
+              <Button type="submit" size="sm" variant={isSaved ? "secondary" : "outline"}>
+                {isSaved ? "★ Saved" : "☆ Save job"}
+              </Button>
+            </form>
+            <ShareJobButton jobId={job.id} connections={shareableConnections} />
+          </div>
         )}
       </div>
       <div className="mt-2 mb-6">

@@ -5,6 +5,8 @@ import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
 import { ConnectionRowActions } from "@/components/connections/connection-row-actions";
+import { ConnectButton } from "@/components/connections/connect-button";
+import type { SuggestedConnection } from "@/types/database";
 
 function initials(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -63,11 +65,14 @@ export default async function ConnectionsPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: connections } = await supabase
-    .from("connections")
-    .select("id, requester_id, recipient_id, status")
-    .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
-    .order("created_at", { ascending: false });
+  const [{ data: connections }, { data: suggestions }] = await Promise.all([
+    supabase
+      .from("connections")
+      .select("id, requester_id, recipient_id, status")
+      .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+      .order("created_at", { ascending: false }),
+    supabase.rpc("get_suggested_connections", { p_limit: 6 }),
+  ]);
 
   const rows = connections ?? [];
   const incoming = rows.filter((c) => c.status === "pending" && c.recipient_id === user.id);
@@ -163,6 +168,25 @@ export default async function ConnectionsPage() {
         </section>
       )}
 
+      {suggestions && suggestions.length > 0 && (
+        <section className="mb-8">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
+            People in your field
+          </h2>
+          <div className="space-y-3">
+            {(suggestions as SuggestedConnection[]).map((person) => (
+              <PersonCard
+                key={person.id}
+                name={person.full_name || "Someone"}
+                headline={person.headline || person.industry}
+                avatarUrl={person.avatar_url}
+                action={<ConnectButton targetUserId={person.id} relation={{ status: "none" }} />}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
           Your connections ({accepted.length})
@@ -170,7 +194,10 @@ export default async function ConnectionsPage() {
         {accepted.length === 0 ? (
           <Card className="p-8 text-center text-slate-500">
             <Users className="mx-auto mb-3 h-8 w-8 text-slate-300" />
-            <p>No connections yet. Visit a candidate&apos;s public profile to connect.</p>
+            <p>
+              No connections yet. Connect with someone above, or visit a candidate&apos;s public
+              profile to connect.
+            </p>
           </Card>
         ) : (
           <div className="space-y-3">
