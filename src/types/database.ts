@@ -373,6 +373,24 @@ export type Connection = {
   updated_at: string;
 };
 
+export type SuggestedConnection = {
+  id: string;
+  full_name: string | null;
+  headline: string | null;
+  avatar_url: string | null;
+  industry: string | null;
+};
+
+export type Message = {
+  id: string;
+  connection_id: string;
+  sender_id: string;
+  body: string;
+  job_id: string | null;
+  read: boolean;
+  created_at: string;
+};
+
 export type ResumeScoreCategories = {
   ats_compatibility: number;
   keyword_coverage: number;
