@@ -74,8 +74,40 @@ const REVIEW_SCHEMA = {
       ],
       additionalProperties: false,
     },
+    projected_score: {
+      type: "integer" as const,
+      description:
+        "A realistic overall score (0-100) the candidate could reach by implementing every item in top_actions. Must be >= score, and grounded — never inflate past what the actions would plausibly earn.",
+    },
+    top_actions: {
+      type: "array" as const,
+      description:
+        "The 3-5 highest-impact, concrete edits or additions the candidate should make, ranked by impact. Each must name a specific change to a specific part of THIS resume (e.g. 'Add the team size and % revenue growth you drove to the Sales Manager bullet') — never generic advice like 'add more detail'.",
+      items: {
+        type: "object" as const,
+        properties: {
+          action: { type: "string" as const },
+          point_impact: {
+            type: "integer" as const,
+            description: "Realistic points (1-15) this single action would add to the overall score.",
+          },
+        },
+        required: ["action", "point_impact"],
+        additionalProperties: false,
+      },
+    },
   },
-  required: ["score", "summary", "strengths", "weaknesses", "suggestions", "keyword_gaps", "categories"],
+  required: [
+    "score",
+    "summary",
+    "strengths",
+    "weaknesses",
+    "suggestions",
+    "keyword_gaps",
+    "categories",
+    "projected_score",
+    "top_actions",
+  ],
   additionalProperties: false,
 };
 
@@ -125,7 +157,9 @@ export async function POST(request: Request) {
 - achievement_quality: how many bullet points show a measurable, quantified result?
 - skills_score: are the listed skills relevant, specific, and not vague buzzwords?
 - formatting_score: is structure consistent (dates present, no obvious gaps in the data)?
-- completeness_score: how many expected sections (summary, experience, education, skills) are actually filled in?`;
+- completeness_score: how many expected sections (summary, experience, education, skills) are actually filled in?
+
+Then, separately from the category scores, name the 3-5 SPECIFIC edits that would raise the score the most (top_actions), each pointing at a specific bullet, section, or missing item in THIS resume — never generic advice. Estimate a realistic point_impact per action and a projected_score for what the overall score would be if all of them were done.`;
 
   const prompt = jobDescription
     ? `Review this resume against the target job description. Score how well it matches (0-100, ATS-style), and give concrete, specific feedback.\n\nRESUME:\n${resumeText}\n\nJOB DESCRIPTION:\n${jobDescription}\n\n${categoryInstructions}`

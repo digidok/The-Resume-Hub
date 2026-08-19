@@ -91,6 +91,26 @@ export function AtsScannerForm({ resumes }: { resumes: { id: string; title: stri
             </div>
           )}
           {review.summary && <p className="text-sm text-slate-700">{review.summary}</p>}
+          {typeof review.projected_score === "number" &&
+            review.top_actions &&
+            review.top_actions.length > 0 &&
+            (review.score == null || review.projected_score > review.score) && (
+              <div className="rounded-lg border border-brand-200 bg-brand-50 p-3">
+                <p className="text-sm font-semibold text-brand-800">
+                  📈 Do these to reach ~{review.projected_score}%
+                </p>
+                <ul className="mt-2 space-y-1.5">
+                  {review.top_actions.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
+                      <span className="mt-0.5 shrink-0 rounded-full bg-brand-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                        +{item.point_impact}
+                      </span>
+                      <span>{item.action}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           {review.categories && (
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {(Object.keys(CATEGORY_LABELS) as (keyof ResumeScoreCategories)[]).map((key) => (

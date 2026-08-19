@@ -19,6 +19,24 @@ export default async function ResumesPage() {
     .eq("user_id", user.id)
     .order("updated_at", { ascending: false });
 
+  const resumeIds = (resumes ?? []).map((r) => r.id);
+  const { data: reviewRows } = resumeIds.length
+    ? await supabase
+        .from("ai_reviews")
+        .select("resume_id, score, created_at")
+        .in("resume_id", resumeIds)
+        .not("score", "is", null)
+        .order("created_at", { ascending: false })
+    : { data: [] };
+
+  // Each CV gets its own score — keep only the most recent scan per resume_id.
+  const latestScoreByResume = new Map<string, number>();
+  for (const row of reviewRows ?? []) {
+    if (!latestScoreByResume.has(row.resume_id)) {
+      latestScoreByResume.set(row.resume_id, row.score as number);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-6xl">
       <BackLink href="/dashboard" label="Dashboard" />
@@ -43,7 +61,7 @@ export default async function ResumesPage() {
               <p className="mt-1 text-sm capitalize text-slate-500">
                 {resume.template} template
               </p>
-              <div className="mt-3 flex items-center gap-2 text-xs">
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
                 <span
                   className={`rounded-full px-2 py-0.5 font-medium ${
                     resume.is_public
@@ -53,6 +71,15 @@ export default async function ResumesPage() {
                 >
                   {resume.is_public ? "Public" : "Private"}
                 </span>
+                {latestScoreByResume.has(resume.id) ? (
+                  <span className="rounded-full bg-brand-50 px-2 py-0.5 font-medium text-brand-700">
+                    {latestScoreByResume.get(resume.id)}% ATS score
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-amber-50 px-2 py-0.5 font-medium text-amber-700">
+                    Not scanned yet
+                  </span>
+                )}
                 <span className="text-slate-400">
                   Updated {new Date(resume.updated_at).toLocaleDateString()}
                 </span>
