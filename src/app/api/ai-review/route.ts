@@ -134,7 +134,12 @@ export async function POST(request: Request) {
   try {
     const message = await anthropic.messages.create({
       model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
-      max_tokens: 2048,
+      // The full review (summary + 4 feedback arrays + 8 grounded category
+      // scores) plus the model's own reasoning both draw from this same
+      // budget — 2048 was cutting responses off mid-JSON on a real resume
+      // more often than not (confirmed empirically: 2 of 3 real-resume
+      // test runs hit stop_reason "max_tokens" and failed JSON.parse).
+      max_tokens: 4096,
       output_config: {
         format: { type: "json_schema", schema: REVIEW_SCHEMA },
       },

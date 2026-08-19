@@ -109,7 +109,11 @@ ${(content.projects ?? []).map((p) => `- id: ${p.id}, description: ${p.descripti
   try {
     const message = await anthropic.messages.create({
       model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
-      max_tokens: 2048,
+      // Same risk shape as the ai-review route: translating every
+      // experience/project description in one structured call can need
+      // more than 2048 tokens combined with the model's own reasoning,
+      // which silently draws from the same budget and truncates the JSON.
+      max_tokens: 4096,
       output_config: { format: { type: "json_schema", schema: TRANSLATION_SCHEMA } },
       messages: [{ role: "user", content: prompt }],
     });
