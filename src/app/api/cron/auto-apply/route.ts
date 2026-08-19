@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { findAutoApplyMatches } from "@/lib/autoapply/match";
 import { sendAutoApplyEmail } from "@/lib/notifications/email";
+import { notifyCandidate } from "@/lib/notifications/dispatch";
 
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
@@ -63,8 +64,8 @@ export async function GET(request: Request) {
 
     candidatesMatched += 1;
 
-    await supabase.from("notifications").insert({
-      user_id: setting.user_id,
+    await notifyCandidate(supabase, {
+      userId: setting.user_id,
       type: "auto_apply",
       title: "Auto-apply found new matches",
       body: `Resume Hub auto-applied to ${appliedCount} new job${appliedCount === 1 ? "" : "s"} for you.`,

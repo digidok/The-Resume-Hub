@@ -14,6 +14,8 @@ import { ShareJobButton } from "@/components/jobs/share-job-button";
 import { computeJobMatch } from "@/lib/matching/job-match";
 import { formatSalaryFull } from "@/lib/currency";
 import { ADZUNA_COUNTRIES } from "@/lib/adzuna/sync";
+import { whatsappApplyLink } from "@/lib/whatsapp";
+import { MessageCircle } from "lucide-react";
 import type { CareerProfile, Job } from "@/types/database";
 
 const COUNTRY_ISO: Record<string, string> = Object.fromEntries(
@@ -411,6 +413,17 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
               </Link>{" "}
               to apply for this job.
             </p>
+          )}
+          {!job.application_url && !alreadyApplied && (
+            <a
+              href={whatsappApplyLink(job.id)}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 flex items-center gap-2 text-sm font-medium text-emerald-700 hover:underline"
+            >
+              <MessageCircle className="h-4 w-4 shrink-0" />
+              Or apply via WhatsApp — no data-heavy site needed
+            </a>
           )}
         </Card>
       )}
