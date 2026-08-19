@@ -24,6 +24,35 @@ export type InvoiceRequest = {
   updated_at: string;
 };
 
+export type QuizUrgency = "has_interview" | "applying" | "starting" | "exploring";
+export type QuizIndustry = "mining_engineering" | "corporate_finance" | "hr_recruitment" | "trades" | "other";
+export type QuizPainPoint = "freeze_up" | "tricky_questions" | "rambling" | "no_offers";
+export type QuizExperienceLevel = "first_in_years" | "often_no_offer" | "confident_edge" | "first_job";
+export type QuizFormatPref = "whatsapp_daily" | "full_document" | "mock_practice" | "all";
+export type QuizTimeline = "this_week" | "two_weeks" | "this_month" | "early_prep";
+
+export type QuizResponse = {
+  id: string;
+  session_id: string;
+  user_id: string | null;
+  name: string | null;
+  phone: string | null;
+  email: string | null;
+  urgency: QuizUrgency | null;
+  industry: QuizIndustry | null;
+  pain_point: QuizPainPoint | null;
+  experience_level: QuizExperienceLevel | null;
+  format_pref: QuizFormatPref | null;
+  timeline: QuizTimeline | null;
+  plan_variant: string | null;
+  completed: boolean;
+  payment_id: string | null;
+  utm_source: string | null;
+  nurture_sent_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Profile = {
   id: string;
   role: ProfileRole;

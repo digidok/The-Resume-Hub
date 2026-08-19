@@ -742,6 +742,12 @@ export default function Home() {
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
+              <p className="mt-4 text-sm text-white/70">
+                Not ready for a full CV yet?{" "}
+                <Link href="/interview-ready?utm_source=rh_homepage" className="font-medium text-white underline underline-offset-2 hover:text-white/90">
+                  Get your free interview prep plan
+                </Link>
+              </p>
             </ScrollReveal>
           </div>
         </section>

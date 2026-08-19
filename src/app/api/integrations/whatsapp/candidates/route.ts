@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
-
-function normalizePhone(raw: string) {
-  const trimmed = raw.trim();
-  const digits = trimmed.replace(/[^\d]/g, "");
-  return trimmed.startsWith("+") ? `+${digits}` : digits;
-}
+import { normalizePhone } from "@/lib/phone";
 
 async function linkExistingCandidate(
   supabase: ReturnType<typeof createAdminClient>,
