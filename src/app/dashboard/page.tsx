@@ -10,6 +10,7 @@ import {
   Bookmark,
   Target,
   Sparkles,
+  MessageSquare,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { createResume } from "@/lib/resumes/actions";
@@ -373,6 +374,44 @@ export default async function DashboardPage() {
           </Link>
         </div>
       </div>
+
+      <Link
+        href="/dashboard/mock-interview"
+        className={`group flex flex-wrap items-center justify-between gap-4 rounded-2xl px-6 py-5 transition hover:-translate-y-0.5 ${
+          statusCounts.interviewing > 0
+            ? "bg-brand-950 hover:shadow-lg"
+            : "border border-brand-200 bg-brand-50 hover:shadow-md"
+        }`}
+      >
+        <div className="flex items-center gap-4">
+          <span
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
+              statusCounts.interviewing > 0 ? "bg-white/10 text-white" : "bg-white text-brand-700"
+            }`}
+          >
+            <MessageSquare className="h-5 w-5" />
+          </span>
+          <div>
+            <p className={`font-semibold ${statusCounts.interviewing > 0 ? "text-white" : "text-slate-900"}`}>
+              {statusCounts.interviewing > 0
+                ? `You have ${statusCounts.interviewing} interview${statusCounts.interviewing === 1 ? "" : "s"} lined up — practice now`
+                : "Get interview-ready before you need to be"}
+            </p>
+            <p className={`text-sm ${statusCounts.interviewing > 0 ? "text-slate-300" : "text-slate-600"}`}>
+              AI Interview Coach asks role-specific questions and gives instant feedback — free to
+              start.
+            </p>
+          </div>
+        </div>
+        <span
+          className={`flex shrink-0 items-center gap-1.5 text-sm font-semibold ${
+            statusCounts.interviewing > 0 ? "text-white" : "text-brand-700"
+          }`}
+        >
+          Try Interview Coach
+          <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+        </span>
+      </Link>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         <StatCard
