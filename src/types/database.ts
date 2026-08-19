@@ -67,6 +67,7 @@ export type Profile = {
   subscription_expires_at: string | null;
   job_posting_credits: number;
   phone_number: string | null;
+  whatsapp_opt_in: boolean;
   source: string;
   created_at: string;
   updated_at: string;

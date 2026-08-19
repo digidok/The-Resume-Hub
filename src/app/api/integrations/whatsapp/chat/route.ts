@@ -17,6 +17,8 @@ What Resume Hub does:
 - Applications page tracks status (submitted, interviewing, offer, hired) for every application, manual or auto-applied.
 - Auto-apply (opt-in): applies daily to new matching jobs using a chosen resume and set keywords, emails the candidate each time; can be turned off anytime.
 - Mock interview: AI-driven practice interview chat.
+- Apply for jobs directly on WhatsApp: every job listing has an "Apply via WhatsApp" link that sends a prefilled message — tapping Send applies with their most recently updated CV. Requires a Resume Hub account with this WhatsApp number saved under Profile settings.
+- WhatsApp status updates (opt-in, on by default once someone applies via WhatsApp): a message here whenever an application status changes (interviewing, offer, rejected) or auto-apply finds new matches. Turned off anytime from Profile settings.
 
 Pricing:
 - Creating an account, building a resume, and applying to jobs is completely free.

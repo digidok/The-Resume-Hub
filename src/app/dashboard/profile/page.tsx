@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AvatarUploader } from "@/components/profile/avatar-uploader";
 import { HeadlineEditor } from "@/components/profile/headline-editor";
+import { WhatsAppSettings } from "@/components/profile/whatsapp-settings";
 
 export default async function ProfileSettingsPage() {
   const supabase = await createClient();
@@ -18,7 +19,7 @@ export default async function ProfileSettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, open_to_work, full_name, avatar_url, headline")
+    .select("role, open_to_work, full_name, avatar_url, headline, phone_number, whatsapp_opt_in")
     .eq("id", user.id)
     .single();
 
@@ -59,6 +60,10 @@ export default async function ProfileSettingsPage() {
           <Card className="p-6">
             <p className="mb-3 font-medium text-slate-900">Headline</p>
             <HeadlineEditor headline={profile.headline} />
+          </Card>
+          <Card className="p-6">
+            <p className="mb-3 font-medium text-slate-900">WhatsApp</p>
+            <WhatsAppSettings phoneNumber={profile.phone_number} whatsappOptIn={profile.whatsapp_opt_in} />
           </Card>
           <Card className="space-y-4 p-6">
             <div className="flex items-start justify-between gap-4">

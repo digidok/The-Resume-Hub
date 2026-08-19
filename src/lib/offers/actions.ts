@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { notifyCandidate } from "@/lib/notifications/dispatch";
 
 export async function saveOfferDraft(jobId: string, applicationId: string, content: string) {
   const supabase = await createClient();
@@ -64,6 +66,27 @@ export async function sendOffer(jobId: string, applicationId: string, content: s
 
   revalidatePath(`/dashboard/jobs/${jobId}/applicants/${applicationId}/offer`);
   revalidatePath(`/dashboard/jobs/${jobId}/applicants`);
+
+  // Best-effort candidate notification (in-app + WhatsApp).
+  try {
+    const admin = createAdminClient();
+    const { data: app } = await admin
+      .from("applications")
+      .select("candidate_id, jobs(title, company)")
+      .eq("id", applicationId)
+      .single();
+    const jobInfo = app?.jobs as { title?: string; company?: string } | null;
+    if (app && jobInfo) {
+      await notifyCandidate(admin, {
+        userId: app.candidate_id,
+        type: "application_status",
+        title: "Application update",
+        body: `You've received an offer for "${jobInfo.title ?? "the role"}" at ${jobInfo.company ?? "the employer"}! Check your Applications page on resumehub.co.za to respond.`,
+      });
+    }
+  } catch (err) {
+    console.error("Offer notification failed", err);
+  }
 }
 
 export async function acceptOffer(offerId: string, applicationId: string) {

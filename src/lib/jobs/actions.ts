@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { notifyCandidate } from "@/lib/notifications/dispatch";
 import type { AuthActionState } from "@/lib/auth/actions";
 import type { EmploymentType } from "@/types/database";
 
@@ -122,6 +124,39 @@ export async function updateApplicationStatus(
 
   revalidatePath(`/dashboard/jobs/${jobId}/applicants`);
   revalidatePath("/dashboard/applications");
+
+  // Best-effort candidate notification (in-app + WhatsApp) — uses the admin
+  // client since the candidate isn't the authenticated user in this request.
+  try {
+    const admin = createAdminClient();
+    const { data: app } = await admin
+      .from("applications")
+      .select("candidate_id, jobs(title, company)")
+      .eq("id", applicationId)
+      .single();
+    const jobInfo = app?.jobs as { title?: string; company?: string } | null;
+    if (app && jobInfo) {
+      const jobTitle = jobInfo.title ?? "the role";
+      const company = jobInfo.company ?? "the employer";
+      const STATUS_MESSAGES: Record<typeof status, string> = {
+        interviewing: `You've been moved to interviewing for "${jobTitle}" at ${company}${
+          status === "interviewing" && interviewScheduledAt
+            ? ` — interview scheduled for ${new Date(interviewScheduledAt).toLocaleString()}`
+            : ""
+        }.`,
+        offer: `You've received an offer for "${jobTitle}" at ${company}! Check your Applications page on resumehub.co.za to respond.`,
+        rejected: `Your application for "${jobTitle}" at ${company} wasn't successful this time.`,
+      };
+      await notifyCandidate(admin, {
+        userId: app.candidate_id,
+        type: "application_status",
+        title: "Application update",
+        body: STATUS_MESSAGES[status],
+      });
+    }
+  } catch (err) {
+    console.error("Application status notification failed", err);
+  }
 }
 
 export async function toggleShortlist(jobId: string, applicationId: string, shortlisted: boolean) {
