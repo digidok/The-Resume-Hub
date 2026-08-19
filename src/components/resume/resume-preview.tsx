@@ -13,9 +13,13 @@ type TemplateConfig = {
   accent2?: string;
   /** "pro" templates are only selectable on a Pro subscription — see hasUnlimitedCredits. */
   tier: "free" | "pro";
+  /** Groups templates in the picker UI. Kept off the original 12 for backward compatibility. */
+  group?: string;
 };
 
-export const RESUME_TEMPLATES: TemplateConfig[] = [
+/** The original, hand-named templates. IDs are referenced by resumes.template in the
+ * database — never rename or remove one of these, only add new ids elsewhere. */
+const SIGNATURE_TEMPLATES: TemplateConfig[] = ([
   {
     id: "professional",
     label: "Professional",
@@ -59,7 +63,77 @@ export const RESUME_TEMPLATES: TemplateConfig[] = [
     accent2: "#b8933f",
     tier: "pro",
   },
+] as Omit<TemplateConfig, "group">[]).map((t) => ({ ...t, group: "Signature" }));
+
+/** Colour palettes used to multiply the 4 layout engines above into a full template
+ * library — the same approach most resume builders use to offer "100+ templates"
+ * without hand-building 100+ distinct layouts. */
+const PALETTES: { slug: string; name: string; accent: string; accentSoft: string }[] = [
+  { slug: "navy", name: "Navy", accent: "#0f172a", accentSoft: "#eef2f6" },
+  { slug: "slate", name: "Slate", accent: "#475569", accentSoft: "#f8fafc" },
+  { slug: "teal", name: "Teal", accent: "#0d9488", accentSoft: "#eafffc" },
+  { slug: "emerald", name: "Emerald", accent: "#059669", accentSoft: "#ecfdf5" },
+  { slug: "coral", name: "Coral", accent: "#f2602c", accentSoft: "#fff3ee" },
+  { slug: "crimson", name: "Crimson", accent: "#b91c1c", accentSoft: "#fef2f2" },
+  { slug: "indigo", name: "Indigo", accent: "#4338ca", accentSoft: "#eef2ff" },
+  { slug: "amber", name: "Amber", accent: "#b45309", accentSoft: "#fffbeb" },
+  { slug: "ocean", name: "Ocean", accent: "#0369a1", accentSoft: "#f0f9ff" },
 ];
+
+type FamilyDef = {
+  key: string;
+  labelSuffix: string;
+  layout: TemplateConfig["layout"];
+  photo: boolean;
+  font: TemplateConfig["font"];
+  compact?: boolean;
+  goldAccent2?: boolean;
+};
+
+const FAMILIES: FamilyDef[] = [
+  { key: "essential", labelSuffix: "Essential", layout: "single", photo: false, font: "font-serif" },
+  { key: "essential-photo", labelSuffix: "Essential with Photo", layout: "single", photo: true, font: "font-serif" },
+  { key: "contemporary", labelSuffix: "Contemporary", layout: "single", photo: false, font: "font-sans" },
+  { key: "contemporary-photo", labelSuffix: "Contemporary with Photo", layout: "single", photo: true, font: "font-sans" },
+  { key: "streamlined", labelSuffix: "Streamlined", layout: "single", photo: false, font: "font-sans", compact: true },
+  { key: "panel", labelSuffix: "Panel", layout: "sidebar", photo: true, font: "font-sans" },
+  { key: "panel-serif", labelSuffix: "Panel Serif", layout: "sidebar", photo: true, font: "font-serif" },
+  { key: "spotlight", labelSuffix: "Spotlight", layout: "executive", photo: true, font: "font-serif", goldAccent2: true },
+  { key: "spotlight-no-photo", labelSuffix: "Spotlight (No Photo)", layout: "executive", photo: false, font: "font-serif", goldAccent2: true },
+  { key: "showcase", labelSuffix: "Showcase", layout: "portfolio", photo: true, font: "font-serif", goldAccent2: true },
+  { key: "showcase-no-photo", labelSuffix: "Showcase (No Photo)", layout: "portfolio", photo: false, font: "font-serif", goldAccent2: true },
+];
+
+/** A handful of the generated variants stay free so the free plan isn't limited to
+ * only the 4 original free templates — the rest of the library is a Pro perk. */
+const FREE_GENERATED_IDS = new Set([
+  "essential-slate",
+  "essential-teal",
+  "essential-photo-slate",
+  "contemporary-emerald",
+  "contemporary-photo-emerald",
+]);
+
+const GENERATED_TEMPLATES: TemplateConfig[] = FAMILIES.flatMap((family) =>
+  PALETTES.map((palette) => {
+    const id = `${family.key}-${palette.slug}`;
+    return {
+      id,
+      label: `${palette.name} ${family.labelSuffix}`,
+      layout: family.layout,
+      photo: family.photo,
+      font: family.font,
+      compact: family.compact,
+      accent: palette.accent,
+      accentSoft: palette.accentSoft,
+      accent2: family.goldAccent2 ? "#b8933f" : undefined,
+      tier: FREE_GENERATED_IDS.has(id) ? "free" : "pro",
+      group: family.labelSuffix,
+    };
+  })
+);
+
+export const RESUME_TEMPLATES: TemplateConfig[] = [...SIGNATURE_TEMPLATES, ...GENERATED_TEMPLATES];
 
 function formatRange(start?: string, end?: string, current?: boolean) {
   const parts = [start, current ? "Present" : end].filter(Boolean);

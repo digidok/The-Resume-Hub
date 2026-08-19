@@ -34,8 +34,8 @@ type FeatureRow = { label: string; free: FeatureCell; pro: FeatureCell };
 
 const CANDIDATE_FEATURE_TABLE: FeatureRow[] = [
   { label: "Resume builder with live preview", free: true, pro: true },
-  { label: "Basic templates (Classic, Minimal, Professional & more)", free: true, pro: true },
-  { label: "All templates, including Executive Portfolio", free: false, pro: true },
+  { label: "9 curated templates (Classic, Minimal, Professional & more)", free: true, pro: true },
+  { label: "Full library of 100+ templates, including Executive Portfolio", free: false, pro: true },
   { label: "AI credits", free: "20 to start", pro: "Unlimited" },
   { label: "AI resume review & ATS scoring", free: "Uses credits", pro: "Unlimited" },
   { label: "AI fill gaps, suggest duties & align to a job", free: "Uses credits", pro: "Unlimited" },
