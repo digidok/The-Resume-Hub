@@ -4,6 +4,7 @@ import { Logo } from "@/components/ui/logo";
 
 const PRODUCT_LINKS = [
   { href: "/dashboard/resumes", label: "Resume builder" },
+  { href: "/cv-examples", label: "Free CV examples" },
   { href: "/dashboard/ats-scanner", label: "AI resume review" },
   { href: "/dashboard/auto-apply", label: "Auto-apply" },
   { href: "/jobs", label: "Job board" },
