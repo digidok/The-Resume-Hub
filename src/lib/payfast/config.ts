@@ -59,6 +59,22 @@ export const PRO_ONCE_OFF_PACKAGE: CreditPackage = {
   subscriptionPlanTarget: "candidate_pro",
 };
 
+export type InterviewPackPackage = {
+  id: "quick_prep" | "full_prep_pack" | "prep_and_mock";
+  label: string;
+  amountZar: number;
+};
+
+// Sold from the /interview-ready quiz funnel, not the subscription page —
+// flat one-off purchases, no credits or Pro plan attached. Content
+// fulfillment (the WhatsApp tip sequence / prep document) is handled
+// outside this app once payment confirms — see the n8n webhook contract.
+export const INTERVIEW_PACK_PACKAGES: InterviewPackPackage[] = [
+  { id: "quick_prep", label: "Quick Prep", amountZar: 199 },
+  { id: "full_prep_pack", label: "Full Prep Pack", amountZar: 399 },
+  { id: "prep_and_mock", label: "Prep + Mock Interview", amountZar: 699 },
+];
+
 export type SubscriptionPackage = {
   id: "candidate_pro" | "employer_jobs";
   label: string;
