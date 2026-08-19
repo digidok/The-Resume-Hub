@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signUp, type AuthActionState } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/field";
+import { PasswordInput } from "@/components/ui/password-input";
 import { OAuthButtons } from "@/components/auth/oauth-buttons";
 import type { ProfileRole } from "@/types/database";
 
@@ -91,14 +92,7 @@ export function SignupForm({
       </div>
       <div>
         <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="new-password"
-          minLength={8}
-          required
-        />
+        <PasswordInput id="password" name="password" autoComplete="new-password" minLength={8} required />
         <p className="mt-1 text-xs text-slate-500">At least 8 characters.</p>
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}

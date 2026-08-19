@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signIn, type AuthActionState } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/field";
+import { PasswordInput } from "@/components/ui/password-input";
 import { OAuthButtons } from "@/components/auth/oauth-buttons";
 
 const initialState: AuthActionState = {};
@@ -27,13 +28,7 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
             Forgot password?
           </Link>
         </div>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-        />
+        <PasswordInput id="password" name="password" autoComplete="current-password" required />
       </div>
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       <Button type="submit" disabled={pending} className="w-full">
