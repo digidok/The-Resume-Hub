@@ -24,6 +24,22 @@ function newId() {
   return crypto.randomUUID();
 }
 
+/** Groups the 100+ template library by family (Signature, Essential, Contemporary, …) so the
+ * picker stays scannable instead of a single 100+ item flat list. */
+const TEMPLATE_GROUPS: [string, typeof RESUME_TEMPLATES][] = (() => {
+  const order: string[] = [];
+  const byGroup = new Map<string, typeof RESUME_TEMPLATES>();
+  for (const t of RESUME_TEMPLATES) {
+    const group = t.group ?? "Signature";
+    if (!byGroup.has(group)) {
+      byGroup.set(group, []);
+      order.push(group);
+    }
+    byGroup.get(group)!.push(t);
+  }
+  return order.map((group) => [group, byGroup.get(group)!]);
+})();
+
 function moveItem<T>(items: T[], index: number, direction: -1 | 1): T[] {
   const target = index + direction;
   if (target < 0 || target >= items.length) return items;
@@ -373,11 +389,15 @@ export function ResumeEditor({
           <div>
             <Label htmlFor="template">Template</Label>
             <Select id="template" value={template} onChange={(e) => setTemplate(e.target.value)}>
-              {RESUME_TEMPLATES.map((t) => (
-                <option key={t.id} value={t.id} disabled={t.tier === "pro" && !isPro}>
-                  {t.label}
-                  {t.tier === "pro" && !isPro ? " — Pro" : ""}
-                </option>
+              {TEMPLATE_GROUPS.map(([group, templates]) => (
+                <optgroup key={group} label={group}>
+                  {templates.map((t) => (
+                    <option key={t.id} value={t.id} disabled={t.tier === "pro" && !isPro}>
+                      {t.label}
+                      {t.tier === "pro" && !isPro ? " — Pro" : ""}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </Select>
             {!isPro && (
