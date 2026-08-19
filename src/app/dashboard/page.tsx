@@ -263,7 +263,7 @@ export default async function DashboardPage() {
       .select("id, job_id, status, created_at, updated_at, interview_scheduled_at")
       .eq("candidate_id", user.id),
     supabase.from("saved_jobs").select("id, job_id").eq("user_id", user.id),
-    supabase.from("resumes").select("id, updated_at").eq("user_id", user.id).order("updated_at", { ascending: false }),
+    supabase.from("resumes").select("id, title, updated_at").eq("user_id", user.id).order("updated_at", { ascending: false }),
     supabase.from("career_profiles").select("*").eq("user_id", user.id).maybeSingle(),
     supabase.from("jobs").select("*").eq("status", "open").order("posted_at", { ascending: false }).limit(30),
   ]);
@@ -312,18 +312,26 @@ export default async function DashboardPage() {
   const resumeIds = resumes.map((r) => r.id);
   const primaryResumeId = resumes[0]?.id ?? null;
 
-  const { data: latestReviews } = resumeIds.length
+  const { data: reviewRows } = resumeIds.length
     ? await supabase
         .from("ai_reviews")
-        .select("score, created_at")
+        .select("resume_id, score, created_at")
         .in("resume_id", resumeIds)
         .not("score", "is", null)
         .order("created_at", { ascending: false })
-        .limit(2)
     : { data: [] };
 
-  const profileMatchScore = latestReviews?.[0]?.score ?? null;
-  const previousMatchScore = latestReviews?.[1]?.score ?? null;
+  // Each CV is scored independently — the trend must compare a resume's
+  // score to its OWN previous scan, never to a different resume's score.
+  const latestReview = reviewRows?.[0] ?? null;
+  const profileMatchScore = latestReview?.score ?? null;
+  const latestScoredResumeTitle = latestReview
+    ? (resumes.find((r) => r.id === latestReview.resume_id)?.title ?? null)
+    : null;
+  const previousMatchScore =
+    (latestReview
+      ? reviewRows?.find((r, i) => i > 0 && r.resume_id === latestReview.resume_id)?.score
+      : null) ?? null;
 
   const credits = profile?.credits_remaining ?? 0;
   const lowCredits = credits < LOW_CREDITS_THRESHOLD;
@@ -400,17 +408,17 @@ export default async function DashboardPage() {
         />
         <StatCard
           icon={Target}
-          label="Profile match score"
+          label="Latest CV score"
           value={profileMatchScore != null ? `${profileMatchScore}%` : "—"}
-          href="/dashboard/ats-scanner"
+          href="/dashboard/resumes"
           trend={
             profileMatchScore != null && previousMatchScore != null
               ? {
-                  text: `${profileMatchScore >= previousMatchScore ? "+" : ""}${profileMatchScore - previousMatchScore}% since last review`,
+                  text: `${profileMatchScore >= previousMatchScore ? "+" : ""}${profileMatchScore - previousMatchScore}% since last scan of "${latestScoredResumeTitle}"`,
                 }
-              : profileMatchScore == null
-                ? { text: "Run an ATS scan to get scored" }
-                : undefined
+              : profileMatchScore != null && latestScoredResumeTitle
+                ? { text: `For "${latestScoredResumeTitle}" — each CV is scored separately` }
+                : { text: "Run an ATS scan to get scored" }
           }
         />
         <StatCard

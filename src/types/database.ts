@@ -414,6 +414,8 @@ export type AiReview = {
     suggestions?: string[];
     keyword_gaps?: string[];
     categories?: ResumeScoreCategories;
+    projected_score?: number;
+    top_actions?: { action: string; point_impact: number }[];
   };
   created_at: string;
 };
