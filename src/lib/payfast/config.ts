@@ -75,6 +75,17 @@ export const INTERVIEW_PACK_PACKAGES: InterviewPackPackage[] = [
   { id: "prep_and_mock", label: "Prep + Mock Interview", amountZar: 699 },
 ];
 
+// Pricing for the WhatsApp-first done-for-you CV/LinkedIn service (Meta ad →
+// WhatsApp → rep-assisted generation → admin approval → this checkout).
+// Payment for these orders is generated and confirmed entirely outside this
+// app's own Payfast integration (n8n owns that leg, same as the interview
+// pack) — this map just gives the review-queue client-decision route a
+// single source of truth for the amount to hand back to n8n.
+export const WHATSAPP_ORDER_PRICING: Record<"cv_cover_letter" | "linkedin_revamp", number> = {
+  cv_cover_letter: 150,
+  linkedin_revamp: 599,
+};
+
 export type SubscriptionPackage = {
   id: "candidate_pro" | "employer_jobs";
   label: string;
