@@ -4,7 +4,7 @@ import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
 import { WhatsAppReviewActions } from "@/components/admin/whatsapp-review-actions";
-import type { WhatsAppReviewQueueItem, WhatsAppReviewStatus } from "@/types/database";
+import type { WhatsAppClientStatus, WhatsAppReviewQueueItem, WhatsAppReviewStatus } from "@/types/database";
 
 const SERVICE_LABELS: Record<string, string> = {
   cv_cover_letter: "CV + Cover Letter — R150",
@@ -15,6 +15,18 @@ const STATUS_STYLES: Record<WhatsAppReviewStatus, string> = {
   pending: "bg-amber-100 text-amber-700",
   approved: "bg-emerald-100 text-emerald-700",
   rejected: "bg-red-100 text-red-700",
+  changes_requested: "bg-blue-100 text-blue-700",
+};
+
+const CLIENT_STATUS_LABELS: Record<WhatsAppClientStatus, string> = {
+  pending: "Client: waiting",
+  approved: "Client: approved — ready for payment",
+  changes_requested: "Client: requested changes",
+};
+
+const CLIENT_STATUS_STYLES: Record<WhatsAppClientStatus, string> = {
+  pending: "bg-slate-100 text-slate-500",
+  approved: "bg-emerald-100 text-emerald-700",
   changes_requested: "bg-blue-100 text-blue-700",
 };
 
@@ -123,12 +135,24 @@ export default async function WhatsAppOrdersPage() {
                   {item.reviewed_at ? new Date(item.reviewed_at).toLocaleString() : ""}
                 </p>
                 {item.admin_notes && <p className="mt-1 text-xs text-slate-500">“{item.admin_notes}”</p>}
+                {item.client_notes && (
+                  <p className="mt-1 text-xs text-slate-500">Client: “{item.client_notes}”</p>
+                )}
               </div>
-              <span
-                className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[item.status]}`}
-              >
-                {item.status.replace("_", " ")}
-              </span>
+              <div className="flex flex-wrap gap-2">
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[item.status]}`}
+                >
+                  {item.status.replace("_", " ")}
+                </span>
+                {item.status === "approved" && (
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${CLIENT_STATUS_STYLES[item.client_status]}`}
+                  >
+                    {CLIENT_STATUS_LABELS[item.client_status]}
+                  </span>
+                )}
+              </div>
             </Card>
           ))}
         </div>

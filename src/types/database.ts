@@ -512,6 +512,7 @@ export type BlogPost = {
 
 export type WhatsAppServiceType = "cv_cover_letter" | "linkedin_revamp";
 export type WhatsAppReviewStatus = "pending" | "approved" | "rejected" | "changes_requested";
+export type WhatsAppClientStatus = "pending" | "approved" | "changes_requested";
 
 export type WhatsAppReviewQueueItem = {
   id: string;
@@ -525,6 +526,9 @@ export type WhatsAppReviewQueueItem = {
   admin_notes: string | null;
   reviewed_by: string | null;
   reviewed_at: string | null;
+  client_status: WhatsAppClientStatus;
+  client_notes: string | null;
+  client_approved_at: string | null;
   created_at: string;
   updated_at: string;
 };
