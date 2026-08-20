@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { normalizePhone } from "@/lib/phone";
 import { WHATSAPP_ORDER_PRICING } from "@/lib/payfast/config";
 import type { WhatsAppServiceType } from "@/types/database";
 
@@ -25,6 +26,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const body = await request.json().catch(() => null);
   const decision = typeof body?.decision === "string" ? body.decision : "";
   const notes = typeof body?.notes === "string" ? body.notes.trim() : "";
+  const discountCode = typeof body?.discountCode === "string" ? body.discountCode.trim() : "";
 
   if (!DECISIONS.includes(decision as (typeof DECISIONS)[number])) {
     return NextResponse.json({ error: `decision must be one of: ${DECISIONS.join(", ")}` }, { status: 400 });
@@ -33,7 +35,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const supabase = createAdminClient();
   const { data: review } = await supabase
     .from("whatsapp_review_queue")
-    .select("status, service_type")
+    .select("status, service_type, customer_phone")
     .eq("id", id)
     .maybeSingle();
 
@@ -61,17 +63,44 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     });
   }
 
+  let amountZar = WHATSAPP_ORDER_PRICING[review.service_type as WhatsAppServiceType];
+  let discountCodeId: string | null = null;
+  let discountApplied = false;
+
+  // A referral discount is only redeemable by its own owner, on their own next
+  // order — verified by matching this order's customer phone to the code
+  // owner's account phone, not just possession of the code string.
+  if (discountCode) {
+    const { data: code } = await supabase
+      .from("discount_codes")
+      .select("id, percent_off, owner_id, redeemed")
+      .eq("code", discountCode)
+      .maybeSingle();
+    if (code && !code.redeemed) {
+      const { data: ownerProfile } = await supabase
+        .from("profiles")
+        .select("phone_number")
+        .eq("id", code.owner_id)
+        .single();
+      if (ownerProfile?.phone_number === normalizePhone(review.customer_phone)) {
+        amountZar = Math.round(amountZar * (1 - code.percent_off / 100));
+        discountCodeId = code.id;
+        discountApplied = true;
+      }
+    }
+  }
+
   await supabase
     .from("whatsapp_review_queue")
     .update({
       client_status: "approved",
       client_notes: notes || null,
       client_approved_at: new Date().toISOString(),
+      discount_code_id: discountCodeId,
+      amount_charged_zar: amountZar,
       updated_at: new Date().toISOString(),
     })
     .eq("id", id);
 
-  const amountZar = WHATSAPP_ORDER_PRICING[review.service_type as WhatsAppServiceType];
-
-  return NextResponse.json({ readyForPayment: true, amountZar });
+  return NextResponse.json({ readyForPayment: true, amountZar, discountApplied });
 }

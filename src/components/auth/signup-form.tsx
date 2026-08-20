@@ -16,9 +16,11 @@ const initialState: AuthActionState = {};
 export function SignupForm({
   redirectTo,
   initialError,
+  referredByCode,
 }: {
   redirectTo: string;
   initialError?: string;
+  referredByCode?: string;
 }) {
   const [state, formAction, pending] = useActionState(signUp, initialState);
   const [role, setRole] = useState<ProfileRole>("candidate");
@@ -31,6 +33,7 @@ export function SignupForm({
   return (
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="redirect" value={redirectTo} />
+      {referredByCode && <input type="hidden" name="referred_by_code" value={referredByCode} />}
       <div>
         <Label>I am a…</Label>
         <div className="grid grid-cols-2 gap-2">

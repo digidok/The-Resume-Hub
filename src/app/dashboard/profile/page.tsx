@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { AvatarUploader } from "@/components/profile/avatar-uploader";
 import { HeadlineEditor } from "@/components/profile/headline-editor";
 import { WhatsAppSettings } from "@/components/profile/whatsapp-settings";
+import { ReferralCard } from "@/components/profile/referral-card";
 
 export default async function ProfileSettingsPage() {
   const supabase = await createClient();
@@ -19,7 +20,9 @@ export default async function ProfileSettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, open_to_work, full_name, avatar_url, headline, phone_number, whatsapp_opt_in")
+    .select(
+      "role, open_to_work, full_name, avatar_url, headline, phone_number, whatsapp_opt_in, referral_code"
+    )
     .eq("id", user.id)
     .single();
 
@@ -27,17 +30,23 @@ export default async function ProfileSettingsPage() {
     redirect("/dashboard");
   }
 
-  const [{ count: publicResumeCount }, { count: careerProfileCount }] = await Promise.all([
-    supabase
-      .from("resumes")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .eq("is_public", true),
-    supabase
-      .from("career_profiles")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id),
-  ]);
+  const [{ count: publicResumeCount }, { count: careerProfileCount }, { count: unredeemedDiscounts }] =
+    await Promise.all([
+      supabase
+        .from("resumes")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("is_public", true),
+      supabase
+        .from("career_profiles")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id),
+      supabase
+        .from("discount_codes")
+        .select("id", { count: "exact", head: true })
+        .eq("owner_id", user.id)
+        .eq("redeemed", false),
+    ]);
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -64,6 +73,13 @@ export default async function ProfileSettingsPage() {
           <Card className="p-6">
             <p className="mb-3 font-medium text-slate-900">WhatsApp</p>
             <WhatsAppSettings phoneNumber={profile.phone_number} whatsappOptIn={profile.whatsapp_opt_in} />
+          </Card>
+          <Card className="p-6">
+            <p className="mb-3 font-medium text-slate-900">Refer a friend</p>
+            <ReferralCard
+              referralCode={profile.referral_code}
+              unredeemedDiscounts={unredeemedDiscounts ?? 0}
+            />
           </Card>
           <Card className="space-y-4 p-6">
             <div className="flex items-start justify-between gap-4">

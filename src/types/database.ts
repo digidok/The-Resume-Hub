@@ -68,6 +68,8 @@ export type Profile = {
   job_posting_credits: number;
   phone_number: string | null;
   whatsapp_opt_in: boolean;
+  referral_code: string;
+  referred_by: string | null;
   source: string;
   created_at: string;
   updated_at: string;
@@ -533,8 +535,43 @@ export type WhatsAppReviewQueueItem = {
   access_expires_at: string | null;
   provisioned_profile_id: string | null;
   provisioned_resume_id: string | null;
+  provisioned_linkedin_pack_id: string | null;
+  discount_code_id: string | null;
+  amount_charged_zar: number | null;
   created_at: string;
   updated_at: string;
+};
+
+export type LinkedInExperienceEntry = {
+  role: string;
+  company: string;
+  bullets: string[];
+};
+
+export type LinkedInCopyPack = {
+  id: string;
+  user_id: string;
+  review_id: string | null;
+  headline: string | null;
+  about: string | null;
+  experience: LinkedInExperienceEntry[];
+  skills: string[];
+  created_at: string;
+  updated_at: string;
+};
+
+export type DiscountCode = {
+  id: string;
+  code: string;
+  owner_id: string;
+  percent_off: number;
+  source: string;
+  referred_profile_id: string | null;
+  redeemed: boolean;
+  redeemed_by: string | null;
+  redeemed_review_id: string | null;
+  created_at: string;
+  redeemed_at: string | null;
 };
 
 export const emptyResumeContent = (): ResumeContent => ({
