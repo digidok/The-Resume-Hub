@@ -529,6 +529,10 @@ export type WhatsAppReviewQueueItem = {
   client_status: WhatsAppClientStatus;
   client_notes: string | null;
   client_approved_at: string | null;
+  payment_confirmed_at: string | null;
+  access_expires_at: string | null;
+  provisioned_profile_id: string | null;
+  provisioned_resume_id: string | null;
   created_at: string;
   updated_at: string;
 };

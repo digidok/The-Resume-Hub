@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { FileText, Clock } from "lucide-react";
+import { FileText, Clock, UserCheck } from "lucide-react";
 import { BackLink } from "@/components/ui/back-link";
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
@@ -151,6 +152,15 @@ export default async function WhatsAppOrdersPage() {
                   >
                     {CLIENT_STATUS_LABELS[item.client_status]}
                   </span>
+                )}
+                {item.provisioned_profile_id && (
+                  <Link
+                    href={`/dashboard/admin/users/${item.provisioned_profile_id}`}
+                    className="flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700 hover:underline"
+                  >
+                    <UserCheck className="h-3 w-3" />
+                    Paid & provisioned
+                  </Link>
                 )}
               </div>
             </Card>
