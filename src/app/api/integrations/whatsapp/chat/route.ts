@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGES } from "@/lib/payfast/config";
+import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGES, WHATSAPP_ORDER_PRICING } from "@/lib/payfast/config";
 
 const SYSTEM_PROMPT = `You are the WhatsApp support assistant for Resume Hub (resumehub.co.za), a South African job-seeker platform. You're chatting with a candidate over WhatsApp, so keep replies short — a few sentences, plain text, no markdown headers or bullet-point walls. WhatsApp does support *bold* and _italic_ with asterisks/underscores if it helps readability.
 
@@ -19,6 +19,8 @@ What Resume Hub does:
 - Mock interview: AI-driven practice interview chat.
 - Apply for jobs directly on WhatsApp: every job listing has an "Apply via WhatsApp" link that sends a prefilled message — tapping Send applies with their most recently updated CV. Requires a Resume Hub account with this WhatsApp number saved under Profile settings.
 - WhatsApp status updates (opt-in, on by default once someone applies via WhatsApp): a message here whenever an application status changes (interviewing, offer, rejected) or auto-apply finds new matches. Turned off anytime from Profile settings.
+- Done-for-you CV + Cover Letter (R${WHATSAPP_ORDER_PRICING.cv_cover_letter}) and LinkedIn Revamp (R${WHATSAPP_ORDER_PRICING.linkedin_revamp}, delivered as a LinkedIn Copy Pack — ready-to-paste headline/About/experience/skills text; we never ask for or store LinkedIn login credentials) — a rep drafts it, an admin reviews it, the client approves a watermarked preview, then pays. Once paid, an account is auto-created with a free 30-day Pro window to edit the CV (on WhatsApp or the dashboard) and use the job board.
+- Referrals: every candidate has a referral code/link under Profile settings. When someone they refer completes a paid WhatsApp order, the referrer gets 20% off their own next WhatsApp order.
 
 Pricing:
 - Creating an account, building a resume, and applying to jobs is completely free.

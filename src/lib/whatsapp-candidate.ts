@@ -13,7 +13,7 @@ export type WhatsAppCandidateResult =
  * duplicate profiles for the same person. */
 export async function findOrCreateWhatsAppCandidate(
   admin: ReturnType<typeof createAdminClient>,
-  input: { phone: string; name?: string; email?: string }
+  input: { phone: string; name?: string; email?: string; referredByCode?: string }
 ): Promise<WhatsAppCandidateResult> {
   const phone = normalizePhone(input.phone);
 
@@ -49,7 +49,11 @@ export async function findOrCreateWhatsAppCandidate(
     email,
     password: randomUUID(),
     email_confirm: true,
-    user_metadata: { full_name: input.name, role: "candidate" },
+    user_metadata: {
+      full_name: input.name,
+      role: "candidate",
+      referred_by_code: input.referredByCode?.trim() || undefined,
+    },
   });
 
   if (createError || !createdUser.user) {

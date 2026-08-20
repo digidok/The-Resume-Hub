@@ -134,6 +134,13 @@ export default async function WhatsAppOrdersPage() {
                 <p className="text-xs text-slate-500">
                   {SERVICE_LABELS[item.service_type] ?? item.service_type} ·{" "}
                   {item.reviewed_at ? new Date(item.reviewed_at).toLocaleString() : ""}
+                  {item.amount_charged_zar != null && (
+                    <>
+                      {" "}
+                      · Charged R{item.amount_charged_zar}
+                      {item.discount_code_id ? " (discount applied)" : ""}
+                    </>
+                  )}
                 </p>
                 {item.admin_notes && <p className="mt-1 text-xs text-slate-500">“{item.admin_notes}”</p>}
                 {item.client_notes && (

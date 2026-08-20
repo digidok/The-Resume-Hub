@@ -9,9 +9,10 @@ export const metadata = {
 export default async function SignupPage({
   searchParams,
 }: PageProps<"/signup">) {
-  const { redirect: redirectParam, error } = await searchParams;
+  const { redirect: redirectParam, error, ref } = await searchParams;
   const redirectTo =
     typeof redirectParam === "string" ? redirectParam : "/dashboard";
+  const referredByCode = typeof ref === "string" ? ref : undefined;
   const oauthError =
     error === "work_email_required"
       ? "Employer accounts need a company email address — personal email addresses (Gmail, Yahoo, Outlook, etc.) aren't allowed. Please sign up with your work email."
@@ -27,7 +28,7 @@ export default async function SignupPage({
           <h1 className="mt-2 text-2xl font-semibold text-slate-900">Create your account</h1>
         </div>
         <Card className="p-6">
-          <SignupForm redirectTo={redirectTo} initialError={oauthError} />
+          <SignupForm redirectTo={redirectTo} initialError={oauthError} referredByCode={referredByCode} />
         </Card>
       </div>
     </div>

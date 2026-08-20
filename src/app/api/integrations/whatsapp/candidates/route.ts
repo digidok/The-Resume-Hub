@@ -13,13 +13,19 @@ export async function POST(request: Request) {
   const phoneRaw = typeof body?.phone === "string" ? body.phone : "";
   const name = typeof body?.name === "string" ? body.name.trim() : undefined;
   const providedEmail = typeof body?.email === "string" ? body.email.trim() : undefined;
+  const referredByCode = typeof body?.referredByCode === "string" ? body.referredByCode.trim() : undefined;
 
   if (!phoneRaw.trim()) {
     return NextResponse.json({ error: "phone is required" }, { status: 400 });
   }
 
   const admin = createAdminClient();
-  const result = await findOrCreateWhatsAppCandidate(admin, { phone: phoneRaw, name, email: providedEmail });
+  const result = await findOrCreateWhatsAppCandidate(admin, {
+    phone: phoneRaw,
+    name,
+    email: providedEmail,
+    referredByCode,
+  });
 
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });

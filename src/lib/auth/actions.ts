@@ -24,6 +24,7 @@ export async function signUp(
   const phoneNumber = String(formData.get("phone_number") ?? "").trim();
   const role = String(formData.get("role") ?? "candidate") as ProfileRole;
   const redirectTo = String(formData.get("redirect") ?? "/dashboard");
+  const referredByCode = String(formData.get("referred_by_code") ?? "").trim();
 
   if (!email || !password) {
     return { error: "Email and password are required." };
@@ -57,7 +58,13 @@ export async function signUp(
     email,
     password,
     options: {
-      data: { full_name: fullName, title: title || null, phone_number: phoneNumber, role },
+      data: {
+        full_name: fullName,
+        title: title || null,
+        phone_number: phoneNumber,
+        role,
+        referred_by_code: referredByCode || undefined,
+      },
       emailRedirectTo: `${siteUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,
     },
   });

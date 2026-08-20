@@ -62,6 +62,15 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
     pendingWhatsAppReviewCount = count ?? 0;
   }
 
+  let hasLinkedInCopyPack = false;
+  if (role === "candidate" || role === "admin") {
+    const { count } = await supabase
+      .from("linkedin_copy_packs")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id);
+    hasLinkedInCopyPack = (count ?? 0) > 0;
+  }
+
   let candidateBadges = { applications: 0, savedJobs: 0 };
   if (role === "candidate" || role === "admin") {
     const [{ count: applicationsCount }, { count: savedJobsCount }] = await Promise.all([
@@ -93,6 +102,9 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
         { href: "/dashboard/career-passport", label: "Career Passport", icon: "IdCard" },
         { href: "/dashboard/resumes", label: "My CV", icon: "FileText" },
         { href: "/dashboard/cover-letters", label: "Cover letters", icon: "Mail" },
+        ...(hasLinkedInCopyPack
+          ? [{ href: "/dashboard/linkedin-copy-pack" as const, label: "LinkedIn Copy Pack", icon: "MessageCircle" as const }]
+          : []),
         { href: "/dashboard/ats-scanner", label: "ATS scanner", icon: "ScanSearch" },
         { href: "/dashboard/saved-jobs", label: "Saved jobs", icon: "Bookmark", badge: candidateBadges.savedJobs },
       ],

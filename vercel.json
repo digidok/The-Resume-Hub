@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/auto-apply",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/whatsapp-job-broadcast",
+      "schedule": "0 9 * * 1"
     }
   ]
 }
