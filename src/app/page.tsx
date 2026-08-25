@@ -35,6 +35,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { MatchShowcase } from "@/components/landing/match-showcase";
 import { AnimatedHero } from "@/components/landing/animated-hero";
+import { OpenPositions } from "@/components/landing/open-positions";
 import { JobMatchDemo } from "@/components/landing/job-match-demo";
 import { ApplicationKitDemo } from "@/components/landing/application-kit-demo";
 import { ApplicationPipeline } from "@/components/landing/application-pipeline";
@@ -265,6 +266,8 @@ export default function Home() {
       <SiteHeader />
       <main className="flex-1">
         <AnimatedHero />
+
+        <OpenPositions />
 
         {/* Page 2: Application tracking */}
         <section id="pipeline" className="mx-auto max-w-5xl px-4 pb-20 pt-24 sm:pt-28">
