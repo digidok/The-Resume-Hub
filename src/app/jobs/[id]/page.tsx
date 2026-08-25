@@ -27,6 +27,17 @@ function looksTruncated(description: string) {
   return description.trim().endsWith("…");
 }
 
+const ANONYMOUS_SUMMARY_CHARS = 220;
+
+/** What anonymous visitors see instead of the full listing — enough to judge relevance, not enough to skip signing up. */
+function briefSummary(description: string) {
+  const trimmed = description.trim();
+  if (trimmed.length <= ANONYMOUS_SUMMARY_CHARS) return trimmed;
+  const cut = trimmed.slice(0, ANONYMOUS_SUMMARY_CHARS);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${cut.slice(0, lastSpace > 0 ? lastSpace : cut.length).trim()}…`;
+}
+
 const EMPLOYMENT_LABELS: Record<string, string> = {
   full_time: "Full-time",
   part_time: "Part-time",
@@ -257,19 +268,50 @@ export default async function JobDetailPage({ params }: PageProps<"/jobs/[id]">)
       </div>
 
       <Card className="mb-6 p-6">
-        <p className="whitespace-pre-line text-sm leading-relaxed text-slate-700">
-          {job.description}
-        </p>
-        {job.application_url && looksTruncated(job.description) && (
-          <a
-            href={job.application_url}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-3 inline-block text-sm font-medium text-brand-600 hover:underline"
-          >
-            This is a preview from {job.source ?? "the source site"} — read the full listing and apply
-            there →
-          </a>
+        {user ? (
+          <>
+            <p className="whitespace-pre-line text-sm leading-relaxed text-slate-700">
+              {job.description}
+            </p>
+            {job.application_url && looksTruncated(job.description) && (
+              <a
+                href={job.application_url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-block text-sm font-medium text-brand-600 hover:underline"
+              >
+                This is a preview from {job.source ?? "the source site"} — read the full listing and apply
+                there →
+              </a>
+            )}
+          </>
+        ) : (
+          <>
+            <p className="whitespace-pre-line text-sm leading-relaxed text-slate-700">
+              {briefSummary(job.description)}
+            </p>
+            <div className="mt-4 rounded-lg border border-brand-100 bg-brand-50 p-4">
+              <p className="text-sm font-semibold text-slate-900">
+                Sign up free to read the full listing
+              </p>
+              <p className="mt-1 text-sm text-slate-600">
+                Create a free Resume Hub account to see the complete job description, your match
+                score, and apply.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Link href={`/signup?redirect=/jobs/${job.id}`}>
+                  <Button type="button" size="sm">
+                    Sign up free
+                  </Button>
+                </Link>
+                <Link href={`/login?redirect=/jobs/${job.id}`}>
+                  <Button type="button" variant="outline" size="sm">
+                    Log in
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </>
         )}
       </Card>
 
