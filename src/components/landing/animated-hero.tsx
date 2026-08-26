@@ -21,21 +21,9 @@ import { EASE } from "@/components/motion/variants";
 import { DashboardPreview } from "@/components/landing/dashboard-preview";
 import { ProductTour } from "@/components/landing/product-tour";
 
-const JOB_COUNT_LABEL = "5,000+";
-
-const TRUST_ITEMS = [
-  `${JOB_COUNT_LABEL} live jobs`,
-  "Let's Help You Apply while you rest",
-  "Verified employers & candidates",
-  "Real human support",
-];
-
-const HERO_STATS = [
-  { icon: Briefcase, value: 5000, suffix: "+", label: "Live jobs right now" },
-  { icon: Clock, value: 5, suffix: "+ yrs", label: "Helping SA job seekers get hired" },
-  { icon: ShieldCheck, value: 100, suffix: "%", label: "Verified employers & candidates" },
-  { icon: HeartHandshake, value: 100, suffix: "%", label: "Real human support" },
-];
+function formatJobCount(count: number) {
+  return `${new Intl.NumberFormat("en-ZA").format(count)}+`;
+}
 
 const DRIFT_SHAPES = [
   {
@@ -155,8 +143,23 @@ const STATUS_BADGES = [
   },
 ];
 
-export function AnimatedHero() {
+export function AnimatedHero({ jobCount }: { jobCount: number }) {
   const prefersReducedMotion = useReducedMotion();
+  const jobCountLabel = formatJobCount(jobCount);
+
+  const TRUST_ITEMS = [
+    `${jobCountLabel} live jobs`,
+    "Let's Help You Apply while you rest",
+    "Verified employers & candidates",
+    "Real human support",
+  ];
+
+  const HERO_STATS = [
+    { icon: Briefcase, value: jobCount, suffix: "+", label: "Live jobs right now" },
+    { icon: Clock, value: 5, suffix: "+ yrs", label: "Helping SA job seekers get hired" },
+    { icon: ShieldCheck, value: 100, suffix: "%", label: "Verified employers & candidates" },
+    { icon: HeartHandshake, value: 100, suffix: "%", label: "Real human support" },
+  ];
 
   return (
     <>
@@ -254,7 +257,7 @@ export function AnimatedHero() {
             className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-sm border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brand-800"
           >
             <Sparkles className="h-3.5 w-3.5 shrink-0" />
-            {JOB_COUNT_LABEL} live jobs
+            {jobCountLabel} live jobs
             <span className="hidden sm:inline">
               &nbsp;· Africa&apos;s first Let&apos;s Help You Apply platform
             </span>
@@ -285,7 +288,7 @@ export function AnimatedHero() {
             transition={{ duration: 0.6, ease: EASE, delay: 0.4 }}
             className="mx-auto mt-5 max-w-xl text-lg text-slate-600 lg:mx-0"
           >
-            Browse {JOB_COUNT_LABEL} live jobs across South Africa — Let&apos;s Help You
+            Browse {jobCountLabel} live jobs across South Africa — Let&apos;s Help You
             Apply submits tailored applications on your behalf while you rest, work, or
             just get on with your day. Verified employers, verified candidates — one platform.
           </motion.p>
@@ -301,7 +304,7 @@ export function AnimatedHero() {
             </Link>
             <Link href="/jobs">
               <Button size="lg" variant="outline">
-                Browse {JOB_COUNT_LABEL} Jobs
+                Browse {jobCountLabel} Jobs
               </Button>
             </Link>
           </motion.div>

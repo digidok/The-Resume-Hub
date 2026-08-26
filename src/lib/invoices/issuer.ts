@@ -6,7 +6,7 @@
  */
 export const INVOICE_ISSUER = {
   companyName: "Resume Hub (Pty) Ltd",
-  address: "REPLACE ME — registered business address",
+  address: "70 Dennis Road, Atholhurst, Sandton, 2191",
   email: "info@resumehub.co.za",
   vatNumber: "REPLACE ME — VAT number, if registered",
   bankName: "REPLACE ME — bank name",
