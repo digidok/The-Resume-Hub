@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { createClient } from "@/lib/supabase/server";
 import { MatchShowcase } from "@/components/landing/match-showcase";
 import { AnimatedHero } from "@/components/landing/animated-hero";
 import { OpenPositions } from "@/components/landing/open-positions";
@@ -260,12 +261,18 @@ const CAREER_RESOURCES = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const { count: jobCount } = await supabase
+    .from("jobs")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "open");
+
   return (
     <div className="flex flex-1 flex-col bg-white">
       <SiteHeader />
       <main className="flex-1">
-        <AnimatedHero />
+        <AnimatedHero jobCount={jobCount ?? 0} />
 
         <OpenPositions />
 
