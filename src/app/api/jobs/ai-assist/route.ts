@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { logAiUsage } from "@/lib/ai/usage";
 
 export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -59,11 +60,19 @@ Employment type: ${employmentType ?? "full_time"}
 
 Return only the job description text.`;
 
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
   try {
     const message = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+      model,
       max_tokens: 1024,
       messages: [{ role: "user", content: prompt }],
+    });
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "job_ai_assist",
+      model,
+      inputTokens: message.usage?.input_tokens,
+      outputTokens: message.usage?.output_tokens,
     });
 
     const textBlock = message.content.find((block) => block.type === "text");
@@ -74,6 +83,13 @@ Return only the job description text.`;
     return NextResponse.json({ description: textBlock.text.trim() });
   } catch (err) {
     console.error("Job AI assist failed", err);
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "job_ai_assist",
+      model,
+      success: false,
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+    });
     return NextResponse.json({ error: "AI assist failed. Please try again." }, { status: 500 });
   }
 }
