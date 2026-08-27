@@ -8,11 +8,9 @@ import { Logo } from "@/components/ui/logo";
 import { AskElsButton } from "@/components/ask-els/ask-els-button";
 
 const NAV_LINKS = [
-  { href: "/signup", label: "CV Builder" },
+  { href: "/signup", label: "Build My CV" },
   { href: "/jobs", label: "Jobs" },
-  { href: "/#job-match", label: "Matching" },
   { href: "/#career-coach", label: "Career Coach" },
-  { href: "/#features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
   { href: "/#employers", label: "For Employers", accent: true },
 ];
