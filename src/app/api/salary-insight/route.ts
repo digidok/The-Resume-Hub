@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { spendCredits } from "@/lib/credits";
+import { logAiUsage } from "@/lib/ai/usage";
 
 const SALARY_SCHEMA = {
   type: "object" as const,
@@ -49,9 +50,10 @@ export async function POST(request: Request) {
 
   const anthropic = new Anthropic({ apiKey });
 
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
   try {
     const message = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+      model,
       max_tokens: 512,
       output_config: { format: { type: "json_schema", schema: SALARY_SCHEMA } },
       messages: [
@@ -60,6 +62,13 @@ export async function POST(request: Request) {
           content: `Estimate a realistic salary range for this role and location based on general market knowledge. Be a reasonable, conservative estimator — this is a rough guide, not verified market data.\n\nRole: ${role}\nLocation: ${location}`,
         },
       ],
+    });
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "salary_insight",
+      model,
+      inputTokens: message.usage?.input_tokens,
+      outputTokens: message.usage?.output_tokens,
     });
 
     const textBlock = message.content.find((block) => block.type === "text");
@@ -73,6 +82,13 @@ export async function POST(request: Request) {
     });
   } catch (err) {
     console.error("Salary insight failed", err);
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "salary_insight",
+      model,
+      success: false,
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+    });
     return NextResponse.json({ error: "Could not estimate salary. Please try again." }, { status: 500 });
   }
 }

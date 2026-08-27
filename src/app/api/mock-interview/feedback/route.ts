@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { logAiUsage } from "@/lib/ai/usage";
 
 export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -30,9 +31,10 @@ export async function POST(request: Request) {
 
   const anthropic = new Anthropic({ apiKey });
 
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
   try {
     const message = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+      model,
       max_tokens: 400,
       messages: [
         {
@@ -40,6 +42,13 @@ export async function POST(request: Request) {
           content: `You're an interview coach reviewing a candidate's answer for a "${role}" role.\n\nQuestion: ${question}\n\nCandidate's answer: ${answer}\n\nGive brief, direct feedback (2-4 sentences): what worked, and one concrete way to improve the answer. No preamble.`,
         },
       ],
+    });
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "mock_interview_feedback",
+      model,
+      inputTokens: message.usage?.input_tokens,
+      outputTokens: message.usage?.output_tokens,
     });
 
     const textBlock = message.content.find((block) => block.type === "text");
@@ -50,6 +59,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ feedback: textBlock.text.trim() });
   } catch (err) {
     console.error("Mock interview feedback failed", err);
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "mock_interview_feedback",
+      model,
+      success: false,
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+    });
     return NextResponse.json({ error: "Could not get feedback. Please try again." }, { status: 500 });
   }
 }

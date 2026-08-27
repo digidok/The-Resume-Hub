@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { spendCredits } from "@/lib/credits";
 import { computeJobMatch } from "@/lib/matching/job-match";
 import { randomSuffix } from "@/lib/slug";
+import { logAiUsage } from "@/lib/ai/usage";
 import type { CareerProfile, Job, ResumeContent } from "@/types/database";
 
 const GENERATION_SCHEMA = {
@@ -82,12 +83,20 @@ TASK — return JSON with:
 3. "experience_descriptions": exactly ${content.experience?.length ?? 0} entries, one per experience item above in the same order, each a rewritten description emphasizing what's relevant to this job. Keep facts unchanged — rewrite emphasis and phrasing only.
 4. "cover_letter": a tailored, specific cover letter (3-4 short paragraphs, professional, no placeholder brackets) referencing this job and company by name.`;
 
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
   try {
     const message = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+      model,
       max_tokens: 3000,
       output_config: { format: { type: "json_schema", schema: GENERATION_SCHEMA } },
       messages: [{ role: "user", content: prompt }],
+    });
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "ai_generate_application",
+      model,
+      inputTokens: message.usage?.input_tokens,
+      outputTokens: message.usage?.output_tokens,
     });
 
     const textBlock = message.content.find((block) => block.type === "text");
@@ -242,6 +251,13 @@ TASK — return JSON with:
     });
   } catch (err) {
     console.error("AI application generation failed", err);
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "ai_generate_application",
+      model,
+      success: false,
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+    });
     return NextResponse.json({ error: "Could not generate application. Please try again." }, { status: 500 });
   }
 }

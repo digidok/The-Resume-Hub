@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { spendCredits } from "@/lib/credits";
+import { logAiUsage } from "@/lib/ai/usage";
 import type { ResumeContent } from "@/types/database";
 
 const FILL_SCHEMA = {
@@ -98,12 +99,20 @@ ${asks.join("\n")}
 
 For any field not requested above, return an empty string or empty array.`;
 
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
   try {
     const message = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+      model,
       max_tokens: 1536,
       output_config: { format: { type: "json_schema", schema: FILL_SCHEMA } },
       messages: [{ role: "user", content: prompt }],
+    });
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "resume_fill_gaps",
+      model,
+      inputTokens: message.usage?.input_tokens,
+      outputTokens: message.usage?.output_tokens,
     });
 
     const textBlock = message.content.find((block) => block.type === "text");
@@ -125,6 +134,13 @@ For any field not requested above, return an empty string or empty array.`;
     });
   } catch (err) {
     console.error("Fill gaps failed", err);
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "resume_fill_gaps",
+      model,
+      success: false,
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+    });
     return NextResponse.json({ error: "Could not fill gaps. Please try again." }, { status: 500 });
   }
 }
