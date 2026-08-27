@@ -123,6 +123,8 @@ export function ResumeEditor({
     keyword_gaps: string[];
   } | null>(null);
   const [selectedAlignSkills, setSelectedAlignSkills] = useState<string[]>([]);
+  const [tailoredVersionPending, setTailoredVersionPending] = useState(false);
+  const [tailoredVersionError, setTailoredVersionError] = useState<string | null>(null);
   const [targetLanguage, setTargetLanguage] = useState("Arabic");
   const [translatePending, setTranslatePending] = useState(false);
   const [translateError, setTranslateError] = useState<string | null>(null);
@@ -260,6 +262,37 @@ export function ResumeEditor({
     const merged = Array.from(new Set([...content.skills, ...selectedAlignSkills]));
     update("skills", merged);
     setSelectedAlignSkills([]);
+  }
+
+  /** Persists the align-to-job result as a brand new resume linked back to
+   * this one, instead of overwriting the CV currently being edited — so
+   * tailoring for one job never clobbers tailoring already done for
+   * another, and this resume (the master copy) stays exactly as it was. */
+  async function handleCreateTailoredVersion() {
+    if (!alignResult) return;
+    setTailoredVersionError(null);
+    setTailoredVersionPending(true);
+    try {
+      const res = await fetch("/api/resume/create-tailored-version", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          resumeId: resume.id,
+          tailoredSummary: alignResult.tailored_summary,
+          additionalSkills: selectedAlignSkills,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setTailoredVersionError(data.error || "Could not save tailored CV.");
+        return;
+      }
+      router.push(`/dashboard/resumes/${data.resumeId}`);
+    } catch {
+      setTailoredVersionError("Could not save tailored CV. Please try again.");
+    } finally {
+      setTailoredVersionPending(false);
+    }
   }
 
   async function handleTranslate() {
@@ -679,6 +712,17 @@ export function ResumeEditor({
                   </div>
                 </div>
               )}
+
+              <div className="border-t border-slate-100 pt-3">
+                <Button type="button" size="sm" disabled={tailoredVersionPending} onClick={handleCreateTailoredVersion}>
+                  {tailoredVersionPending ? "Saving…" : "Save as a new tailored CV for this job"}
+                </Button>
+                <p className="mt-1.5 text-xs text-slate-500">
+                  Keeps this CV exactly as it is and creates a separate copy with the tailored summary
+                  and selected skills applied.
+                </p>
+                {tailoredVersionError && <p className="mt-1.5 text-sm text-red-600">{tailoredVersionError}</p>}
+              </div>
             </div>
           )}
         </Card>

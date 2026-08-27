@@ -15,11 +15,16 @@ export default async function ResumesPage() {
 
   const { data: resumes } = await supabase
     .from("resumes")
-    .select("id, title, template, is_public, slug, updated_at")
+    .select("id, title, template, is_public, slug, updated_at, parent_resume_id")
     .eq("user_id", user.id)
     .order("updated_at", { ascending: false });
 
   const resumeIds = (resumes ?? []).map((r) => r.id);
+  const parentIds = [...new Set((resumes ?? []).map((r) => r.parent_resume_id).filter((id): id is string => Boolean(id)))];
+  const { data: parentRows } = parentIds.length
+    ? await supabase.from("resumes").select("id, title").in("id", parentIds)
+    : { data: [] };
+  const titleByParentId = new Map((parentRows ?? []).map((r) => [r.id, r.title]));
   const { data: reviewRows } = resumeIds.length
     ? await supabase
         .from("ai_reviews")
@@ -84,6 +89,11 @@ export default async function ResumesPage() {
                   Updated {new Date(resume.updated_at).toLocaleDateString()}
                 </span>
               </div>
+              {resume.parent_resume_id && titleByParentId.has(resume.parent_resume_id) && (
+                <p className="mt-2 text-xs text-slate-400">
+                  Tailored from &ldquo;{titleByParentId.get(resume.parent_resume_id)}&rdquo;
+                </p>
+              )}
             </Link>
             <div className="mt-3 flex gap-2 border-t border-slate-100 pt-3">
               <form action={duplicateResume.bind(null, resume.id)}>

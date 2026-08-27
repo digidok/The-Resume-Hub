@@ -132,6 +132,10 @@ export type Resume = {
   content: ResumeContent;
   is_public: boolean;
   source_file_path: string | null;
+  /** Set when this resume is a tailored copy created from another resume
+   * (e.g. "Tailor CV to this job" or the language translator) — null means
+   * this is an original, not a derived version. */
+  parent_resume_id: string | null;
   created_at: string;
   updated_at: string;
 };

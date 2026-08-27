@@ -158,6 +158,7 @@ ${(content.projects ?? []).map((p) => `- id: ${p.id}, description: ${p.descripti
         slug,
         template: resume.template,
         content: translatedContent,
+        parent_resume_id: resumeId,
       })
       .select("id")
       .single();
