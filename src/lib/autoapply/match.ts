@@ -54,6 +54,16 @@ export async function findAutoApplyMatches(
     if (locationFilter && !(job.location ?? "").toLowerCase().includes(locationFilter)) {
       return false;
     }
+    // A job whose posted maximum is below the candidate's stated minimum is
+    // an application no one wants auto-submitted — skip it rather than
+    // waste the candidate's shot at a role that can't meet their ask.
+    if (
+      careerProfile.salary_min != null &&
+      job.salary_max != null &&
+      job.salary_max < careerProfile.salary_min
+    ) {
+      return false;
+    }
     if (keywordList.length === 0) return true;
     const haystack = `${job.title} ${job.description}`.toLowerCase();
     return keywordList.some((keyword) => haystack.includes(keyword));
