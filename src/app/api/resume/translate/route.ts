@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { spendCredits } from "@/lib/credits";
 import { randomSuffix } from "@/lib/slug";
+import { logAiUsage } from "@/lib/ai/usage";
 import type { ResumeContent } from "@/types/database";
 
 const TRANSLATION_SCHEMA = {
@@ -106,9 +107,10 @@ ${(content.experience ?? []).map((exp) => `- id: ${exp.id}, description: ${exp.d
 Project entries (translate only "description", keep "id" exactly as given):
 ${(content.projects ?? []).map((p) => `- id: ${p.id}, description: ${p.description || "(empty)"}`).join("\n") || "(none)"}`;
 
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
   try {
     const message = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+      model,
       // Same risk shape as the ai-review route: translating every
       // experience/project description in one structured call can need
       // more than 2048 tokens combined with the model's own reasoning,
@@ -116,6 +118,13 @@ ${(content.projects ?? []).map((p) => `- id: ${p.id}, description: ${p.descripti
       max_tokens: 4096,
       output_config: { format: { type: "json_schema", schema: TRANSLATION_SCHEMA } },
       messages: [{ role: "user", content: prompt }],
+    });
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "resume_translate",
+      model,
+      inputTokens: message.usage?.input_tokens,
+      outputTokens: message.usage?.output_tokens,
     });
 
     const textBlock = message.content.find((block) => block.type === "text");
@@ -170,6 +179,13 @@ ${(content.projects ?? []).map((p) => `- id: ${p.id}, description: ${p.descripti
     return NextResponse.json({ resumeId: newResume.id, credits_remaining: spend.remaining });
   } catch (err) {
     console.error("Resume translation failed", err);
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "resume_translate",
+      model,
+      success: false,
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+    });
     return NextResponse.json({ error: "Could not translate resume. Please try again." }, { status: 500 });
   }
 }

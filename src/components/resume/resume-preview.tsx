@@ -1,3 +1,4 @@
+import { Globe, Mail, MapPin, Phone } from "lucide-react";
 import type { ResumeContent } from "@/types/database";
 
 type TemplateConfig = {
@@ -177,8 +178,42 @@ function splitIntoSentences(text: string): string[] {
     .filter(Boolean);
 }
 
-function Photo({ url, size = 80 }: { url?: string; size?: number }) {
-  if (!url) return null;
+function initials(name?: string): string {
+  if (!name) return "";
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
+/** Renders the candidate's photo, or — when none has been uploaded yet — an
+ * initials avatar in the template's accent colour. A photo-enabled template
+ * should never show a blank gap where a portrait was promised. */
+function Photo({
+  url,
+  name,
+  size = 80,
+  accent = "#0f1e38",
+}: {
+  url?: string;
+  name?: string;
+  size?: number;
+  accent?: string;
+}) {
+  if (!url) {
+    const label = initials(name);
+    if (!label) return null;
+    return (
+      <div
+        className="flex shrink-0 items-center justify-center rounded-full font-semibold text-white"
+        style={{ width: size, height: size, backgroundColor: accent, fontSize: size * 0.34 }}
+      >
+        {label}
+      </div>
+    );
+  }
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
@@ -202,13 +237,20 @@ function Heading({ children, accent }: { children: React.ReactNode; accent: stri
 }
 
 function ContactLine({ content }: { content: ResumeContent }) {
+  const items = [
+    content.email && { icon: Mail, text: content.email },
+    content.phone && { icon: Phone, text: content.phone },
+    content.location && { icon: MapPin, text: content.location },
+    content.website && { icon: Globe, text: content.website },
+  ].filter((v): v is { icon: typeof Mail; text: string } => Boolean(v));
   return (
-    <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-sm text-slate-600">
-      {[content.email, content.phone, content.location, content.website]
-        .filter(Boolean)
-        .map((item, i) => (
-          <span key={i}>{item}</span>
-        ))}
+    <p className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600">
+      {items.map(({ icon: Icon, text }, i) => (
+        <span key={i} className="inline-flex items-center gap-1.5">
+          <Icon className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+          {text}
+        </span>
+      ))}
     </p>
   );
 }
@@ -341,7 +383,9 @@ function SingleLayout({ content, config }: { content: ResumeContent; config: Tem
           <ContactLine content={content} />
           <InternationalDetails content={content} />
         </div>
-        {config.photo && <Photo url={content.photo_url} />}
+        {config.photo && (
+          <Photo url={content.photo_url} name={content.full_name} accent={config.accent} size={88} />
+        )}
       </header>
 
       <Sections content={content} accent={config.accent} compact={config.compact} />
@@ -388,15 +432,21 @@ function SidebarLayout({ content, config }: { content: ResumeContent; config: Te
         style={{ backgroundColor: config.accentSoft }}
       >
         <div className="flex flex-col items-center text-center">
-          <Photo url={content.photo_url} size={96} />
+          <Photo url={content.photo_url} name={content.full_name} accent={config.accent} size={96} />
           <h1 className="mt-3 text-xl font-bold">{content.full_name || "Your Name"}</h1>
         </div>
-        <div className="space-y-1 text-xs text-slate-600">
-          {[content.email, content.phone, content.location, content.website]
-            .filter(Boolean)
-            .map((item, i) => (
-              <p key={i} className="break-words">
-                {item}
+        <div className="space-y-1.5 text-xs text-slate-600">
+          {[
+            content.email && { icon: Mail, text: content.email },
+            content.phone && { icon: Phone, text: content.phone },
+            content.location && { icon: MapPin, text: content.location },
+            content.website && { icon: Globe, text: content.website },
+          ]
+            .filter((v): v is { icon: typeof Mail; text: string } => Boolean(v))
+            .map(({ icon: Icon, text }, i) => (
+              <p key={i} className="flex items-center justify-center gap-1.5 break-words">
+                <Icon className="h-3 w-3 shrink-0" style={{ color: config.accent }} />
+                {text}
               </p>
             ))}
           {[
@@ -490,9 +540,9 @@ function ExecutiveLayout({ content, config }: { content: ResumeContent; config: 
         className="flex flex-wrap items-center gap-5 px-10 py-8"
         style={{ backgroundColor: navy }}
       >
-        {config.photo && content.photo_url && (
+        {config.photo && (
           <div className="shrink-0 rounded-full p-1" style={{ backgroundColor: gold }}>
-            <Photo url={content.photo_url} size={80} />
+            <Photo url={content.photo_url} name={content.full_name} accent={navy} size={80} />
           </div>
         )}
         <div>
@@ -509,14 +559,23 @@ function ExecutiveLayout({ content, config }: { content: ResumeContent; config: 
       </header>
 
       <div
-        className="flex flex-wrap justify-center gap-x-6 gap-y-1 px-10 py-3 text-center text-sm font-medium text-slate-700"
+        className="flex flex-wrap justify-center gap-x-6 gap-y-1.5 px-10 py-3 text-center text-sm font-medium text-slate-700"
         style={{ backgroundColor: cream }}
       >
-        {[content.location, content.phone, content.email, content.website, content.nationality]
-          .filter(Boolean)
-          .map((item, i) => (
-            <span key={i}>{item}</span>
+        {[
+          content.location && { icon: MapPin, text: content.location },
+          content.phone && { icon: Phone, text: content.phone },
+          content.email && { icon: Mail, text: content.email },
+          content.website && { icon: Globe, text: content.website },
+        ]
+          .filter((v): v is { icon: typeof Mail; text: string } => Boolean(v))
+          .map(({ icon: Icon, text }, i) => (
+            <span key={i} className="inline-flex items-center gap-1.5">
+              <Icon className="h-3.5 w-3.5 shrink-0" style={{ color: gold }} />
+              {text}
+            </span>
           ))}
+        {content.nationality && <span>{content.nationality}</span>}
       </div>
 
       <div className="px-10 py-6">
@@ -716,9 +775,9 @@ function PortfolioLayout({ content, config }: { content: ResumeContent; config: 
             </p>
           )}
         </div>
-        {config.photo && content.photo_url && (
+        {config.photo && (
           <div className="shrink-0 rounded-full p-1" style={{ backgroundColor: gold }}>
-            <Photo url={content.photo_url} size={88} />
+            <Photo url={content.photo_url} name={content.full_name} accent={navy} size={88} />
           </div>
         )}
       </header>
@@ -743,11 +802,19 @@ function PortfolioLayout({ content, config }: { content: ResumeContent; config: 
         </div>
       )}
 
-      <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 px-10 py-3 text-center text-sm text-slate-600">
-        {[content.location, content.phone, content.email, content.website]
-          .filter(Boolean)
-          .map((item, i) => (
-            <span key={i}>{item}</span>
+      <div className="flex flex-wrap justify-center gap-x-6 gap-y-1.5 px-10 py-3 text-center text-sm text-slate-600">
+        {[
+          content.location && { icon: MapPin, text: content.location },
+          content.phone && { icon: Phone, text: content.phone },
+          content.email && { icon: Mail, text: content.email },
+          content.website && { icon: Globe, text: content.website },
+        ]
+          .filter((v): v is { icon: typeof Mail; text: string } => Boolean(v))
+          .map(({ icon: Icon, text }, i) => (
+            <span key={i} className="inline-flex items-center gap-1.5">
+              <Icon className="h-3.5 w-3.5 shrink-0" style={{ color: gold }} />
+              {text}
+            </span>
           ))}
       </div>
 
