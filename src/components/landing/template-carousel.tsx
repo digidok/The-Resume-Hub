@@ -56,7 +56,7 @@ const FEATURED_TEMPLATE_IDS = [
   "minimal",
 ];
 
-const CARD_WIDTH = 240;
+const CARD_WIDTH = 300;
 const PREVIEW_NATIVAL_WIDTH = 816; // 8.5in at 96dpi, matches ResumePreview's max-w-[8.5in]
 const SCALE = CARD_WIDTH / PREVIEW_NATIVAL_WIDTH;
 

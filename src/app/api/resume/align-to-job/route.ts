@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { spendCredits } from "@/lib/credits";
+import { logAiUsage } from "@/lib/ai/usage";
 import type { ResumeContent } from "@/types/database";
 
 const ALIGN_SCHEMA = {
@@ -65,12 +66,20 @@ TASK:
 2. "suggested_skills": list skills from the candidate's own experience/skills that match this job but aren't already in their skills list, worth adding (max 8). Only suggest skills reasonably implied by their existing resume content.
 3. "keyword_gaps": list important keywords/requirements from the job posting that the candidate's resume doesn't currently address at all, so they know what's missing (max 6).`;
 
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
   try {
     const message = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+      model,
       max_tokens: 1024,
       output_config: { format: { type: "json_schema", schema: ALIGN_SCHEMA } },
       messages: [{ role: "user", content: prompt }],
+    });
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "align_to_job",
+      model,
+      inputTokens: message.usage?.input_tokens,
+      outputTokens: message.usage?.output_tokens,
     });
 
     const textBlock = message.content.find((block) => block.type === "text");
@@ -87,6 +96,13 @@ TASK:
     return NextResponse.json({ ...parsed, credits_remaining: spend.remaining });
   } catch (err) {
     console.error("Align to job failed", err);
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "align_to_job",
+      model,
+      success: false,
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+    });
     return NextResponse.json({ error: "Could not align resume. Please try again." }, { status: 500 });
   }
 }
