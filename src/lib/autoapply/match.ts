@@ -37,7 +37,11 @@ export async function findAutoApplyMatches(
   const locationFilter = location.trim().toLowerCase();
 
   const [{ data: jobs }, { data: existingApplications }] = await Promise.all([
-    supabase.from("jobs").select("*").eq("status", "open"),
+    // application_url IS NULL — auto-apply can only submit a real Resume Hub
+    // application. Jobs that route to an employer's own site need a human to
+    // actually go there; including them here would create an "applied" row
+    // and email the candidate without anything ever being submitted.
+    supabase.from("jobs").select("*").eq("status", "open").is("application_url", null),
     supabase.from("applications").select("job_id").eq("candidate_id", userId),
   ]);
 

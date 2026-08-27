@@ -23,6 +23,15 @@ const EMPLOYMENT_LABELS: Record<string, string> = {
   internship: "Internship",
 };
 
+const PAGE_SIZE = 25;
+/** Cap on how many filtered rows get pulled in for personalised "best match"
+ * sorting, which has to score every candidate row in memory before it can be
+ * ordered — without this, a broad filter (or none at all) would fetch every
+ * open job (16,000+) on a single request. Rows are ordered newest-first
+ * before the cap is applied, so this is "best match among the most recent
+ * N", not an arbitrary N. */
+const BEST_MATCH_SCAN_LIMIT = 300;
+
 function sinceIso(days: number) {
   return new Date(Date.now() - days * 86400000).toISOString();
 }
@@ -51,35 +60,9 @@ export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">)
   const minSalary = typeof params.salary === "string" ? Number(params.salary) : null;
   const postedWithin = typeof params.posted === "string" ? params.posted : "";
   const sort = typeof params.sort === "string" ? params.sort : "best_match";
+  const page = Math.max(1, Number(params.page) || 1);
 
   const supabase = await createClient();
-
-  let query = supabase.from("jobs").select("*").eq("status", "open");
-  if (country) query = query.eq("country", country);
-  if (keyword) query = query.or(`title.ilike.%${keyword}%,company.ilike.%${keyword}%`);
-  if (location) query = query.ilike("location", `%${location}%`);
-  if (province) query = query.ilike("province", `%${province}%`);
-  if (industry) query = query.ilike("industry", `%${industry}%`);
-  if (employmentType) query = query.eq("employment_type", employmentType);
-  if (minExperience) query = query.gte("experience_max", minExperience);
-  if (minSalary) query = query.gte("salary_max", minSalary);
-  if (postedWithin) {
-    query = query.gte("posted_at", sinceIso(Number(postedWithin)));
-  }
-
-  const { data: jobsData } = await query.order("posted_at", { ascending: false });
-  const jobs = (jobsData ?? []) as Job[];
-
-  const companyNames = [...new Set(jobs.map((j) => j.company))];
-  const { data: ratingsData } = companyNames.length
-    ? await supabase.from("company_ratings").select("company, rating, reviews_count").in("company", companyNames)
-    : { data: [] };
-  const ratingByCompany = new Map(
-    ((ratingsData ?? []) as Pick<CompanyRating, "company" | "rating" | "reviews_count">[]).map((r) => [
-      r.company,
-      r,
-    ])
-  );
 
   const {
     data: { user },
@@ -95,17 +78,87 @@ export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">)
     careerProfile = (data as CareerProfile) ?? null;
   }
 
-  const jobsWithMatch = jobs.map((job) => ({
+  function buildFilteredQuery() {
+    let query = supabase.from("jobs").select("*").eq("status", "open");
+    if (country) query = query.eq("country", country);
+    if (keyword) query = query.or(`title.ilike.%${keyword}%,company.ilike.%${keyword}%`);
+    if (location) query = query.ilike("location", `%${location}%`);
+    if (province) query = query.ilike("province", `%${province}%`);
+    if (industry) query = query.ilike("industry", `%${industry}%`);
+    if (employmentType) query = query.eq("employment_type", employmentType);
+    if (minExperience) query = query.gte("experience_max", minExperience);
+    if (minSalary) query = query.gte("salary_max", minSalary);
+    if (postedWithin) query = query.gte("posted_at", sinceIso(Number(postedWithin)));
+    return query;
+  }
+
+  // "Best match" needs every filtered row scored before it can be sorted, so
+  // it's the one case that can't be paginated at the database level — capped
+  // and sorted in memory instead. Every other sort order (including
+  // best_match with no Career Passport to score against) is ordered and
+  // paginated directly by Postgres, so it never fetches more than a page.
+  const usePersonalizedSort = sort === "best_match" && Boolean(careerProfile);
+
+  let pageJobs: Job[];
+  let hasNextPage: boolean;
+
+  if (usePersonalizedSort) {
+    const { data } = await buildFilteredQuery()
+      .order("posted_at", { ascending: false })
+      .limit(BEST_MATCH_SCAN_LIMIT);
+    const scanned = (data ?? []) as Job[];
+    const scored = scanned
+      .map((job) => ({ job, score: computeJobMatch(careerProfile!, job).overallScore }))
+      .sort((a, b) => b.score - a.score)
+      .map((s) => s.job);
+    hasNextPage = scored.length > page * PAGE_SIZE;
+    pageJobs = scored.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  } else {
+    const orderedQuery =
+      sort === "salary"
+        ? buildFilteredQuery().order("salary_max", { ascending: false, nullsFirst: false })
+        : buildFilteredQuery().order("posted_at", { ascending: false });
+    const from = (page - 1) * PAGE_SIZE;
+    // Fetch one extra row past the page so we know whether a next page
+    // exists without a separate COUNT query.
+    const { data } = await orderedQuery.range(from, from + PAGE_SIZE);
+    const fetched = (data ?? []) as Job[];
+    hasNextPage = fetched.length > PAGE_SIZE;
+    pageJobs = fetched.slice(0, PAGE_SIZE);
+  }
+
+  const companyNames = [...new Set(pageJobs.map((j) => j.company))];
+  const { data: ratingsData } = companyNames.length
+    ? await supabase.from("company_ratings").select("company, rating, reviews_count").in("company", companyNames)
+    : { data: [] };
+  const ratingByCompany = new Map(
+    ((ratingsData ?? []) as Pick<CompanyRating, "company" | "rating" | "reviews_count">[]).map((r) => [
+      r.company,
+      r,
+    ])
+  );
+
+  const jobsWithMatch = pageJobs.map((job) => ({
     job,
     match: careerProfile ? computeJobMatch(careerProfile, job) : null,
   }));
 
-  if (sort === "best_match" && careerProfile) {
-    jobsWithMatch.sort((a, b) => (b.match?.overallScore ?? 0) - (a.match?.overallScore ?? 0));
-  } else if (sort === "salary") {
-    jobsWithMatch.sort((a, b) => (b.job.salary_max ?? 0) - (a.job.salary_max ?? 0));
+  function pageHref(targetPage: number) {
+    const qs = new URLSearchParams();
+    if (country) qs.set("country", country);
+    if (keyword) qs.set("q", keyword);
+    if (location) qs.set("location", location);
+    if (province) qs.set("province", province);
+    if (industry) qs.set("industry", industry);
+    if (employmentType) qs.set("type", employmentType);
+    if (minExperience) qs.set("experience", String(minExperience));
+    if (minSalary) qs.set("salary", String(minSalary));
+    if (postedWithin) qs.set("posted", postedWithin);
+    if (sort) qs.set("sort", sort);
+    if (targetPage > 1) qs.set("page", String(targetPage));
+    const qsStr = qs.toString();
+    return qsStr ? `/jobs?${qsStr}` : "/jobs";
   }
-  // "newest" (and best_match with no profile) already ordered by posted_at desc from the query.
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
@@ -253,6 +306,30 @@ export default async function JobBoardPage({ searchParams }: PageProps<"/jobs">)
           </Link>
         ))}
       </div>
+
+      {(page > 1 || hasNextPage) && (
+        <div className="mt-6 flex items-center justify-between">
+          {page > 1 ? (
+            <Link href={pageHref(page - 1)}>
+              <Button type="button" variant="outline" size="sm">
+                ← Previous
+              </Button>
+            </Link>
+          ) : (
+            <span />
+          )}
+          <span className="text-sm text-slate-500">Page {page}</span>
+          {hasNextPage ? (
+            <Link href={pageHref(page + 1)}>
+              <Button type="button" variant="outline" size="sm">
+                Next →
+              </Button>
+            </Link>
+          ) : (
+            <span />
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,12 +1,14 @@
 import type { CareerProfile, Job, JobMatch } from "@/types/database";
+import { sameSkill, skillAppearsIn } from "@/lib/matching/skill-synonyms";
 
 function norm(value: string) {
   return value.trim().toLowerCase();
 }
 
+/** Synonym-aware overlap — "Talent Acquisition" on a candidate's profile
+ * matches a job asking for "Recruitment", not just an exact string match. */
 function overlap(a: string[], b: string[]): string[] {
-  const bNorm = new Set(b.map(norm));
-  return a.filter((item) => bNorm.has(norm(item)));
+  return a.filter((item) => b.some((other) => sameSkill(item, other)));
 }
 
 function clamp(value: number, min = 0, max = 100) {
@@ -81,7 +83,7 @@ export function computeJobMatch(profile: CareerProfile, job: Job): JobMatch {
       strengths.push(`Skills match: ${matchedSkills.join(", ")}.`);
     }
     const missingSkills = job.skills.filter(
-      (skill) => !matchedSkills.some((m) => norm(m) === norm(skill))
+      (skill) => !matchedSkills.some((m) => sameSkill(m, skill))
     );
     if (missingSkills.length > 0) {
       gaps.push(`Missing skills: ${missingSkills.slice(0, 4).join(", ")}.`);
@@ -94,7 +96,7 @@ export function computeJobMatch(profile: CareerProfile, job: Job): JobMatch {
       skillsScore = 50;
       gaps.push("Add your skills to your Career Passport for a more accurate match.");
     } else {
-      const matchedSkills = profile.skills.filter((s) => s.trim() && searchText.includes(norm(s)));
+      const matchedSkills = profile.skills.filter((s) => s.trim() && skillAppearsIn(s, searchText));
       if (matchedSkills.length > 0) {
         skillsScore = clamp(Math.round((matchedSkills.length / profile.skills.length) * 100));
         strengths.push(`Your listed skills appear in this job: ${matchedSkills.join(", ")}.`);
