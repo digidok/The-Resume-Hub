@@ -69,12 +69,12 @@ export default async function CvExamplePage({ params }: { params: Promise<{ slug
               </div>
 
               <div className="rounded-2xl bg-brand-950 p-5 text-center">
-                <p className="text-sm font-semibold text-white">Build your own free CV</p>
+                <p className="text-sm font-semibold text-white">Build a CV like this</p>
                 <p className="mt-1.5 text-xs text-slate-300">
-                  Free templates, AI review, and ATS scoring — no credit card required.
+                  100+ templates, AI review, and ATS scoring — unlimited on every plan.
                 </p>
                 <Link href="/signup" className="mt-4 block">
-                  <Button className="w-full">Get started free</Button>
+                  <Button className="w-full">Build my CV</Button>
                 </Link>
               </div>
             </aside>

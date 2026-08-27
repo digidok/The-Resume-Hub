@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { CV_EXAMPLES } from "@/lib/cv-examples";
 
 export const metadata = {
-  title: "Free CV Examples — Resume Hub",
+  title: "CV Examples — Resume Hub",
   description:
-    "Real, complete CV examples across different fields and career stages — built with Resume Hub's free templates. See what a strong CV looks like, then build your own for free.",
+    "Real, complete CV examples across different fields and career stages — built with Resume Hub's templates. See what a strong CV looks like, then build your own.",
 };
 
 export default function CvExamplesPage() {
@@ -17,11 +17,11 @@ export default function CvExamplesPage() {
       <SiteHeader />
       <main className="flex-1">
         <section className="mx-auto max-w-5xl px-4 py-16">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Free CV examples</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">CV examples</h1>
           <p className="mt-2 max-w-2xl text-slate-600">
             Three complete, real-world CVs — different fields, different career stages — built with
-            templates available on the free plan. See exactly what a CV that gets interviews looks
-            like, then build your own from scratch or from one of these.
+            Resume Hub templates. See exactly what a CV that gets interviews looks like, then build
+            your own from scratch or from one of these.
           </p>
 
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
@@ -48,12 +48,12 @@ export default function CvExamplesPage() {
           <div className="mt-14 rounded-2xl bg-brand-950 p-8 text-center sm:p-10">
             <h2 className="text-xl font-bold text-white">Ready to build yours?</h2>
             <p className="mx-auto mt-2 max-w-md text-sm text-slate-300">
-              Start from a blank CV or import your existing one — free templates, AI review, and
-              ATS scoring are included from day one.
+              Start from a blank CV or import your existing one — 100+ templates, AI review, and
+              ATS scoring, unlimited on every plan.
             </p>
             <div className="mt-5 flex flex-wrap justify-center gap-3">
               <Link href="/signup">
-                <Button>Create your free CV</Button>
+                <Button>Build my CV</Button>
               </Link>
               <Link href="/dashboard/import">
                 <Button variant="outlineInverse">Import an existing CV</Button>
@@ -61,7 +61,7 @@ export default function CvExamplesPage() {
             </div>
             <p className="mx-auto mt-4 flex max-w-md items-center justify-center gap-1.5 text-xs text-slate-400">
               <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-              No credit card required
+              Plans from R99/month
             </p>
           </div>
         </section>
