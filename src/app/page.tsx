@@ -38,6 +38,7 @@ import { MatchShowcase } from "@/components/landing/match-showcase";
 import { AnimatedHero } from "@/components/landing/animated-hero";
 import { OpenPositions } from "@/components/landing/open-positions";
 import { AfricaShowcase } from "@/components/landing/africa-showcase";
+import { TemplateCarousel } from "@/components/landing/template-carousel";
 import { Testimonials } from "@/components/landing/testimonials";
 import { JobMatchDemo } from "@/components/landing/job-match-demo";
 import { ApplicationKitDemo } from "@/components/landing/application-kit-demo";
@@ -302,6 +303,23 @@ export default async function Home() {
                 </MotionCard>
               ))}
             </ScrollStagger>
+          </div>
+        </section>
+
+        {/* Interactive template picker */}
+        <section className="py-16">
+          <div className="mx-auto max-w-5xl px-4">
+            <ScrollReveal className="mx-auto max-w-2xl text-center">
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                Pick a template that gets you noticed.
+              </h2>
+              <p className="mt-2 text-slate-600">
+                100+ professionally designed templates. Browse a few, or see the full library.
+              </p>
+            </ScrollReveal>
+            <div className="mt-10">
+              <TemplateCarousel />
+            </div>
           </div>
         </section>
 
