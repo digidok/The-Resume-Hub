@@ -8,3 +8,9 @@ export const WHATSAPP_BUSINESS_NUMBER = "27693391915";
 export function whatsappApplyLink(jobId: string) {
   return `https://wa.me/${WHATSAPP_BUSINESS_NUMBER}?text=${encodeURIComponent(`APPLY ${jobId}`)}`;
 }
+
+/** General "talk to us" link — used by the persistent floating WhatsApp
+ * button on the public site, distinct from the job-specific apply link. */
+export function whatsappContactLink() {
+  return `https://wa.me/${WHATSAPP_BUSINESS_NUMBER}?text=${encodeURIComponent("Hi, I'd like help with my CV.")}`;
+}

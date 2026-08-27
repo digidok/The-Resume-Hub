@@ -1,14 +1,14 @@
-import { Quote } from "lucide-react";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
+import { TestimonialsGrid } from "@/components/landing/testimonials-grid";
 
-type Testimonial = {
+export type Testimonial = {
   name: string;
   role: string;
   location: string;
   quote: string;
 };
 
-const TESTIMONIALS: Testimonial[] = [
+export const TESTIMONIALS: Testimonial[] = [
   {
     name: "Thabo Mokoena",
     role: "HR Manager",
@@ -195,65 +195,17 @@ const TESTIMONIALS: Testimonial[] = [
   },
 ];
 
-const ROW_1 = TESTIMONIALS.slice(0, 15);
-const ROW_2 = TESTIMONIALS.slice(15);
-
-function initials(name: string) {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-}
-
-function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
-  return (
-    <div className="flex w-80 shrink-0 flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:w-96">
-      <Quote className="h-5 w-5 shrink-0 text-accent-400" />
-      <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-700">&ldquo;{testimonial.quote}&rdquo;</p>
-      <div className="mt-4 flex items-center gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-700 text-xs font-semibold text-white">
-          {initials(testimonial.name)}
-        </span>
-        <div>
-          <p className="text-sm font-semibold text-slate-900">{testimonial.name}</p>
-          <p className="text-xs text-slate-500">
-            {testimonial.role} · {testimonial.location}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MarqueeRow({ testimonials, direction }: { testimonials: Testimonial[]; direction: "left" | "right" }) {
-  return (
-    <div className="marquee-row overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]">
-      <div className={`flex w-max gap-4 ${direction === "left" ? "animate-marquee-left" : "animate-marquee-right"}`}>
-        {[...testimonials, ...testimonials].map((testimonial, i) => (
-          <TestimonialCard key={`${testimonial.name}-${i}`} testimonial={testimonial} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export function Testimonials() {
   return (
     <section className="border-y border-slate-200 bg-slate-50 py-16 sm:py-20">
       <ScrollReveal className="mx-auto max-w-2xl px-4 text-center">
         <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-          Job seekers are getting hired with Resume Hub.
+          What job seekers are saying
         </h2>
-        <p className="mt-2 text-slate-600">Real feedback from candidates across South Africa.</p>
+        <p className="mt-2 text-slate-600">Feedback from candidates across South Africa.</p>
       </ScrollReveal>
 
-      <div className="mt-10 space-y-4">
-        <MarqueeRow testimonials={ROW_1} direction="left" />
-        <MarqueeRow testimonials={ROW_2} direction="right" />
-      </div>
+      <TestimonialsGrid testimonials={TESTIMONIALS} />
     </section>
   );
 }
