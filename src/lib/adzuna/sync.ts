@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { EmploymentType } from "@/types/database";
 import { extractSkillsFromText } from "@/lib/matching/skill-synonyms";
+import { jobFingerprint } from "@/lib/jobs/fingerprint";
 
 const ADZUNA_SOURCE = "Adzuna";
 const RESULTS_PER_PAGE = 50;
@@ -110,9 +111,11 @@ export type AdzunaSyncResult = {
 
 /**
  * Pulls current listings from every country Adzuna's Jobs API covers and
- * upserts them into the jobs table (deduped by application_url, since
- * Adzuna's own id isn't a column we store separately). Requires a
- * service-role client — synced jobs have no employer_id (see
+ * upserts them into the jobs table, deduped by application_url and by a
+ * normalized title|company|location fingerprint (Adzuna's own id isn't a
+ * column we store separately, and different aggregators/re-crawls often
+ * hand back a different redirect URL for the same underlying posting).
+ * Requires a service-role client — synced jobs have no employer_id (see
  * 20260812170059_nullable_job_employer.sql), and RLS would otherwise block
  * writes with no owning employer.
  *
@@ -178,15 +181,37 @@ export async function syncAdzunaJobs(
       if (valid.length === 0) continue;
 
       const urls = valid.map((r) => r.redirect_url as string);
-      const { data: existingRows } = await supabase
-        .from("jobs")
-        .select("application_url")
-        .in("application_url", urls);
-      const existingUrls = new Set((existingRows ?? []).map((r) => r.application_url));
+      const fingerprints = valid.map((r) =>
+        jobFingerprint(r.title, r.company!.display_name ?? "", r.location?.display_name ?? null)
+      );
+      const [{ data: existingByUrl }, { data: existingByFingerprint }] = await Promise.all([
+        supabase.from("jobs").select("application_url").in("application_url", urls),
+        supabase
+          .from("jobs")
+          .select("dedupe_key")
+          .eq("status", "open")
+          .in("dedupe_key", fingerprints),
+      ]);
+      const existingUrls = new Set((existingByUrl ?? []).map((r) => r.application_url));
+      const existingFingerprints = new Set(
+        (existingByFingerprint ?? []).map((r) => r.dedupe_key)
+      );
+      const seenFingerprints = new Set<string>();
 
       const newRows = valid
-        .filter((r) => !existingUrls.has(r.redirect_url))
-        .map((result) => {
+        .map((result, i) => ({ result, fingerprint: fingerprints[i] }))
+        .filter(({ result, fingerprint }) => {
+          if (existingUrls.has(result.redirect_url)) return false;
+          // Also guards against the same run inserting two near-duplicate
+          // results from the same page (e.g. a listing crawled twice with
+          // different tracking params on its redirect URL).
+          if (existingFingerprints.has(fingerprint) || seenFingerprints.has(fingerprint)) {
+            return false;
+          }
+          seenFingerprints.add(fingerprint);
+          return true;
+        })
+        .map(({ result, fingerprint }) => {
           const description = result.description ? stripHtml(result.description) : "See full listing for details.";
           return {
             employer_id: null,
@@ -202,6 +227,7 @@ export async function syncAdzunaJobs(
             industry: result.category?.label ?? null,
             skills: extractSkillsFromText(result.title, description),
             application_url: result.redirect_url,
+            dedupe_key: fingerprint,
             source: ADZUNA_SOURCE,
             posted_at: result.created ?? new Date().toISOString(),
             status: "open" as const,

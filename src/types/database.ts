@@ -162,6 +162,8 @@ export type Job = {
   qualification_requirements: string | null;
   skills: string[];
   application_url: string | null;
+  /** Normalized title|company|location fingerprint for cross-source dedup — see jobFingerprint(). */
+  dedupe_key: string | null;
   source: string | null;
   serpapi_job_id: string | null;
   hiring_manager_name: string | null;
