@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { EmploymentType } from "@/types/database";
 import { KNOWN_AGGREGATOR_NAMES } from "@/lib/jobs/aggregators";
+import { extractSkillsFromText } from "@/lib/matching/skill-synonyms";
 
 const SERPAPI_SOURCE = "Google Jobs";
 const COUNTRY = "South Africa";
@@ -144,26 +145,30 @@ export async function syncSerpApiJobs(
 
     const newRows = valid
       .filter((r) => !existingUrls.has(r.applyUrl))
-      .map((result) => ({
-        employer_id: null,
-        title: result.title,
-        company: result.company_name,
-        location: result.location ?? null,
-        country: COUNTRY,
-        currency: CURRENCY,
-        employment_type: mapEmploymentType(result),
-        description: result.description
+      .map((result) => {
+        const description = result.description
           ? cleanText(result.description)
-          : "See full listing for details.",
-        salary_min: null,
-        salary_max: null,
-        industry: null,
-        application_url: result.applyUrl,
-        source: SERPAPI_SOURCE,
-        serpapi_job_id: result.job_id ?? null,
-        posted_at: new Date().toISOString(),
-        status: "open" as const,
-      }));
+          : "See full listing for details.";
+        return {
+          employer_id: null,
+          title: result.title,
+          company: result.company_name,
+          location: result.location ?? null,
+          country: COUNTRY,
+          currency: CURRENCY,
+          employment_type: mapEmploymentType(result),
+          description,
+          salary_min: null,
+          salary_max: null,
+          industry: null,
+          skills: extractSkillsFromText(result.title ?? "", description),
+          application_url: result.applyUrl,
+          source: SERPAPI_SOURCE,
+          serpapi_job_id: result.job_id ?? null,
+          posted_at: new Date().toISOString(),
+          status: "open" as const,
+        };
+      });
 
     if (newRows.length > 0) {
       const { data: inserted, error } = await supabase.from("jobs").insert(newRows).select("id");

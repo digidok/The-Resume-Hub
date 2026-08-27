@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { EmploymentType } from "@/types/database";
+import { extractSkillsFromText } from "@/lib/matching/skill-synonyms";
 
 const ADZUNA_SOURCE = "Adzuna";
 const RESULTS_PER_PAGE = 50;
@@ -185,23 +186,27 @@ export async function syncAdzunaJobs(
 
       const newRows = valid
         .filter((r) => !existingUrls.has(r.redirect_url))
-        .map((result) => ({
-          employer_id: null,
-          title: result.title,
-          company: result.company!.display_name,
-          location: result.location?.display_name ?? null,
-          country,
-          currency,
-          employment_type: mapEmploymentType(result),
-          description: result.description ? stripHtml(result.description) : "See full listing for details.",
-          salary_min: result.salary_min ? Math.round(result.salary_min) : null,
-          salary_max: result.salary_max ? Math.round(result.salary_max) : null,
-          industry: result.category?.label ?? null,
-          application_url: result.redirect_url,
-          source: ADZUNA_SOURCE,
-          posted_at: result.created ?? new Date().toISOString(),
-          status: "open" as const,
-        }));
+        .map((result) => {
+          const description = result.description ? stripHtml(result.description) : "See full listing for details.";
+          return {
+            employer_id: null,
+            title: result.title,
+            company: result.company!.display_name,
+            location: result.location?.display_name ?? null,
+            country,
+            currency,
+            employment_type: mapEmploymentType(result),
+            description,
+            salary_min: result.salary_min ? Math.round(result.salary_min) : null,
+            salary_max: result.salary_max ? Math.round(result.salary_max) : null,
+            industry: result.category?.label ?? null,
+            skills: extractSkillsFromText(result.title, description),
+            application_url: result.redirect_url,
+            source: ADZUNA_SOURCE,
+            posted_at: result.created ?? new Date().toISOString(),
+            status: "open" as const,
+          };
+        });
 
       if (newRows.length > 0) {
         const { data: inserted, error } = await supabase.from("jobs").insert(newRows).select("id");
