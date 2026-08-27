@@ -22,6 +22,8 @@ export default async function AdminOverviewPage() {
   const greeting = greetingHour < 12 ? "Good morning" : greetingHour < 18 ? "Good afternoon" : "Good evening";
   const firstName = profile?.full_name?.split(" ")[0] || "there";
 
+  const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+
   const [
     { count: candidateCount },
     { count: employerCount },
@@ -30,6 +32,7 @@ export default async function AdminOverviewPage() {
     { count: applicationCount },
     { count: resumeCount },
     { data: completedPayments },
+    { data: aiUsageThisMonth },
   ] = await Promise.all([
     supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "candidate"),
     supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "employer"),
@@ -38,9 +41,15 @@ export default async function AdminOverviewPage() {
     supabase.from("applications").select("id", { count: "exact", head: true }),
     supabase.from("resumes").select("id", { count: "exact", head: true }),
     supabase.from("payments").select("amount").eq("status", "complete"),
+    supabase.from("ai_usage_events").select("estimated_cost_zar").gte("created_at", startOfMonth),
   ]);
 
   const totalRevenue = (completedPayments ?? []).reduce((sum, p) => sum + Number(p.amount), 0);
+  const aiCostThisMonth = (aiUsageThisMonth ?? []).reduce(
+    (sum, e) => sum + Number(e.estimated_cost_zar ?? 0),
+    0
+  );
+  const aiCallsThisMonth = aiUsageThisMonth?.length ?? 0;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -59,6 +68,8 @@ export default async function AdminOverviewPage() {
         <StatCard label="Applications" value={applicationCount ?? 0} />
         <StatCard label="Resumes created" value={resumeCount ?? 0} />
         <StatCard label="Revenue" value={`R${totalRevenue.toFixed(2)}`} />
+        <StatCard label="AI cost this month" value={`R${aiCostThisMonth.toFixed(2)}`} />
+        <StatCard label="AI calls this month" value={aiCallsThisMonth} />
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -70,6 +81,9 @@ export default async function AdminOverviewPage() {
         </Link>
         <Link href="/dashboard/admin/payments">
           <Button variant="outline">View payments</Button>
+        </Link>
+        <Link href="/dashboard/admin/ai-usage">
+          <Button variant="outline">AI usage breakdown</Button>
         </Link>
       </div>
     </div>
