@@ -37,6 +37,7 @@ import { createClient } from "@/lib/supabase/server";
 import { MatchShowcase } from "@/components/landing/match-showcase";
 import { AnimatedHero } from "@/components/landing/animated-hero";
 import { OpenPositions } from "@/components/landing/open-positions";
+import { AfricaShowcase } from "@/components/landing/africa-showcase";
 import { JobMatchDemo } from "@/components/landing/job-match-demo";
 import { ApplicationKitDemo } from "@/components/landing/application-kit-demo";
 import { ApplicationPipeline } from "@/components/landing/application-pipeline";
@@ -275,6 +276,8 @@ export default async function Home() {
         <AnimatedHero jobCount={jobCount ?? 0} />
 
         <OpenPositions />
+
+        <AfricaShowcase />
 
         {/* Page 2: Application tracking */}
         <section id="pipeline" className="mx-auto max-w-5xl px-4 pb-20 pt-24 sm:pt-28">
