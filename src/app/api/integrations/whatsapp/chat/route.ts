@@ -82,9 +82,9 @@ export async function POST(request: Request) {
         .eq("phone_number", phoneRaw.trim())
         .maybeSingle();
       if (profile) {
-        candidateContext = `\n\nThis person already has a Resume Hub account: name "${profile.full_name ?? "unknown"}", role ${profile.role}, plan ${profile.plan}, ${profile.credits_remaining} AI credits remaining. You can reference this naturally (e.g. "you're on the free plan with X credits left") but don't dump it all at once unless relevant.`;
+        candidateContext = `\n\nThis person already has a Resume Hub account: name "${profile.full_name ?? "unknown"}", role ${profile.role}, plan ${profile.plan}. You can reference this naturally if relevant, but don't dump it all at once.`;
       } else {
-        candidateContext = "\n\nThis person doesn't have a Resume Hub account yet — if relevant, invite them to sign up free at resumehub.co.za.";
+        candidateContext = "\n\nThis person doesn't have a Resume Hub account yet — if relevant, invite them to sign up at resumehub.co.za.";
       }
     } catch (err) {
       console.error("WhatsApp chat: account lookup failed, continuing without it", err);

@@ -435,7 +435,7 @@ export function ResumeEditor({
             </Select>
             {!isPro && (
               <p className="mt-1 text-xs text-slate-500">
-                Free plan includes a curated set of templates.{" "}
+                Your plan includes a curated set of templates.{" "}
                 <a href="/pricing" className="text-brand-600 hover:underline">
                   Upgrade to Pro
                 </a>{" "}
