@@ -4,25 +4,25 @@
   --background: #ffffff;
   --foreground: #0f172a;
 
-  /* Brand: turquoise — primary actions, headers, interactive accents */
-  --color-brand-50: #eafffc;
-  --color-brand-100: #cbfdf6;
-  --color-brand-200: #99f8ed;
-  --color-brand-300: #5eeade;
-  --color-brand-400: #2dd4c6;
-  --color-brand-500: #14b8a8;
-  --color-brand-600: #0d9488;
-  --color-brand-700: #0f766e;
-  --color-brand-800: #135e58;
-  --color-brand-900: #134945;
-  --color-brand-950: #062825;
+  /* Brand: navy — the same ink navy used across Resume Hub's own CV templates */
+  --color-brand-50: #f1f4f9;
+  --color-brand-100: #dfe6f1;
+  --color-brand-200: #b7c6e1;
+  --color-brand-300: #829ece;
+  --color-brand-400: #4570ba;
+  --color-brand-500: #305491;
+  --color-brand-600: #213d6e;
+  --color-brand-700: #182e54;
+  --color-brand-800: #132544;
+  --color-brand-900: #0f1e38;
+  --color-brand-950: #0c1422;
 
-  /* Accent: warm coral — pairs with the turquoise for a fun, warm energy */
-  --color-accent-50: #fff3ee;
-  --color-accent-400: #ff9466;
-  --color-accent-500: #ff7a45;
-  --color-accent-600: #f2602c;
-  --color-accent-700: #d94f1f;
+  /* Accent: gold — matches the gold + cream used on the CV templates */
+  --color-accent-50: #f3ead9;
+  --color-accent-400: #b8933f;
+  --color-accent-500: #8e6f29;
+  --color-accent-600: #775d22;
+  --color-accent-700: #5f4a1c;
 }
 
 @theme inline {

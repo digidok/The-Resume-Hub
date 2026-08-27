@@ -276,8 +276,6 @@ export default async function Home() {
 
         <OpenPositions />
 
-        <OpenPositions />
-
         {/* Page 2: Application tracking */}
         <section id="pipeline" className="mx-auto max-w-5xl px-4 pb-20 pt-24 sm:pt-28">
           <ScrollReveal className="mx-auto max-w-2xl text-center">
