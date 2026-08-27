@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { EmploymentType } from "@/types/database";
 import { KNOWN_AGGREGATOR_NAMES } from "@/lib/jobs/aggregators";
 import { extractSkillsFromText } from "@/lib/matching/skill-synonyms";
+import { jobFingerprint } from "@/lib/jobs/fingerprint";
 
 const SERPAPI_SOURCE = "Google Jobs";
 const COUNTRY = "South Africa";
@@ -102,8 +103,9 @@ export type SerpApiSyncResult = {
 /**
  * Pulls South Africa job listings from Google Jobs (via SerpApi) for a
  * small curated set of search terms and upserts them into the jobs table,
- * deduped by application_url — same pattern as the Adzuna sync. Requires a
- * service-role client, since these rows have no owning employer_id.
+ * deduped by application_url and a title|company|location fingerprint —
+ * same pattern as the Adzuna sync. Requires a service-role client, since
+ * these rows have no owning employer_id.
  */
 export async function syncSerpApiJobs(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -137,15 +139,28 @@ export async function syncSerpApiJobs(
     if (valid.length === 0) continue;
 
     const urls = valid.map((r) => r.applyUrl as string);
-    const { data: existingRows } = await supabase
-      .from("jobs")
-      .select("application_url")
-      .in("application_url", urls);
-    const existingUrls = new Set((existingRows ?? []).map((r) => r.application_url));
+    const fingerprints = valid.map((r) =>
+      jobFingerprint(r.title ?? "", r.company_name ?? "", r.location ?? null)
+    );
+    const [{ data: existingByUrl }, { data: existingByFingerprint }] = await Promise.all([
+      supabase.from("jobs").select("application_url").in("application_url", urls),
+      supabase.from("jobs").select("dedupe_key").eq("status", "open").in("dedupe_key", fingerprints),
+    ]);
+    const existingUrls = new Set((existingByUrl ?? []).map((r) => r.application_url));
+    const existingFingerprints = new Set((existingByFingerprint ?? []).map((r) => r.dedupe_key));
+    const seenFingerprints = new Set<string>();
 
     const newRows = valid
-      .filter((r) => !existingUrls.has(r.applyUrl))
-      .map((result) => {
+      .map((result, i) => ({ result, fingerprint: fingerprints[i] }))
+      .filter(({ result, fingerprint }) => {
+        if (existingUrls.has(result.applyUrl)) return false;
+        if (existingFingerprints.has(fingerprint) || seenFingerprints.has(fingerprint)) {
+          return false;
+        }
+        seenFingerprints.add(fingerprint);
+        return true;
+      })
+      .map(({ result, fingerprint }) => {
         const description = result.description
           ? cleanText(result.description)
           : "See full listing for details.";
@@ -163,6 +178,7 @@ export async function syncSerpApiJobs(
           industry: null,
           skills: extractSkillsFromText(result.title ?? "", description),
           application_url: result.applyUrl,
+          dedupe_key: fingerprint,
           source: SERPAPI_SOURCE,
           serpapi_job_id: result.job_id ?? null,
           posted_at: new Date().toISOString(),
