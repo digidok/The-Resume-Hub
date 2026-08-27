@@ -38,6 +38,7 @@ import { MatchShowcase } from "@/components/landing/match-showcase";
 import { AnimatedHero } from "@/components/landing/animated-hero";
 import { OpenPositions } from "@/components/landing/open-positions";
 import { AfricaShowcase } from "@/components/landing/africa-showcase";
+import { Testimonials } from "@/components/landing/testimonials";
 import { JobMatchDemo } from "@/components/landing/job-match-demo";
 import { ApplicationKitDemo } from "@/components/landing/application-kit-demo";
 import { ApplicationPipeline } from "@/components/landing/application-pipeline";
@@ -708,6 +709,8 @@ export default async function Home() {
             </ScrollStagger>
           </div>
         </section>
+
+        <Testimonials />
 
         {/* Page 8: Employers + closing CTAs */}
         <section id="employers" className="bg-white py-20">
