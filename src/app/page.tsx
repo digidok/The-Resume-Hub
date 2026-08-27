@@ -750,11 +750,11 @@ export default async function Home() {
                 Your next opportunity starts here.
               </h2>
               <p className="mx-auto mt-3 max-w-xl text-white/80">
-                It&apos;s free to get started — build your first resume in minutes.
+                Plans from R99/month — build your CV and start applying today.
               </p>
               <Link href="/signup">
                 <Button size="lg" variant="solidInverse" className="mt-6">
-                  Build My CV Free
+                  Build My CV
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>

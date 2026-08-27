@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { SidebarShell } from "@/components/dashboard/sidebar-shell";
 import { SidebarPlanCard } from "@/components/dashboard/sidebar-plan-card";
@@ -6,6 +7,7 @@ import { SidebarFooter } from "@/components/dashboard/sidebar-footer";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { DashboardNav, type NavGroup } from "@/components/dashboard/nav";
 import { hasUnlimitedCredits } from "@/lib/credits";
+import { FREE_TIER_CUTOFF } from "@/lib/plans/free-tier-cutover";
 
 export default async function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
   const supabase = await createClient();
@@ -19,7 +21,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
     supabase
       .from("profiles")
       .select(
-        "role, full_name, plan, credits_remaining, job_posting_credits, avatar_url, subscription_plan, subscription_expires_at"
+        "role, full_name, plan, credits_remaining, job_posting_credits, avatar_url, subscription_plan, subscription_expires_at, created_at"
       )
       .eq("id", user.id)
       .single(),
@@ -46,6 +48,23 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
         : profile
           ? hasUnlimitedCredits(profile)
           : false;
+
+  // Candidates who signed up after the free tier was retired must have an
+  // active paid plan to use the dashboard. Accounts that already existed
+  // are grandfathered — untouched, same free access as before. The
+  // subscription page (and its /success redirect after checkout) is
+  // exempt so a gated candidate can actually reach it to pay.
+  if (
+    role === "candidate" &&
+    profile?.created_at &&
+    new Date(profile.created_at) >= FREE_TIER_CUTOFF &&
+    !isSubscribedOrPro
+  ) {
+    const pathname = (await headers()).get("x-pathname") ?? "";
+    if (!pathname.startsWith("/dashboard/subscription")) {
+      redirect("/dashboard/subscription?paywall=1");
+    }
+  }
 
   const { count: pendingConnectionsCount } = await supabase
     .from("connections")

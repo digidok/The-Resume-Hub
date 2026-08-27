@@ -71,7 +71,7 @@ const FAQ_GROUPS = [
     items: [
       {
         q: "Is Resume Hub free?",
-        a: "Creating an account, building a resume, and applying to jobs is free. AI features (review, mock interview, auto-apply, salary insights, translation) use credits — free accounts get a starting balance, and you can top up or subscribe to Pro for more.",
+        a: "Resume Hub is a paid platform — a plan gives you full, unlimited access to the CV builder, every AI tool (review, mock interview, auto-apply, salary insights, translation), and the job board, with no credit limits. See Pricing for current plans.",
       },
       {
         q: "Do you offer a student discount?",
