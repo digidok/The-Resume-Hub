@@ -1,10 +1,10 @@
-import { Globe, Mail, MapPin, Phone } from "lucide-react";
+import { DollarSign, Globe, Mail, MapPin, Phone, TrendingUp, Trophy, Users } from "lucide-react";
 import type { ResumeContent } from "@/types/database";
 
 type TemplateConfig = {
   id: string;
   label: string;
-  layout: "single" | "sidebar" | "executive" | "portfolio";
+  layout: "single" | "sidebar" | "executive" | "portfolio" | "achievements";
   photo: boolean;
   font: "font-serif" | "font-sans";
   compact?: boolean;
@@ -62,6 +62,17 @@ const SIGNATURE_TEMPLATES: TemplateConfig[] = ([
     accent: "#0f1e38",
     accentSoft: "#f3ead9",
     accent2: "#b8933f",
+    tier: "pro",
+  },
+  {
+    id: "sidebar-achiever",
+    label: "Achiever Sidebar",
+    layout: "achievements",
+    photo: true,
+    font: "font-sans",
+    accent: "#13223f",
+    accentSoft: "#eef2f8",
+    accent2: "#2f6fed",
     tier: "pro",
   },
 ] as Omit<TemplateConfig, "group">[]).map((t) => ({ ...t, group: "Signature" }));
@@ -176,6 +187,23 @@ function splitIntoSentences(text: string): string[] {
     .split(/(?<=[.!?])\s+(?=[A-Z0-9])/)
     .map((s) => s.trim())
     .filter(Boolean);
+}
+
+/** One "achievement card" per experience entry — the role as its title, the
+ * first existing bullet as its description. Reuses real resume content
+ * rather than inventing achievement copy the candidate never wrote. */
+function getAchievementCards(
+  experience: ResumeContent["experience"],
+  max = 4
+): { title: string; description: string }[] {
+  return experience
+    .map((exp) => {
+      const line = exp.description?.split("\n").map((l) => l.trim()).find(Boolean);
+      if (!line) return null;
+      return { title: exp.title || "Key Achievement", description: line };
+    })
+    .filter((v): v is { title: string; description: string } => Boolean(v))
+    .slice(0, max);
 }
 
 function initials(name?: string): string {
@@ -982,6 +1010,188 @@ function PortfolioLayout({ content, config }: { content: ResumeContent; config: 
   );
 }
 
+const ACHIEVEMENT_ICONS = [Trophy, DollarSign, Users, TrendingUp];
+
+function AchievementsLayout({ content, config }: { content: ResumeContent; config: TemplateConfig }) {
+  const navy = config.accent;
+  const linkColor = config.accent2 ?? "#2f6fed";
+  const roleTags = [...new Set(content.experience.map((e) => e.title).filter(Boolean))].slice(
+    0,
+    3
+  ) as string[];
+  const achievements = getAchievementCards(content.experience);
+
+  return (
+    <div
+      id="resume-preview"
+      className={`mx-auto flex w-full max-w-[8.5in] bg-white text-slate-900 print:p-0 ${config.font}`}
+    >
+      <aside className="w-[36%] shrink-0 space-y-6 p-6 text-white" style={{ backgroundColor: navy }}>
+        <div className="flex justify-center">
+          <Photo url={content.photo_url} name={content.full_name} accent="#3b4d73" size={96} />
+        </div>
+
+        {achievements.length > 0 && (
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-wide text-white/90">
+              Key Achievements
+            </h2>
+            <div className="mt-3 space-y-3">
+              {achievements.map((item, i) => {
+                const Icon = ACHIEVEMENT_ICONS[i % ACHIEVEMENT_ICONS.length];
+                return (
+                  <div key={i} className="flex gap-2.5">
+                    <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/15">
+                      <Icon className="h-3.5 w-3.5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-white">{item.title}</p>
+                      <p className="mt-0.5 text-[11px] leading-relaxed text-white/70">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {content.education.length > 0 && (
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-wide text-white/90">Education</h2>
+            <div className="mt-2 space-y-2">
+              {content.education.map((edu) => (
+                <div key={edu.id}>
+                  <p className="text-xs font-semibold text-white">{edu.degree || edu.school}</p>
+                  <p className="text-[11px] text-white/70">
+                    {formatRange(edu.start_date, edu.end_date)}
+                    {edu.degree && edu.school ? ` · ${edu.school}` : ""}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {content.skills.length > 0 && (
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-wide text-white/90">Skills</h2>
+            <p className="mt-2 text-[11px] leading-relaxed text-white/80">
+              {content.skills.join(" · ")}
+            </p>
+          </div>
+        )}
+
+        {content.certifications.length > 0 && (
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-wide text-white/90">
+              Training / Courses
+            </h2>
+            <p className="mt-2 text-[11px] leading-relaxed text-white/80">
+              {content.certifications.join(" · ")}
+            </p>
+          </div>
+        )}
+      </aside>
+
+      <main className="flex-1 p-8">
+        <h1 className="text-2xl font-bold text-slate-900">{content.full_name || "Your Name"}</h1>
+        {roleTags.length > 0 && (
+          <p className="mt-1 text-sm font-medium" style={{ color: linkColor }}>
+            {roleTags.join("  |  ")}
+          </p>
+        )}
+        <ContactLine content={content} />
+        <InternationalDetails content={content} />
+
+        {content.summary && (
+          <section className="mt-5">
+            <Heading accent={navy}>Summary</Heading>
+            <p className="mt-2 text-sm leading-relaxed whitespace-pre-line">{content.summary}</p>
+          </section>
+        )}
+
+        {content.experience.length > 0 && (
+          <section className="mt-5">
+            <Heading accent={navy}>Experience</Heading>
+            <div className="mt-2 space-y-4">
+              {content.experience.map((exp) => (
+                <div key={exp.id} className="break-inside-avoid">
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-2">
+                    <p className="text-sm font-semibold">
+                      {exp.title || "Role"}
+                      {exp.company ? ` · ${exp.company}` : ""}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {formatRange(exp.start_date, exp.end_date, exp.current)}
+                    </p>
+                  </div>
+                  {exp.location && <p className="text-xs text-slate-500">{exp.location}</p>}
+                  {exp.description && (
+                    <ul className="mt-1.5 space-y-1">
+                      {exp.description
+                        .split("\n")
+                        .map((l) => l.trim())
+                        .filter(Boolean)
+                        .map((line, i) => (
+                          <li key={i} className="flex gap-2 text-sm leading-relaxed text-slate-700">
+                            <span
+                              className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
+                              style={{ backgroundColor: linkColor }}
+                            />
+                            {line}
+                          </li>
+                        ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {content.projects.length > 0 && (
+          <section className="mt-5">
+            <Heading accent={navy}>Projects</Heading>
+            <div className="mt-2 space-y-3">
+              {content.projects.map((project) => (
+                <div key={project.id} className="break-inside-avoid">
+                  <p className="text-sm font-semibold">
+                    {project.name}
+                    {project.url && (
+                      <span className="ml-2 text-xs font-normal text-slate-500">{project.url}</span>
+                    )}
+                  </p>
+                  {project.description && (
+                    <p className="mt-1 text-sm leading-relaxed text-slate-700">
+                      {project.description}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {content.languages.length > 0 && (
+          <section className="mt-5">
+            <Heading accent={navy}>Languages</Heading>
+            <p className="mt-2 text-sm text-slate-700">{content.languages.join(" · ")}</p>
+          </section>
+        )}
+
+        {content.awards.length > 0 && (
+          <section className="mt-5">
+            <Heading accent={navy}>Awards &amp; Honors</Heading>
+            <p className="mt-2 text-sm text-slate-700">{content.awards.join(" · ")}</p>
+          </section>
+        )}
+      </main>
+    </div>
+  );
+}
+
 function PreviewWatermark() {
   return (
     <div
@@ -1021,6 +1231,8 @@ export function ResumePreview({
       <ExecutiveLayout content={content} config={config} />
     ) : config.layout === "portfolio" ? (
       <PortfolioLayout content={content} config={config} />
+    ) : config.layout === "achievements" ? (
+      <AchievementsLayout content={content} config={config} />
     ) : (
       <SingleLayout content={content} config={config} />
     );
