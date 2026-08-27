@@ -49,6 +49,9 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // Lets server components (e.g. the dashboard layout's paywall gate) read
+  // the current path without needing client-side usePathname().
+  response.headers.set("x-pathname", pathname);
   return response;
 }
 
