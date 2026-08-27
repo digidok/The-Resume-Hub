@@ -276,6 +276,35 @@ export default async function Home() {
       <main className="flex-1">
         <AnimatedHero jobCount={jobCount ?? 0} />
 
+        {/* Every tool, front and centre */}
+        <section className="border-y border-slate-200 bg-slate-50 py-16">
+          <div className="mx-auto max-w-5xl px-4">
+            <ScrollReveal className="mx-auto max-w-2xl text-center">
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                Everything you need for the job search, in one place.
+              </h2>
+              <p className="mt-2 text-slate-600">
+                CV builder, ATS scoring, mock interviews, salary insights, and more.
+              </p>
+            </ScrollReveal>
+            <ScrollStagger className="mt-10 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+              {CAREER_RESOURCES.map((resource) => (
+                <MotionCard key={resource.title}>
+                  <Link href={resource.href} className="group flex items-start gap-3">
+                    <resource.icon className="mt-0.5 h-5 w-5 shrink-0 text-brand-600" />
+                    <div>
+                      <h3 className="text-base font-semibold text-slate-900 group-hover:text-brand-700">
+                        {resource.title}
+                      </h3>
+                      <p className="mt-1 text-sm text-slate-600">{resource.description}</p>
+                    </div>
+                  </Link>
+                </MotionCard>
+              ))}
+            </ScrollStagger>
+          </div>
+        </section>
+
         <OpenPositions />
 
         <AfricaShowcase />
@@ -602,32 +631,6 @@ export default async function Home() {
                       <h3 className="mt-3 text-lg font-semibold text-slate-900">{feature.title}</h3>
                       <p className="mt-2 text-sm text-slate-600">{feature.description}</p>
                     </Card>
-                  </MotionCard>
-                ))}
-              </ScrollStagger>
-            </div>
-
-            <div className="mt-16 border-t border-slate-200 pt-16">
-              <ScrollReveal className="mx-auto max-w-2xl text-center">
-                <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-                  Career Resources
-                </h2>
-                <p className="mt-2 text-slate-600">
-                  Everything else you need for the job search, in one place.
-                </p>
-              </ScrollReveal>
-              <ScrollStagger className="mt-10 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-                {CAREER_RESOURCES.map((resource) => (
-                  <MotionCard key={resource.title}>
-                    <Link href={resource.href} className="group flex items-start gap-3">
-                      <resource.icon className="mt-0.5 h-5 w-5 shrink-0 text-brand-600" />
-                      <div>
-                        <h3 className="text-base font-semibold text-slate-900 group-hover:text-brand-700">
-                          {resource.title}
-                        </h3>
-                        <p className="mt-1 text-sm text-slate-600">{resource.description}</p>
-                      </div>
-                    </Link>
                   </MotionCard>
                 ))}
               </ScrollStagger>
