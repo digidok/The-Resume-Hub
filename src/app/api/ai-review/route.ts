@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { spendCredits } from "@/lib/credits";
+import { logAiUsage } from "@/lib/ai/usage";
 import type { ResumeContent } from "@/types/database";
 
 function contentToPlainText(content: ResumeContent): string {
@@ -165,9 +166,10 @@ Then, separately from the category scores, name the 3-5 SPECIFIC edits that woul
     ? `Review this resume against the target job description. Score how well it matches (0-100, ATS-style), and give concrete, specific feedback.\n\nRESUME:\n${resumeText}\n\nJOB DESCRIPTION:\n${jobDescription}\n\n${categoryInstructions}`
     : `Review this resume for general quality, clarity, and impact. Score it 0-100 as if evaluated by an applicant tracking system, and give concrete, specific feedback.\n\nRESUME:\n${resumeText}\n\n${categoryInstructions}`;
 
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
   try {
     const message = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+      model,
       // The full review (summary + 4 feedback arrays + 8 grounded category
       // scores) plus the model's own reasoning both draw from this same
       // budget — 2048 was cutting responses off mid-JSON on a real resume
@@ -178,6 +180,13 @@ Then, separately from the category scores, name the 3-5 SPECIFIC edits that woul
         format: { type: "json_schema", schema: REVIEW_SCHEMA },
       },
       messages: [{ role: "user", content: prompt }],
+    });
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "ai_review",
+      model,
+      inputTokens: message.usage?.input_tokens,
+      outputTokens: message.usage?.output_tokens,
     });
 
     const textBlock = message.content.find((block) => block.type === "text");
@@ -204,6 +213,13 @@ Then, separately from the category scores, name the 3-5 SPECIFIC edits that woul
     return NextResponse.json({ ...review, credits_remaining: spend.remaining });
   } catch (err) {
     console.error("AI review failed", err);
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "ai_review",
+      model,
+      success: false,
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+    });
     return NextResponse.json({ error: "AI review failed. Please try again." }, { status: 500 });
   }
 }

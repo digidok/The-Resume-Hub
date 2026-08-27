@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { spendCredits } from "@/lib/credits";
+import { logAiUsage } from "@/lib/ai/usage";
 import type { ResumeContent } from "@/types/database";
 
 const MESSAGE_SCHEMA = {
@@ -74,12 +75,20 @@ Write:
 
 None of the messages should read as generic form letters — reference the actual role and the candidate's real background.`;
 
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
   try {
     const message = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+      model,
       max_tokens: 1024,
       output_config: { format: { type: "json_schema", schema: MESSAGE_SCHEMA } },
       messages: [{ role: "user", content: prompt }],
+    });
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "recruiter_message_generate",
+      model,
+      inputTokens: message.usage?.input_tokens,
+      outputTokens: message.usage?.output_tokens,
     });
 
     const textBlock = message.content.find((block) => block.type === "text");
@@ -106,6 +115,13 @@ None of the messages should read as generic form letters — reference the actua
     return NextResponse.json({ ...parsed, credits_remaining: spend.remaining });
   } catch (err) {
     console.error("Recruiter message generation failed", err);
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "recruiter_message_generate",
+      model,
+      success: false,
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+    });
     return NextResponse.json({ error: "Could not generate messages. Please try again." }, { status: 500 });
   }
 }

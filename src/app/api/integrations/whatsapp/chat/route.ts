@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGES, WHATSAPP_ORDER_PRICING } from "@/lib/payfast/config";
+import { logAiUsage } from "@/lib/ai/usage";
 
 const SYSTEM_PROMPT = `You are the WhatsApp support assistant for Resume Hub (resumehub.co.za), a South African job-seeker platform. You're chatting with a candidate over WhatsApp, so keep replies short — a few sentences, plain text, no markdown headers or bullet-point walls. WhatsApp does support *bold* and _italic_ with asterisks/underscores if it helps readability.
 
@@ -71,10 +72,10 @@ export async function POST(request: Request) {
   // works as a plain FAQ assistant if this fails for any reason (e.g. the
   // service-role key isn't configured), since it's a nice-to-have, not a
   // requirement for answering general questions.
+  const supabase = createAdminClient();
   let candidateContext = "";
   if (phoneRaw.trim()) {
     try {
-      const supabase = createAdminClient();
       const { data: profile } = await supabase
         .from("profiles")
         .select("full_name, plan, credits_remaining, role")
@@ -92,12 +93,20 @@ export async function POST(request: Request) {
 
   const anthropic = new Anthropic({ apiKey });
 
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
   try {
     const response = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+      model,
       max_tokens: 400,
       system: SYSTEM_PROMPT + candidateContext,
       messages: [...history, { role: "user" as const, content: message }],
+    });
+    await logAiUsage(supabase, {
+      userId: null,
+      feature: "whatsapp_chat",
+      model,
+      inputTokens: response.usage?.input_tokens,
+      outputTokens: response.usage?.output_tokens,
     });
 
     const textBlock = response.content.find((block) => block.type === "text");
@@ -108,6 +117,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ reply: textBlock.text });
   } catch (err) {
     console.error("WhatsApp chat failed", err);
+    await logAiUsage(supabase, {
+      userId: null,
+      feature: "whatsapp_chat",
+      model,
+      success: false,
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+    });
     return NextResponse.json(
       { error: "Could not generate a reply. Please try again." },
       { status: 500 }

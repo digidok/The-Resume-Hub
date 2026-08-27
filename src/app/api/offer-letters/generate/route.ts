@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { logAiUsage } from "@/lib/ai/usage";
 
 export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -54,11 +55,19 @@ Company: ${job.company}
 
 Return only the offer letter text, no preamble.`;
 
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
   try {
     const message = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+      model,
       max_tokens: 1024,
       messages: [{ role: "user", content: prompt }],
+    });
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "offer_letter_generate",
+      model,
+      inputTokens: message.usage?.input_tokens,
+      outputTokens: message.usage?.output_tokens,
     });
 
     const textBlock = message.content.find((block) => block.type === "text");
@@ -90,6 +99,13 @@ Return only the offer letter text, no preamble.`;
     return NextResponse.json({ content });
   } catch (err) {
     console.error("Offer letter generation failed", err);
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "offer_letter_generate",
+      model,
+      success: false,
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+    });
     return NextResponse.json({ error: "Could not draft offer letter. Please try again." }, { status: 500 });
   }
 }

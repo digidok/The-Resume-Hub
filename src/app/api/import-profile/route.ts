@@ -51,13 +51,19 @@ export async function POST(request: Request) {
   const pastedText = typeof body.text === "string" ? body.text.trim() : "";
   const uploadedFiles: UploadedFileRef[] = Array.isArray(body.sourceFiles) ? body.sourceFiles : [];
 
+  const usageLog = { supabase, userId: user.id };
+
   try {
     // --- Pasted text path (LinkedIn export paste) ---
     if (pastedText) {
-      const parsed = await runCvExtraction(apiKey, {
-        mode: "text",
-        prompt: buildTextExtractionPrompt(pastedText),
-      });
+      const parsed = await runCvExtraction(
+        apiKey,
+        {
+          mode: "text",
+          prompt: buildTextExtractionPrompt(pastedText),
+        },
+        usageLog
+      );
       const draft = buildDraftFromExtraction(parsed, []);
       return NextResponse.json({ draft });
     }
@@ -122,8 +128,8 @@ export async function POST(request: Request) {
         images,
       };
       const [parsed, hasProfilePhoto] = await Promise.all([
-        runCvExtraction(apiKey, extractionInput),
-        detectProfilePhoto(apiKey, extractionInput),
+        runCvExtraction(apiKey, extractionInput, usageLog),
+        detectProfilePhoto(apiKey, extractionInput, usageLog),
       ]);
       const draft = buildDraftFromExtraction(parsed, sourceFiles, { hasProfilePhoto });
       return NextResponse.json({ draft });
@@ -146,10 +152,14 @@ export async function POST(request: Request) {
       const quality = assessTextQuality(nativeText, pageCount);
 
       if (quality.ok) {
-        const parsed = await runCvExtraction(apiKey, {
-          mode: "text",
-          prompt: buildTextExtractionPrompt(nativeText),
-        });
+        const parsed = await runCvExtraction(
+          apiKey,
+          {
+            mode: "text",
+            prompt: buildTextExtractionPrompt(nativeText),
+          },
+          usageLog
+        );
         const draft = buildDraftFromExtraction(parsed, sourceFiles);
         return NextResponse.json({ draft });
       }
@@ -161,8 +171,8 @@ export async function POST(request: Request) {
         pdfBase64: buffer.toString("base64"),
       };
       const [parsed, hasProfilePhoto] = await Promise.all([
-        runCvExtraction(apiKey, extractionInput),
-        detectProfilePhoto(apiKey, extractionInput),
+        runCvExtraction(apiKey, extractionInput, usageLog),
+        detectProfilePhoto(apiKey, extractionInput, usageLog),
       ]);
       const draft = buildDraftFromExtraction(parsed, sourceFiles, {
         hasProfilePhoto,
@@ -187,10 +197,14 @@ export async function POST(request: Request) {
           400
         );
       }
-      const parsed = await runCvExtraction(apiKey, {
-        mode: "text",
-        prompt: buildTextExtractionPrompt(text),
-      });
+      const parsed = await runCvExtraction(
+        apiKey,
+        {
+          mode: "text",
+          prompt: buildTextExtractionPrompt(text),
+        },
+        usageLog
+      );
       const draft = buildDraftFromExtraction(parsed, sourceFiles);
       return NextResponse.json({ draft });
     }
@@ -203,10 +217,14 @@ export async function POST(request: Request) {
         400
       );
     }
-    const parsed = await runCvExtraction(apiKey, {
-      mode: "text",
-      prompt: buildTextExtractionPrompt(text),
-    });
+    const parsed = await runCvExtraction(
+      apiKey,
+      {
+        mode: "text",
+        prompt: buildTextExtractionPrompt(text),
+      },
+      usageLog
+    );
     const draft = buildDraftFromExtraction(parsed, sourceFiles, {
       warning: "Older .doc files can be harder to read reliably — please double-check the details below.",
     });

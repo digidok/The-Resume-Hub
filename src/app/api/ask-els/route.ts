@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { logAiUsage } from "@/lib/ai/usage";
 
 const MAX_HISTORY = 12;
 const MAX_MESSAGE_LENGTH = 2000;
@@ -64,12 +65,20 @@ export async function POST(request: Request) {
 
   const anthropic = new Anthropic({ apiKey });
 
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
   try {
     const message = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+      model,
       max_tokens: 500,
       system: `${SYSTEM_PROMPT}\n\n${profileContext}`,
       messages,
+    });
+    await logAiUsage(supabase, {
+      userId: user?.id ?? null,
+      feature: "ask_els",
+      model,
+      inputTokens: message.usage?.input_tokens,
+      outputTokens: message.usage?.output_tokens,
     });
 
     const textBlock = message.content.find((block) => block.type === "text");
@@ -80,6 +89,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ reply: textBlock.text.trim() });
   } catch (err) {
     console.error("Ask Els failed", err);
+    await logAiUsage(supabase, {
+      userId: user?.id ?? null,
+      feature: "ask_els",
+      model,
+      success: false,
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+    });
     return NextResponse.json(
       { error: "Els is having trouble responding right now. Please try again." },
       { status: 500 }

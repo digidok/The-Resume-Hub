@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { spendCredits } from "@/lib/credits";
+import { logAiUsage } from "@/lib/ai/usage";
 
 const DUTIES_SCHEMA = {
   type: "object" as const,
@@ -46,9 +47,10 @@ export async function POST(request: Request) {
 
   const anthropic = new Anthropic({ apiKey });
 
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
   try {
     const message = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5",
+      model,
       max_tokens: 1400,
       output_config: { format: { type: "json_schema", schema: DUTIES_SCHEMA } },
       messages: [
@@ -64,6 +66,13 @@ export async function POST(request: Request) {
         },
       ],
     });
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "resume_suggest_duties",
+      model,
+      inputTokens: message.usage?.input_tokens,
+      outputTokens: message.usage?.output_tokens,
+    });
 
     const textBlock = message.content.find((block) => block.type === "text");
     if (!textBlock || textBlock.type !== "text") {
@@ -74,6 +83,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ duties: parsed.duties, credits_remaining: spend.remaining });
   } catch (err) {
     console.error("Suggest duties failed", err);
+    await logAiUsage(supabase, {
+      userId: user.id,
+      feature: "resume_suggest_duties",
+      model,
+      success: false,
+      errorMessage: err instanceof Error ? err.message : "Unknown error",
+    });
     return NextResponse.json({ error: "Could not suggest duties. Please try again." }, { status: 500 });
   }
 }
