@@ -85,6 +85,9 @@ export default async function AdminOverviewPage() {
         <Link href="/dashboard/admin/ai-usage">
           <Button variant="outline">AI usage breakdown</Button>
         </Link>
+        <Link href="/dashboard/admin/errors">
+          <Button variant="outline">Server errors</Button>
+        </Link>
       </div>
     </div>
   );
