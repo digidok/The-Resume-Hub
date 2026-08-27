@@ -10,6 +10,7 @@ import { UpgradePrompt } from "@/components/subscription/upgrade-prompt";
 const TIPS = [
   "Keywords should match how the role is actually titled — \"React Developer\" not just \"Developer\".",
   "We only apply to jobs already open on the Resume Hub board.",
+  "We skip jobs whose posted salary is below your Career Passport's minimum, so we never auto-apply you to something that can't meet your ask.",
   "Turn on the daily scheduled run to keep applying automatically, or run it on demand any time.",
 ];
 
