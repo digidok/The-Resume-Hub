@@ -96,16 +96,6 @@ export default async function SubscriptionPage({
         </p>
       </div>
 
-      {params.paywall === "1" && (
-        <Card className="border-brand-200 bg-brand-50 p-4 text-sm text-slate-700">
-          <p className="font-semibold text-slate-900">Choose a plan to continue</p>
-          <p className="mt-1">
-            Resume Hub is now a paid platform for new candidates — pick a plan below to unlock the
-            CV builder, job matching, and every AI tool.
-          </p>
-        </Card>
-      )}
-
       {!config.configured && (
         <Card className="border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
           Payments aren&apos;t configured yet — set PAYFAST_MERCHANT_ID and PAYFAST_MERCHANT_KEY to
