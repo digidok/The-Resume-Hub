@@ -8,7 +8,13 @@ import { emptyResumeContent, type ResumeContent } from "@/types/database";
 import { RESUME_TEMPLATES } from "@/components/resume/resume-preview";
 import { hasUnlimitedCredits } from "@/lib/credits";
 
-export async function createResume() {
+/**
+ * Creates a blank resume and returns its id — used by the "build a CV"
+ * onboarding wizard once its questions are done, so the wizard controls
+ * when the redirect into the editor happens rather than this action
+ * navigating on its own.
+ */
+export async function createResume(): Promise<string> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -32,7 +38,7 @@ export async function createResume() {
   }
 
   revalidatePath("/dashboard/resumes");
-  redirect(`/dashboard/resumes/${data.id}`);
+  return data.id;
 }
 
 export async function saveResume(

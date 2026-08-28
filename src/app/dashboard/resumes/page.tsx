@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BackLink } from "@/components/ui/back-link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { createResume, deleteResume, duplicateResume } from "@/lib/resumes/actions";
+import { deleteResume, duplicateResume } from "@/lib/resumes/actions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -47,9 +47,9 @@ export default async function ResumesPage() {
       <BackLink href="/dashboard" label="Dashboard" />
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold text-slate-900">My resumes</h1>
-        <form action={createResume}>
-          <Button type="submit">+ New resume</Button>
-        </form>
+        <Link href="/dashboard/resumes/new">
+          <Button type="button">+ New resume</Button>
+        </Link>
       </div>
 
       {(!resumes || resumes.length === 0) && (

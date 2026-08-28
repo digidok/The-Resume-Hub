@@ -13,7 +13,6 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { createResume } from "@/lib/resumes/actions";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { DonutChart } from "@/components/dashboard/donut-chart";
 import { WeeklyBarChart } from "@/components/dashboard/weekly-bar-chart";
@@ -37,7 +36,7 @@ function GetStartedChooser({ firstName }: { firstName: string }) {
         </p>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Link href="/dashboard/import">
+        <Link href="/dashboard/resumes/new?start=upload">
           <Card className="flex h-full flex-col p-6 transition hover:-translate-y-0.5 hover:shadow-md">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
               <UploadCloud className="h-5 w-5" />
@@ -53,22 +52,20 @@ function GetStartedChooser({ firstName }: { firstName: string }) {
           </Card>
         </Link>
 
-        <form action={createResume}>
-          <button type="submit" className="block h-full w-full text-left">
-            <Card className="flex h-full flex-col p-6 transition hover:-translate-y-0.5 hover:shadow-md">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-500/10 text-accent-600">
-                <FilePlus2 className="h-5 w-5" />
-              </div>
-              <h2 className="mt-4 text-lg font-semibold text-slate-900">Build from scratch</h2>
-              <p className="mt-2 flex-1 text-sm text-slate-600">
-                Start with a blank resume and fill it in step by step, with AI help along the way.
-              </p>
-              <span className="mt-4 flex items-center gap-1.5 text-sm font-medium text-accent-600">
-                Start building <ArrowRight className="h-4 w-4" />
-              </span>
-            </Card>
-          </button>
-        </form>
+        <Link href="/dashboard/resumes/new?start=scratch">
+          <Card className="flex h-full flex-col p-6 transition hover:-translate-y-0.5 hover:shadow-md">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-500/10 text-accent-600">
+              <FilePlus2 className="h-5 w-5" />
+            </div>
+            <h2 className="mt-4 text-lg font-semibold text-slate-900">Build from scratch</h2>
+            <p className="mt-2 flex-1 text-sm text-slate-600">
+              Start with a blank resume and fill it in step by step, with AI help along the way.
+            </p>
+            <span className="mt-4 flex items-center gap-1.5 text-sm font-medium text-accent-600">
+              Start building <ArrowRight className="h-4 w-4" />
+            </span>
+          </Card>
+        </Link>
       </div>
     </div>
   );
