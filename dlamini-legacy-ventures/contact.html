@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us | Dlamini Legacy Ventures</title>
+<meta name="description" content="Get in touch with Dlamini Legacy Ventures via phone, email or WhatsApp, or send us an enquiry.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="demo-banner">DEMO PROTOTYPE — for illustration only. No real applications, loans, payments or credit checks are processed on this site.</div>
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">Dlamini <span>Legacy Ventures</span></a>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="site-nav">
+      <a href="loans.html">Loans</a>
+      <a href="calculator.html">Calculator</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQs</a>
+      <a href="contact.html">Contact</a>
+      <a href="login.html">Login</a>
+      <a href="apply.html" class="btn btn-primary nav-apply">Apply Now</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" style="padding:40px 0;">
+  <div class="container">
+    <p class="hero-eyebrow">Get In Touch</p>
+    <h1>Contact Us</h1>
+    <p class="lead">Questions about a loan, an existing application, or need help? Reach out below.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container grid grid-2">
+    <div class="card">
+      <h3>Contact details</h3>
+      <p><strong>Phone:</strong> 0800 000 000 (demo number)</p>
+      <p><strong>Email:</strong> support@dlaminilegacyventures.co.za (demo)</p>
+      <p><strong>WhatsApp:</strong> <a href="https://wa.me/27000000000" target="_blank" rel="noopener">Chat with us</a></p>
+      <p><strong>Hours:</strong> Monday–Friday, 08:00–17:00</p>
+    </div>
+    <div class="card">
+      <h3>Send an enquiry</h3>
+      <form id="contact-form" onsubmit="event.preventDefault(); document.getElementById('contact-success').hidden=false; this.hidden=true;">
+        <div class="field">
+          <label for="c-name">Full name</label>
+          <input type="text" id="c-name" required>
+        </div>
+        <div class="field">
+          <label for="c-email">Email address</label>
+          <input type="email" id="c-email" required>
+        </div>
+        <div class="field">
+          <label for="c-message">Message</label>
+          <textarea id="c-message" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+      </form>
+      <div id="contact-success" hidden>
+        <p class="muted">Thanks — this is a demo form, so your message wasn't actually sent anywhere. In the live site this would reach our support team.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h3>Dlamini Legacy Ventures</h3>
+      <p>Short-term loans up to R2,000. Simple. Transparent. Responsible.</p>
+      <p class="disclaimer-small">All applications are subject to verification, affordability assessment, credit assessment and approval. Approval is not guaranteed.</p>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <a href="about.html">About Us</a>
+      <a href="responsible-lending.html">Responsible Lending</a>
+      <a href="credit-provider-info.html">Credit Provider Information</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <a href="complaints.html">Complaints</a>
+    </div>
+    <div>
+      <h4>Get in touch</h4>
+      <a href="https://wa.me/27000000000" target="_blank" rel="noopener">Chat on WhatsApp</a>
+      <p>Mon–Fri 08:00–17:00 (demo hours)</p>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>&copy; 2026 Dlamini Legacy Ventures (Pty) Ltd. Registration and credit-provider details to be confirmed. This is a demonstration website; no real credit is offered.</p>
+    <a href="admin.html" class="admin-link">Admin (demo)</a>
+  </div>
+</footer>
+<a class="whatsapp-float" href="https://wa.me/27000000000" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">💬</a>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

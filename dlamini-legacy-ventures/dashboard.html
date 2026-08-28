@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard | Dlamini Legacy Ventures</title>
+<meta name="description" content="Customer dashboard for tracking your Dlamini Legacy Ventures loan.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="demo-banner">DEMO PROTOTYPE — all data below is mocked sample data, not a real account.</div>
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">Dlamini <span>Legacy Ventures</span></a>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="site-nav">
+      <a href="loans.html">Loans</a>
+      <a href="calculator.html">Calculator</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQs</a>
+      <a href="contact.html">Contact</a>
+      <a href="login.html">Login</a>
+      <a href="apply.html" class="btn btn-primary nav-apply">Apply Now</a>
+    </nav>
+  </div>
+</header>
+
+<section style="padding:32px 0 64px;">
+  <div class="container dash-layout">
+    <nav class="dash-nav">
+      <a href="#my-loan" class="active">My Loan</a>
+      <a href="#documents">Documents</a>
+      <a href="#profile">Profile</a>
+      <a href="#support">Support</a>
+      <a href="login.html">Log Out</a>
+    </nav>
+
+    <div>
+      <h1 style="margin-bottom:4px;">Welcome back, Thabo</h1>
+      <p class="muted" style="margin-bottom:24px;">Sample customer account (demo data)</p>
+
+      <div id="my-loan" class="card" style="margin-bottom:24px;">
+        <h3>My Loan</h3>
+        <table class="result-table">
+          <tr><td>Application number</td><td>DLV-2026-00842</td></tr>
+          <tr><td>Loan amount</td><td>R1,500.00</td></tr>
+          <tr><td>Status</td><td><span class="badge badge-review">Under Assessment</span></td></tr>
+          <tr><td>Repayment amount</td><td>R1,810.00 (estimate)</td></tr>
+          <tr><td>Repayment date</td><td>27 September 2026</td></tr>
+          <tr><td>Outstanding balance</td><td>R0.00 — not yet disbursed</td></tr>
+        </table>
+        <a href="application-status.html" class="btn btn-outline">View status guide</a>
+      </div>
+
+      <div class="card" style="margin-bottom:24px;">
+        <h3>Payment history</h3>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>—</td><td>No payments yet</td><td>—</td><td><span class="badge badge-info">N/A</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="documents" class="card" style="margin-bottom:24px;">
+        <h3>Documents</h3>
+        <ul class="list-check">
+          <li>Credit agreement — not yet issued</li>
+          <li>Statements — none yet</li>
+          <li>Notices — none yet</li>
+          <li>Correspondence — none yet</li>
+        </ul>
+      </div>
+
+      <div id="profile" class="card" style="margin-bottom:24px;">
+        <h3>Profile</h3>
+        <table class="result-table">
+          <tr><td>Full name</td><td>Thabo Nkosi (sample)</td></tr>
+          <tr><td>Mobile number</td><td>082 000 0000 (sample)</td></tr>
+          <tr><td>Email</td><td>thabo@example.co.za (sample)</td></tr>
+          <tr><td>Banking details</td><td>On file — masked for security</td></tr>
+        </table>
+      </div>
+
+      <div id="support" class="card">
+        <h3>Support</h3>
+        <p class="muted">Need help with your application or loan?</p>
+        <div class="hero-ctas">
+          <a href="contact.html" class="btn btn-outline">Contact Us</a>
+          <a href="complaints.html" class="btn btn-outline">Lodge a Complaint</a>
+          <a href="https://wa.me/27000000000" target="_blank" rel="noopener" class="btn btn-primary">WhatsApp Support</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container footer-bottom">
+    <p>&copy; 2026 Dlamini Legacy Ventures (Pty) Ltd. This is a demonstration website; no real customer data is shown.</p>
+    <a href="admin.html" class="admin-link">Admin (demo)</a>
+  </div>
+</footer>
+<a class="whatsapp-float" href="https://wa.me/27000000000" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">💬</a>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

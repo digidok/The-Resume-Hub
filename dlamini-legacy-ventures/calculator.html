@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loan Calculator | Dlamini Legacy Ventures</title>
+<meta name="description" content="Estimate your repayment for a short-term loan of up to R2,000 with our interactive loan calculator.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="demo-banner">DEMO PROTOTYPE — for illustration only. No real applications, loans, payments or credit checks are processed on this site.</div>
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">Dlamini <span>Legacy Ventures</span></a>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="site-nav">
+      <a href="loans.html">Loans</a>
+      <a href="calculator.html">Calculator</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQs</a>
+      <a href="contact.html">Contact</a>
+      <a href="login.html">Login</a>
+      <a href="apply.html" class="btn btn-primary nav-apply">Apply Now</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" style="padding:40px 0;">
+  <div class="container">
+    <p class="hero-eyebrow">Loan Calculator</p>
+    <h1>Estimate your repayment</h1>
+    <p class="lead">Select a loan amount to see an estimated cost of credit and total repayment.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="card" style="max-width:640px; margin:0 auto;">
+      <div class="notice notice-warning notice-strong" style="margin-bottom:20px;">
+        Illustrative example only. The interest rate and fees shown here are placeholder figures for this demo and are not the company's approved pricing. Real pricing must be approved by management and a compliance/legal professional before use with customers.
+      </div>
+
+      <label>Choose a loan amount</label>
+      <div class="amount-grid">
+        <button type="button" class="amount-chip" data-amount="500">R500</button>
+        <button type="button" class="amount-chip" data-amount="750">R750</button>
+        <button type="button" class="amount-chip" data-amount="1000">R1,000</button>
+        <button type="button" class="amount-chip" data-amount="1250">R1,250</button>
+        <button type="button" class="amount-chip" data-amount="1500">R1,500</button>
+        <button type="button" class="amount-chip" data-amount="1750">R1,750</button>
+        <button type="button" class="amount-chip" data-amount="2000">R2,000</button>
+      </div>
+
+      <div id="calc-result" hidden>
+        <table class="result-table">
+          <tr><td>Loan amount</td><td id="res-amount"></td></tr>
+          <tr><td>Loan term</td><td id="res-term"></td></tr>
+          <tr><td>Interest</td><td id="res-interest"></td></tr>
+          <tr><td>Applicable fees</td><td id="res-fees"></td></tr>
+          <tr><td>Repayment date</td><td id="res-date"></td></tr>
+          <tr><td>Cost of credit</td><td id="res-cost"></td></tr>
+          <tr class="total"><td>Total repayment</td><td id="res-total"></td></tr>
+        </table>
+        <p class="field-hint">This calculator provides an estimate only. Your final repayment amount will be confirmed in your credit agreement.</p>
+        <a href="apply.html" class="btn btn-primary btn-block">Apply for This Amount</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h3>Dlamini Legacy Ventures</h3>
+      <p>Short-term loans up to R2,000. Simple. Transparent. Responsible.</p>
+      <p class="disclaimer-small">All applications are subject to verification, affordability assessment, credit assessment and approval. Approval is not guaranteed.</p>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <a href="about.html">About Us</a>
+      <a href="responsible-lending.html">Responsible Lending</a>
+      <a href="credit-provider-info.html">Credit Provider Information</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <a href="complaints.html">Complaints</a>
+    </div>
+    <div>
+      <h4>Get in touch</h4>
+      <a href="https://wa.me/27000000000" target="_blank" rel="noopener">Chat on WhatsApp</a>
+      <p>Mon–Fri 08:00–17:00 (demo hours)</p>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>&copy; 2026 Dlamini Legacy Ventures (Pty) Ltd. Registration and credit-provider details to be confirmed. This is a demonstration website; no real credit is offered.</p>
+    <a href="admin.html" class="admin-link">Admin (demo)</a>
+  </div>
+</footer>
+<a class="whatsapp-float" href="https://wa.me/27000000000" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">💬</a>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/calculator.js"></script>
+</body>
+</html>

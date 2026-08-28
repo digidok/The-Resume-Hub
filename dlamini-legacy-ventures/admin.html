@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | Dlamini Legacy Ventures</title>
+<meta name="description" content="Administration dashboard for Dlamini Legacy Ventures loan applications and reporting.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="demo-banner">DEMO PROTOTYPE — mocked admin view. No real authentication, 2FA or data. Not linked from public navigation.</div>
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">Dlamini <span>Legacy Ventures</span> <span style="color:#8ea0bd; font-weight:400; font-size:0.8rem;">· Admin</span></a>
+    <nav class="site-nav" style="display:flex; position:static; background:none; flex-direction:row; padding:0;">
+      <a href="index.html" style="color:#e8edf5;">Exit to Public Site</a>
+    </nav>
+  </div>
+</header>
+
+<section style="padding:32px 0 64px;">
+  <div class="container dash-layout">
+    <nav class="dash-nav">
+      <a href="#overview" class="active">Reporting Overview</a>
+      <a href="#applications">Applications</a>
+      <a href="#loans">Loan Management</a>
+      <a href="#customers">Customers</a>
+      <a href="index.html">Log Out</a>
+    </nav>
+
+    <div>
+      <h1 id="overview" style="margin-bottom:20px;">Reporting Overview</h1>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-value">312</div><div class="stat-label">Applications received</div></div>
+        <div class="stat-card"><div class="stat-value">187</div><div class="stat-label">Applications approved</div></div>
+        <div class="stat-card"><div class="stat-value">96</div><div class="stat-label">Applications declined</div></div>
+        <div class="stat-card"><div class="stat-value">R246,500</div><div class="stat-label">Total amount disbursed</div></div>
+        <div class="stat-card"><div class="stat-value">R58,900</div><div class="stat-label">Amount outstanding</div></div>
+        <div class="stat-card"><div class="stat-value">R201,300</div><div class="stat-label">Repayments received</div></div>
+        <div class="stat-card"><div class="stat-value">14</div><div class="stat-label">Loans in arrears</div></div>
+        <div class="stat-card"><div class="stat-value">4.2%</div><div class="stat-label">Default rate</div></div>
+      </div>
+      <p class="field-hint" style="margin-bottom:32px;">All figures above are sample data for demonstration only.</p>
+
+      <div id="applications" class="card" style="margin-bottom:28px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+          <h3 style="margin:0;">Application Management</h3>
+          <div style="display:flex; gap:8px;">
+            <input type="text" placeholder="Search applications…" style="max-width:220px;">
+            <select style="max-width:160px;">
+              <option>All statuses</option>
+              <option>Received</option><option>Under Assessment</option><option>Approved</option><option>Declined</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>App #</th><th>Applicant</th><th>Amount</th><th>Status</th><th>Submitted</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td>DLV-2026-00842</td><td>Thabo Nkosi</td><td>R1,500</td><td><span class="badge badge-review">Under Assessment</span></td><td>26 Aug 2026</td><td><a href="#">Review</a></td></tr>
+              <tr><td>DLV-2026-00841</td><td>Nomvula Dube</td><td>R2,000</td><td><span class="badge badge-received">Received</span></td><td>26 Aug 2026</td><td><a href="#">Review</a></td></tr>
+              <tr><td>DLV-2026-00840</td><td>Sipho Mahlangu</td><td>R750</td><td><span class="badge badge-approved">Approved</span></td><td>25 Aug 2026</td><td><a href="#">View</a></td></tr>
+              <tr><td>DLV-2026-00839</td><td>Lerato Molefe</td><td>R1,000</td><td><span class="badge badge-declined">Declined</span></td><td>25 Aug 2026</td><td><a href="#">View</a></td></tr>
+              <tr><td>DLV-2026-00838</td><td>Johan van der Merwe</td><td>R2,000</td><td><span class="badge badge-info">Info Required</span></td><td>24 Aug 2026</td><td><a href="#">Review</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="loans" class="card" style="margin-bottom:28px;">
+        <h3>Loan Management</h3>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Loan #</th><th>Customer</th><th>Amount</th><th>Repayment Date</th><th>Outstanding</th><th>Arrears</th></tr></thead>
+            <tbody>
+              <tr><td>L-01923</td><td>Sipho Mahlangu</td><td>R750</td><td>20 Sep 2026</td><td>R905.00</td><td><span class="badge badge-info">No</span></td></tr>
+              <tr><td>L-01890</td><td>Ayanda Zulu</td><td>R1,250</td><td>02 Sep 2026</td><td>R1,510.00</td><td><span class="badge badge-declined">14 days</span></td></tr>
+              <tr><td>L-01877</td><td>Karabo Sithole</td><td>R2,000</td><td>29 Aug 2026</td><td>R0.00</td><td><span class="badge badge-approved">Settled</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="customers" class="card">
+        <h3>Customer Management</h3>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Customer</th><th>Previous Loans</th><th>Repayment History</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Thabo Nkosi</td><td>1</td><td>—</td><td><span class="badge badge-info">Active application</span></td></tr>
+              <tr><td>Sipho Mahlangu</td><td>2</td><td>Good standing</td><td><span class="badge badge-approved">Good standing</span></td></tr>
+              <tr><td>Ayanda Zulu</td><td>3</td><td>1 late payment</td><td><span class="badge badge-review">Watch</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container footer-bottom">
+    <p>&copy; 2026 Dlamini Legacy Ventures (Pty) Ltd. Demonstration admin view only — no real customer or loan data.</p>
+  </div>
+</footer>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

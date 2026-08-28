@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply for a Loan | Dlamini Legacy Ventures</title>
+<meta name="description" content="Apply online for a short-term loan of up to R2,000 with Dlamini Legacy Ventures.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="demo-banner">DEMO PROTOTYPE — this form does not submit anywhere. No personal information you enter is stored, transmitted or processed.</div>
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">Dlamini <span>Legacy Ventures</span></a>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="site-nav">
+      <a href="loans.html">Loans</a>
+      <a href="calculator.html">Calculator</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQs</a>
+      <a href="contact.html">Contact</a>
+      <a href="login.html">Login</a>
+      <a href="apply.html" class="btn btn-primary nav-apply">Apply Now</a>
+    </nav>
+  </div>
+</header>
+
+<section style="padding:36px 0 64px;">
+  <div class="container" style="max-width:720px;">
+    <h1>Loan Application</h1>
+    <p class="muted" style="margin-bottom:28px;">All applications are subject to verification, affordability assessment, credit assessment and approval. Approval is not guaranteed.</p>
+
+    <div class="stepper">
+      <div class="stepper-item">Personal</div>
+      <div class="stepper-item">Employment</div>
+      <div class="stepper-item">Financial</div>
+      <div class="stepper-item">Banking</div>
+      <div class="stepper-item">Documents</div>
+      <div class="stepper-item">Consent</div>
+    </div>
+
+    <form id="apply-form" novalidate>
+
+      <!-- Step 1: Personal Details -->
+      <div class="form-step">
+        <div class="card">
+          <h3>Personal Details</h3>
+          <div class="field"><label for="fullname">Full name</label><input type="text" id="fullname" required></div>
+          <div class="field"><label for="idnumber">South African ID number</label><input type="text" id="idnumber" pattern="[0-9]{13}" maxlength="13" required><p class="field-hint">13 digits, as it appears on your ID.</p></div>
+          <div class="field"><label for="dob">Date of birth</label><input type="date" id="dob" required></div>
+          <div class="field"><label for="mobile">Mobile number</label><input type="tel" id="mobile" required></div>
+          <div class="field"><label for="email">Email address</label><input type="email" id="email" required></div>
+          <div class="field"><label for="address">Residential address</label><textarea id="address" rows="2" required></textarea></div>
+          <div class="field">
+            <label for="marital">Marital status</label>
+            <select id="marital" required>
+              <option value="">Select…</option>
+              <option>Single</option><option>Married in community of property</option>
+              <option>Married out of community of property</option><option>Divorced</option><option>Widowed</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions"><span></span><button type="button" class="btn btn-primary" data-next>Next: Employment</button></div>
+      </div>
+
+      <!-- Step 2: Employment -->
+      <div class="form-step">
+        <div class="card">
+          <h3>Employment</h3>
+          <div class="field">
+            <label for="empstatus">Employment status</label>
+            <select id="empstatus" required>
+              <option value="">Select…</option>
+              <option>Permanently employed</option><option>Contract employed</option>
+              <option>Self-employed</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field"><label for="employer">Employer</label><input type="text" id="employer" required></div>
+          <div class="field"><label for="jobtitle">Job title</label><input type="text" id="jobtitle" required></div>
+          <div class="field"><label for="empduration">Employment duration</label><input type="text" id="empduration" placeholder="e.g. 2 years 3 months" required></div>
+          <div class="field"><label for="income">Monthly income (R)</label><input type="number" id="income" min="0" required></div>
+          <div class="field"><label for="paydate">Pay date</label><input type="text" id="paydate" placeholder="e.g. 25th of the month" required></div>
+          <div class="field"><label for="otherincome">Other income (R, if any)</label><input type="number" id="otherincome" min="0"></div>
+        </div>
+        <div class="form-actions"><button type="button" class="btn btn-outline" data-prev>Back</button><button type="button" class="btn btn-primary" data-next>Next: Financial Info</button></div>
+      </div>
+
+      <!-- Step 3: Financial Information -->
+      <div class="form-step">
+        <div class="card">
+          <h3>Financial Information</h3>
+          <div class="field"><label for="rent">Monthly rent / bond (R)</label><input type="number" id="rent" min="0" required></div>
+          <div class="field"><label for="food">Food expenses (R)</label><input type="number" id="food" min="0" required></div>
+          <div class="field"><label for="transport">Transport (R)</label><input type="number" id="transport" min="0" required></div>
+          <div class="field"><label for="loans">Existing loan repayments (R)</label><input type="number" id="loans" min="0"></div>
+          <div class="field"><label for="otherexp">Other regular expenses (R)</label><input type="number" id="otherexp" min="0"></div>
+          <div class="field"><label for="dependants">Number of dependants</label><input type="number" id="dependants" min="0" required></div>
+          <div class="field"><label for="commitments">Other financial commitments</label><textarea id="commitments" rows="2"></textarea></div>
+        </div>
+        <div class="form-actions"><button type="button" class="btn btn-outline" data-prev>Back</button><button type="button" class="btn btn-primary" data-next>Next: Banking</button></div>
+      </div>
+
+      <!-- Step 4: Banking Information -->
+      <div class="form-step">
+        <div class="card">
+          <h3>Banking Information</h3>
+          <p class="muted">We only collect what's genuinely required to assess and pay out your loan. In the live product this step would integrate with a secure banking/income-verification provider rather than storing your banking credentials directly.</p>
+          <div class="field"><label for="bankname">Bank name</label><input type="text" id="bankname" required></div>
+          <div class="field"><label for="acctype">Account type</label>
+            <select id="acctype" required><option value="">Select…</option><option>Cheque / Current</option><option>Savings</option></select>
+          </div>
+          <div class="field"><label for="accnumber">Account number</label><input type="text" id="accnumber" required></div>
+        </div>
+        <div class="form-actions"><button type="button" class="btn btn-outline" data-prev>Back</button><button type="button" class="btn btn-primary" data-next>Next: Documents</button></div>
+      </div>
+
+      <!-- Step 5: Documents -->
+      <div class="form-step">
+        <div class="card">
+          <h3>Documents</h3>
+          <p class="muted">Required documents depend on your application. In this demo, upload controls are illustrative and do not upload any file.</p>
+          <div class="upload-box"><strong>South African ID</strong><br>Tap to upload (demo only)</div>
+          <div class="upload-box"><strong>Proof of income</strong><br>Tap to upload (demo only)</div>
+          <div class="upload-box"><strong>Proof of address</strong><br>Tap to upload (demo only)</div>
+          <div class="upload-box"><strong>Bank statement(s)</strong><br>Tap to upload (demo only)</div>
+        </div>
+        <div class="form-actions"><button type="button" class="btn btn-outline" data-prev>Back</button><button type="button" class="btn btn-primary" data-next>Next: Consent</button></div>
+      </div>
+
+      <!-- Step 6: Consent -->
+      <div class="form-step">
+        <div class="card">
+          <h3>Consent</h3>
+          <p class="muted">Please review and confirm each item below. None of these boxes are pre-ticked.</p>
+          <div class="checkbox-field"><input type="checkbox" id="c1" required><label for="c1">I consent to the processing of my personal information for the purposes of this application.</label></div>
+          <div class="checkbox-field"><input type="checkbox" id="c2" required><label for="c2">I consent to a credit assessment being performed.</label></div>
+          <div class="checkbox-field"><input type="checkbox" id="c3" required><label for="c3">I consent to verification of the information I have provided.</label></div>
+          <div class="checkbox-field"><input type="checkbox" id="c4" required><label for="c4">I consent to applicable credit-bureau enquiries being made.</label></div>
+          <div class="checkbox-field"><input type="checkbox" id="c5" required><label for="c5">I consent to receive communication regarding my application.</label></div>
+        </div>
+        <div class="form-actions"><button type="button" class="btn btn-outline" data-prev>Back</button><button type="submit" class="btn btn-primary">Submit Application</button></div>
+      </div>
+    </form>
+
+    <div id="apply-success" class="card success-box" hidden>
+      <div class="success-icon">✓</div>
+      <h2>Application Received</h2>
+      <p class="muted">Thank you. Your application has been received and is being assessed.</p>
+      <p class="badge badge-received" style="margin:12px 0;">Status: Application Received</p>
+      <p class="field-hint" style="max-width:52ch; margin:0 auto 20px;">This is a demo confirmation only — nothing was actually submitted. In the live product you would be able to track your application status from your dashboard.</p>
+      <a href="login.html" class="btn btn-primary">View Demo Dashboard</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h3>Dlamini Legacy Ventures</h3>
+      <p>Short-term loans up to R2,000. Simple. Transparent. Responsible.</p>
+      <p class="disclaimer-small">All applications are subject to verification, affordability assessment, credit assessment and approval. Approval is not guaranteed.</p>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <a href="about.html">About Us</a>
+      <a href="responsible-lending.html">Responsible Lending</a>
+      <a href="credit-provider-info.html">Credit Provider Information</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <a href="complaints.html">Complaints</a>
+    </div>
+    <div>
+      <h4>Get in touch</h4>
+      <a href="https://wa.me/27000000000" target="_blank" rel="noopener">Chat on WhatsApp</a>
+      <p>Mon–Fri 08:00–17:00 (demo hours)</p>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>&copy; 2026 Dlamini Legacy Ventures (Pty) Ltd. Registration and credit-provider details to be confirmed. This is a demonstration website; no real credit is offered.</p>
+    <a href="admin.html" class="admin-link">Admin (demo)</a>
+  </div>
+</footer>
+<a class="whatsapp-float" href="https://wa.me/27000000000" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">💬</a>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/apply-form.js"></script>
+</body>
+</html>
