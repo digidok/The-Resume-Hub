@@ -3,7 +3,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Card } from "@/components/ui/card";
 
 export const metadata = {
-  title: "Privacy Policy — Resume Hub",
+  title: "Privacy Policy — The Resume Document Hub",
 };
 
 const SECTIONS = [

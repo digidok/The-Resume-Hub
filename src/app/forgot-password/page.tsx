@@ -3,7 +3,7 @@ import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 import { Card } from "@/components/ui/card";
 
 export const metadata = {
-  title: "Reset Password — Resume Hub",
+  title: "Reset Password — The Resume Document Hub",
 };
 
 export default async function ForgotPasswordPage({

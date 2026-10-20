@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CV_EXAMPLES } from "@/lib/cv-examples";
 
 export const metadata = {
-  title: "CV Examples — Resume Hub",
+  title: "CV Examples — The Resume Document Hub",
   description:
     "Real, complete CV examples across different fields and career stages — built with Resume Hub's templates. See what a strong CV looks like, then build your own.",
 };

@@ -5,7 +5,7 @@ import { ResetPasswordForm } from "@/components/auth/reset-password-form";
 import { Card } from "@/components/ui/card";
 
 export const metadata = {
-  title: "Set New Password — Resume Hub",
+  title: "Set New Password — The Resume Document Hub",
 };
 
 export default async function ResetPasswordPage() {

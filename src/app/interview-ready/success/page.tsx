@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export const metadata = {
-  title: "You're all set — Resume Hub",
+  title: "You're all set — The Resume Document Hub",
 };
 
 export default function InterviewReadySuccessPage() {

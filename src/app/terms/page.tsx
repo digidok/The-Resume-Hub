@@ -3,8 +3,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { Card } from "@/components/ui/card";
 
 export const metadata = {
-  title: "Terms of Service — Resume Hub",
-  description: "The terms that govern your use of Resume Hub.",
+  title: "Terms of Service — The Resume Document Hub",
+  description: "The terms that govern your use of The Resume Document Hub.",
 };
 
 const SECTIONS = [

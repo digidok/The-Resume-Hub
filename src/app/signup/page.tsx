@@ -3,7 +3,7 @@ import { SignupForm } from "@/components/auth/signup-form";
 import { Card } from "@/components/ui/card";
 
 export const metadata = {
-  title: "Sign Up — Resume Hub",
+  title: "Sign Up — The Resume Document Hub",
 };
 
 export default async function SignupPage({

@@ -5,7 +5,7 @@ import { ReferenceSubmitForm } from "@/components/career/reference-submit-form";
 import { getReferenceRequestByToken } from "@/lib/career-references/actions";
 
 export const metadata = {
-  title: "Submit a Reference — Resume Hub",
+  title: "Submit a Reference — The Resume Document Hub",
 };
 
 export default async function ReferenceSubmitPage({

@@ -3,7 +3,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 
 export const metadata = {
-  title: "FAQ — Resume Hub",
+  title: "FAQ — The Resume Document Hub",
 };
 
 const FAQ_GROUPS = [

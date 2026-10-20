@@ -12,7 +12,7 @@ const PERKS = [
 ];
 
 export const metadata = {
-  title: "Student Discount — Resume Hub",
+  title: "Student Discount — The Resume Document Hub",
 };
 
 export default function StudentDiscountPage() {

@@ -12,8 +12,8 @@ import { CompanyRatingBadge } from "@/components/jobs/company-rating-badge";
 import type { CareerProfile, CompanyRating, Job } from "@/types/database";
 
 export const metadata = {
-  title: "Find Jobs — Resume Hub",
-  description: "Search open roles from employers on Resume Hub, with AI-powered match scoring against your Career Passport.",
+  title: "Find Jobs — The Resume Document Hub",
+  description: "Search open roles from employers on The Resume Document Hub, with AI-powered match scoring against your Career Passport.",
 };
 
 const EMPLOYMENT_LABELS: Record<string, string> = {

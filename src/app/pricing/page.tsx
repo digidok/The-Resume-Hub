@@ -5,7 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 
 export const metadata = {
-  title: "Pricing — Resume Hub",
+  title: "Pricing — The Resume Document Hub",
   description:
     "Simple, transparent pricing for candidates and employers on Resume Hub — every candidate plan unlocks full access, no free tier, no credit limits.",
 };

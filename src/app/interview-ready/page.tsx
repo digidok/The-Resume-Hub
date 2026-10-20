@@ -6,7 +6,7 @@ import { InterviewQuizClient } from "@/components/interview-quiz/interview-quiz-
 // landing page (every ad/social link points straight at it), and nav
 // distractions measurably hurt funnel completion rate.
 export const metadata = {
-  title: "Get Interview Ready — Resume Hub",
+  title: "Get Interview Ready — The Resume Document Hub",
   description: "Answer 6 quick questions and get your free personal interview prep plan.",
 };
 

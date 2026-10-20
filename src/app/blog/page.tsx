@@ -5,7 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Card } from "@/components/ui/card";
 
 export const metadata = {
-  title: "Blog — Resume Hub",
+  title: "Blog — The Resume Document Hub",
 };
 
 export default async function BlogPage() {

@@ -15,7 +15,7 @@ export function generateMetadata({ params }: { params: Promise<{ slug: string }>
   return params.then(({ slug }) => {
     const example = CV_EXAMPLES.find((e) => e.slug === slug);
     return {
-      title: example ? `${example.role} CV Example — Resume Hub` : "CV Example — Resume Hub",
+      title: example ? `${example.role} CV Example — The Resume Document Hub` : "CV Example — The Resume Document Hub",
       description: example?.blurb,
     };
   });

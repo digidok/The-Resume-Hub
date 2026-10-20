@@ -1,7 +1,7 @@
 import { PlanRevealClient } from "@/components/interview-quiz/plan-reveal-client";
 
 export const metadata = {
-  title: "Your interview prep plan — Resume Hub",
+  title: "Your interview prep plan — The Resume Document Hub",
 };
 
 export default function InterviewReadyPlanPage() {

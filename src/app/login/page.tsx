@@ -3,7 +3,7 @@ import { LoginForm } from "@/components/auth/login-form";
 import { Card } from "@/components/ui/card";
 
 export const metadata = {
-  title: "Log In — Resume Hub",
+  title: "Log In — The Resume Document Hub",
 };
 
 export default async function LoginPage({

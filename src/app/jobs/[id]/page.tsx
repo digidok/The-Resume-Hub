@@ -66,13 +66,13 @@ export async function generateMetadata({ params }: PageProps<"/jobs/[id]">) {
     .eq("id", id)
     .single();
 
-  if (!job) return { title: "Job not found — Resume Hub" };
+  if (!job) return { title: "Job not found — The Resume Document Hub" };
 
   return {
-    title: `${job.title} at ${job.company} — Resume Hub`,
+    title: `${job.title} at ${job.company} — The Resume Document Hub`,
     description: job.description
       ? job.description.slice(0, 155)
-      : `${job.title} at ${job.company}${job.location ? ` in ${job.location}` : ""}. Apply on Resume Hub.`,
+      : `${job.title} at ${job.company}${job.location ? ` in ${job.location}` : ""}. Apply on The Resume Document Hub.`,
   };
 }
 
