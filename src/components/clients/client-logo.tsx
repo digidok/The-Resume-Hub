@@ -38,7 +38,7 @@ export function ClientLogo({ slug, name }: { slug: string; name: string }) {
     <img
       src={src}
       alt={name}
-      className="h-10 w-full max-w-[9rem] object-contain opacity-80 grayscale transition hover:opacity-100 hover:grayscale-0"
+      className="h-16 w-full max-w-[9rem] rounded-sm object-contain"
     />
   );
 }
