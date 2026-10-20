@@ -38,6 +38,18 @@ export default async function MyApplicationsPage() {
     .eq("candidate_id", user.id)
     .order("created_at", { ascending: false });
 
+  const { data: kits } = await supabase
+    .from("ai_generations")
+    .select("id, created_at, profile_match_pct, jobs:job_id(id, title, company, application_url)")
+    .eq("user_id", user.id)
+    .is("application_id", null)
+    .order("created_at", { ascending: false })
+    .limit(20);
+  // Only roles on an employer's own site: nothing has been sent for these.
+  const preparedKits = (kits ?? [])
+    .map((k) => ({ ...k, job: Array.isArray(k.jobs) ? k.jobs[0] : k.jobs }))
+    .filter((k) => k.job?.application_url);
+
   const list = applications ?? [];
   const interviewingCount = list.filter((a) => a.status === "interviewing").length;
   const offerCount = list.filter((a) => a.status === "offer" || a.status === "hired").length;
@@ -67,6 +79,41 @@ export default async function MyApplicationsPage() {
           </span>
         ))}
       </div>
+
+      {preparedKits.length > 0 && (
+        <div id="prepared-kits" className="mb-8">
+          <h2 className="text-lg font-semibold text-slate-900">Prepared kits: not yet submitted</h2>
+          <p className="mb-3 mt-1 text-sm text-slate-500">
+            Your tailored CV and cover letter are ready. These roles are on the employer&apos;s own
+            site, so nothing has been sent. Open the kit, review it, then apply there yourself.
+          </p>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            {preparedKits.map((kit) => (
+              <Card key={kit.id} className="flex items-center justify-between p-5">
+                <div>
+                  <p className="font-semibold text-slate-900">{kit.job?.title}</p>
+                  <p className="text-sm text-slate-500">{kit.job?.company}</p>
+                  <p className="mt-1 text-xs text-slate-400">
+                    Prepared {new Date(kit.created_at).toLocaleDateString()}
+                    {kit.profile_match_pct != null ? ` · ${kit.profile_match_pct}% match` : ""}
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                  <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                    Ready to review
+                  </span>
+                  <Link
+                    href={`/dashboard/applications/kit/${kit.job?.id}`}
+                    className="text-xs font-medium text-brand-600 hover:underline"
+                  >
+                    Open kit
+                  </Link>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
 
       {list.length === 0 && (
         <Card className="flex flex-col items-center gap-3 p-10 text-center">

@@ -75,3 +75,71 @@ export async function findAutoApplyMatches(
 
   return { jobs: matches };
 }
+
+// Jobs that send candidates to an employer's own site can't be applied to for
+// them. For these we only PREPARE a tailored kit; the candidate submits it.
+// The pool is large (tens of thousands), so narrow it in the database first.
+const EXTERNAL_CANDIDATE_POOL = 300;
+
+export async function findExternalKitMatches(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: SupabaseClient<any, any, any>,
+  userId: string,
+  keywords: string,
+  location: string,
+  limit: number
+): Promise<{ jobs: Job[]; careerProfile: CareerProfile | null }> {
+  const { data: careerProfileData } = await supabase
+    .from("career_profiles")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (!careerProfileData) return { jobs: [], careerProfile: null };
+  const careerProfile = careerProfileData as CareerProfile;
+
+  // Strip characters that have meaning inside a PostgREST filter expression.
+  const keywordList = keywords
+    .split(",")
+    .map((k) => k.trim().replace(/[^\p{L}\p{N} +#.-]/gu, ""))
+    .filter(Boolean)
+    .slice(0, 8);
+  if (keywordList.length === 0) return { jobs: [], careerProfile };
+
+  let query = supabase
+    .from("jobs")
+    .select("*")
+    .eq("status", "open")
+    .not("application_url", "is", null)
+    .or(keywordList.map((k) => `title.ilike.%${k}%`).join(","))
+    .order("created_at", { ascending: false })
+    .limit(EXTERNAL_CANDIDATE_POOL);
+  const locationFilter = location.trim().replace(/[^\p{L}\p{N} -]/gu, "");
+  if (locationFilter) query = query.ilike("location", `%${locationFilter}%`);
+
+  const [{ data: jobs }, { data: generations }, { data: applications }] = await Promise.all([
+    query,
+    supabase.from("ai_generations").select("job_id").eq("user_id", userId),
+    supabase.from("applications").select("job_id").eq("candidate_id", userId),
+  ]);
+
+  const done = new Set<string>([
+    ...(generations ?? []).map((g: { job_id: string }) => g.job_id),
+    ...(applications ?? []).map((a: { job_id: string }) => a.job_id),
+  ]);
+
+  const matches = ((jobs ?? []) as Job[])
+    .filter((job) => !done.has(job.id))
+    .filter(
+      (job) =>
+        careerProfile.salary_min == null ||
+        job.salary_max == null ||
+        job.salary_max >= careerProfile.salary_min
+    )
+    .map((job) => ({ job, score: computeJobMatch(careerProfile, job).overallScore }))
+    .filter((m) => m.score >= AUTO_APPLY_MIN_SCORE)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((m) => m.job);
+
+  return { jobs: matches, careerProfile };
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
 import Link from "next/link";
 import { Check, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -25,12 +25,14 @@ export function ApplicationKit({
   match,
   alreadyApplied,
   creditsRemaining,
+  initialGeneration,
 }: {
   job: Job;
   resumes: ResumeOption[];
   match: JobMatch | null;
   alreadyApplied: boolean;
   creditsRemaining: number;
+  initialGeneration?: ComponentProps<typeof AiGeneratorPanel>["initialGeneration"];
 }) {
   const [resumeId, setResumeId] = useState(resumes[0]?.id ?? "");
 
@@ -78,7 +80,13 @@ export function ApplicationKit({
         <p className="text-sm text-slate-500">{job.company}</p>
       </Card>
 
-      <AiGeneratorPanel job={job} resumes={resumes} initialMatch={match} creditsRemaining={creditsRemaining} />
+      <AiGeneratorPanel
+        job={job}
+        resumes={resumes}
+        initialMatch={match}
+        creditsRemaining={creditsRemaining}
+        initialGeneration={initialGeneration}
+      />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card className="p-5 sm:col-span-2">
