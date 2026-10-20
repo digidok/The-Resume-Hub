@@ -27,13 +27,18 @@ export function ServicesFooter({ whatsappUrl }: { whatsappUrl: string }) {
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-300">Services</p>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
-                <a href="#small-business" className="hover:text-white">
-                  Small business &amp; start-ups
+                <a href="#corporate" className="hover:text-white">
+                  Corporate &amp; boards
                 </a>
               </li>
               <li>
-                <a href="#corporate" className="hover:text-white">
-                  Corporate &amp; boards
+                <a href="#studio" className="hover:text-white">
+                  Document Studio
+                </a>
+              </li>
+              <li>
+                <a href="#small-business" className="hover:text-white">
+                  Small business &amp; start-ups
                 </a>
               </li>
               <li>

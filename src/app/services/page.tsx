@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { ServicesHeader } from "@/components/services/services-header";
 import { ServicesFooter } from "@/components/services/services-footer";
+import { DocumentStudio } from "@/components/services/document-studio";
 import { whatsappLink } from "@/lib/whatsapp-contacts";
 
 export const metadata = {
@@ -247,12 +248,12 @@ export default function ServicesPage() {
                 Single Point of Contact
               </p>
               <h1 className="mt-5 text-3xl font-bold tracking-tight sm:text-5xl sm:leading-[1.1]">
-                One team for your admin, documents and business support
+                Executive office and board support, delivered with discretion
               </h1>
               <p className="mt-5 max-w-xl text-lg text-slate-300">
-                Virtual assistants for business registration, executive documentation, board packs
-                and corporate governance. Tell us what you need and one person owns it from quote to
-                delivery.
+                Virtual assistants for boards, executive committees and senior teams: secretariat,
+                governance documentation, board packs and business documents prepared to your brand.
+                One accountable contact from quote to delivery.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
@@ -265,11 +266,11 @@ export default function ServicesPage() {
                   Request a consultation
                 </a>
                 <a
-                  href="mailto:info@resumehub.co.za"
+                  href="#studio"
                   className="inline-flex items-center gap-2 rounded-md border border-white/30 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10"
                 >
-                  <Mail className="h-4 w-4" />
-                  info@resumehub.co.za
+                  <FileText className="h-4 w-4" />
+                  Start a document request
                 </a>
               </div>
             </div>
@@ -277,11 +278,11 @@ export default function ServicesPage() {
               <p className="text-xs font-semibold uppercase tracking-widest text-slate-300">What we handle</p>
               <ul className="mt-4 divide-y divide-white/10">
                 {[
-                  { icon: FileText, label: "Company registration & compliance", href: "#small-business" },
-                  { icon: Briefcase, label: "Everyday business administration", href: "#small-business" },
-                  { icon: Bot, label: "AI, automation & business systems", href: "#small-business" },
                   { icon: Users, label: "Executive secretariat & board support", href: "#corporate" },
                   { icon: Landmark, label: "Governance & company secretariat", href: "#corporate" },
+                  { icon: FileText, label: "Document Studio: plans, packs, minutes, templates", href: "#studio" },
+                  { icon: Briefcase, label: "Business administration & registration", href: "#small-business" },
+                  { icon: Bot, label: "AI, automation & business systems", href: "#small-business" },
                 ].map((row) => (
                   <li key={row.label}>
                     <a href={row.href} className="group flex items-center gap-3 py-3 text-sm text-slate-100 hover:text-white">
@@ -310,34 +311,10 @@ export default function ServicesPage() {
           </div>
         </section>
 
-        <section id="small-business" className="scroll-mt-20 bg-slate-50 py-16 sm:py-20">
-          <div className="mx-auto max-w-6xl px-4">
-            <SectionHeading
-              number="01"
-              eyebrow="Small business and start-ups"
-              title="Business administration & virtual office solutions"
-              intro="Your one-stop partner for business registration, administration, branding and ongoing business support, for entrepreneurs, small businesses, consultants, freelancers and start-ups across South Africa. Pay once off for a single service, or subscribe monthly for ongoing support."
-            />
-            <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 md:[&>*:last-child:nth-child(odd)]:col-span-2">
-              {SMALL_BUSINESS_AREAS.map((area) => (
-                <AreaCard key={area.title} area={area} />
-              ))}
-            </div>
-            <h3 className="mt-14 text-xs font-semibold uppercase tracking-widest text-slate-500">
-              Monthly packages
-            </h3>
-            <PackageGrid
-              packages={SMALL_BUSINESS_PACKAGES}
-              quoteLabel="Tell us what you need and we'll scope a once-off service or a custom monthly plan."
-              quoteUrl={SMALL_BUSINESS_URL}
-            />
-          </div>
-        </section>
-
         <section id="corporate" className="scroll-mt-20 py-16 sm:py-20">
           <div className="mx-auto max-w-6xl px-4">
             <SectionHeading
-              number="02"
+              number="01"
               eyebrow="Corporate and boards"
               title="Executive secretariat, board support & governance"
               intro="Your executive office support, delivered with precision, discretion and accountability. For corporate engagements, monthly retainers and project-based assignments."
@@ -364,10 +341,48 @@ export default function ServicesPage() {
           </div>
         </section>
 
-        <section id="process" className="scroll-mt-20 bg-slate-50 py-16 sm:py-20">
+        <section id="studio" className="scroll-mt-20 bg-slate-50 py-16 sm:py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <SectionHeading
+              number="02"
+              eyebrow="Document Studio"
+              title="Board-ready documents, prepared to your brand"
+              intro="Choose the document you need, select a template style, add your logo and source material, and submit one request. Your assistant prepares the document, applies your branding and returns it for review. Recordings are transcribed by our team."
+            />
+            <div className="mt-10">
+              <DocumentStudio />
+            </div>
+          </div>
+        </section>
+
+        <section id="small-business" className="scroll-mt-20 py-16 sm:py-20">
           <div className="mx-auto max-w-6xl px-4">
             <SectionHeading
               number="03"
+              eyebrow="Small business and start-ups"
+              title="Business administration & virtual office solutions"
+              intro="Your one-stop partner for business registration, administration, branding and ongoing business support, for entrepreneurs, small businesses, consultants, freelancers and start-ups across South Africa. Pay once off for a single service, or subscribe monthly for ongoing support."
+            />
+            <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 md:[&>*:last-child:nth-child(odd)]:col-span-2">
+              {SMALL_BUSINESS_AREAS.map((area) => (
+                <AreaCard key={area.title} area={area} />
+              ))}
+            </div>
+            <h3 className="mt-14 text-xs font-semibold uppercase tracking-widest text-slate-500">
+              Monthly packages
+            </h3>
+            <PackageGrid
+              packages={SMALL_BUSINESS_PACKAGES}
+              quoteLabel="Tell us what you need and we'll scope a once-off service or a custom monthly plan."
+              quoteUrl={SMALL_BUSINESS_URL}
+            />
+          </div>
+        </section>
+
+        <section id="process" className="scroll-mt-20 bg-slate-50 py-16 sm:py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <SectionHeading
+              number="04"
               eyebrow="How it works"
               title="From first message to finished work"
               intro="A simple, accountable process with one point of contact throughout."

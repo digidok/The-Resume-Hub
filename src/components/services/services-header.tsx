@@ -2,8 +2,9 @@ import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 
 const NAV = [
-  { href: "#small-business", label: "Small business" },
   { href: "#corporate", label: "Corporate & boards" },
+  { href: "#studio", label: "Document Studio" },
+  { href: "#small-business", label: "Small business" },
   { href: "#process", label: "How it works" },
   { href: "#contact", label: "Contact" },
 ];
