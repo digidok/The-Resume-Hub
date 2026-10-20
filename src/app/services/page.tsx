@@ -20,7 +20,7 @@ import { Card } from "@/components/ui/card";
 import { whatsappLink } from "@/lib/whatsapp-contacts";
 
 export const metadata = {
-  title: "Resume Document Hub — Business & Executive Services",
+  title: "Resume Document Hub — Single Point of Contact Business Services",
   description:
     "One point of contact for business registration, administration, branding, executive documentation, board packs, governance support and business automation.",
 };
@@ -200,7 +200,10 @@ export default function ServicesPage() {
       <main className="flex-1">
         <section className="mx-auto max-w-5xl px-4 py-16 text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-brand-600">
-            Resume Document Hub · Single point of contact virtual assistants
+            Resume Document Hub
+          </p>
+          <p className="mt-2 inline-block rounded-full bg-accent-50 px-4 py-1 text-sm font-semibold text-accent-700">
+            Single Point of Contact
           </p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             One team for your admin, documents and business support
