@@ -82,11 +82,11 @@ export function HubHero() {
                 Explore Career Solutions
               </Link>
               <Link
-                href="/contact"
+                href="/book?type=business-consultation"
                 className="inline-flex items-center gap-2 px-3 py-3 text-sm font-semibold text-slate-200 underline-offset-4 hover:text-white hover:underline"
               >
                 <MessageCircle className="h-4 w-4" />
-                Request a Business Consultation
+                Book a Business Consultation
               </Link>
             </div>
           </div>

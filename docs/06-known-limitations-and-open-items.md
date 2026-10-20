@@ -13,6 +13,15 @@
 9. **Labour broking.** The site now offers labour broking / temporary employment services (we employ and pay placed staff and run payroll). Before it is promoted, confirm the business's legal registrations and obligations for this service, and have the written placement agreement reviewed by a labour-law adviser. The page makes no claim about registrations.
 10. **"100,000+ CVs" claim.** The figure is supplied by the business and is set in `src/lib/site-constants.ts`. The Resume Hub platform database itself holds far fewer resumes, so confirm where the 100,000 CVs are held and that they may be used for placement matching (POPIA consent) before publishing.
 
+## Added in the "best platform" round (all need their migrations applied first)
+
+Apply in this order after `20261020170000` and `20261020180000`: `20261020190000_security_hardening.sql`, `20261020200000_staff_roles.sql`, `20261020210000_appointments.sql`, `20261020220000_recruitment_workspace.sql`. Local database tests are in `supabase/tests` (27 checks); unit tests run with `npm test` and in CI.
+
+- **Appointments:** public booking at `/book`, self-service cancel by private link, double-booking prevented by the database, daily reminder cron. Availability is set under Business hub > Appointments > Availability. Reminders run once a day on the current Vercel plan.
+- **Staff roles:** recruiter, consultant, payroll, delivery. Added under Business hub > Staff. Admins can do everything.
+- **Recruitment workspace:** CSV import with consent flag, searchable talent pool, vacancies with a pipeline board, bulk email with unsubscribe link, placements with timesheets and margin. It prepares payroll inputs only; it does not run payroll or file statutory returns.
+- Only import people who have consented to be contacted. The 100,000 CV figure shown on the site must be confirmed against a real, consented source.
+
 ## Limitations of what is built
 - Business-portal staff are administrators. There are no separate "service delivery staff" or "external provider" roles yet.
 - Team members see everything linked to the owner's email. There is no per-document restriction.

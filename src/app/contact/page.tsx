@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, MessageCircle } from "lucide-react";
+import { CalendarCheck, Mail, MessageCircle } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { DIVISIONS } from "@/lib/catalog/divisions";
@@ -24,11 +24,18 @@ export default function ContactPage() {
               quotation.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                href="/book?type=business-consultation"
+                className="inline-flex items-center gap-2 rounded-md bg-accent-400 px-6 py-3 text-sm font-semibold text-brand-950 hover:bg-accent-50"
+              >
+                <CalendarCheck className="h-4 w-4" />
+                Book a time
+              </Link>
               <a
                 href={whatsappLink("main", "Hi, I'd like to request a business consultation.")}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-md bg-accent-400 px-6 py-3 text-sm font-semibold text-brand-950 hover:bg-accent-50"
+                className="inline-flex items-center gap-2 rounded-md border border-white/30 px-6 py-3 text-sm font-semibold hover:bg-white/10"
               >
                 <MessageCircle className="h-4 w-4" />
                 WhatsApp us

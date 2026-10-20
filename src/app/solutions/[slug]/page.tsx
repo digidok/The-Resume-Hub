@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Check, Info, MessageCircle } from "lucide-react";
+import { CalendarCheck, Check, Info, MessageCircle } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { EnquiryForm } from "@/components/solutions/enquiry-form";
@@ -49,14 +49,21 @@ export default async function SolutionPage({ params }: PageProps<"/solutions/[sl
               >
                 Request a quote
               </a>
+              <Link
+                href={`/book?type=${["hr-recruitment", "labour-broking", "background-screening"].includes(division.slug) ? "screening-call" : "business-consultation"}`}
+                className="inline-flex items-center gap-2 rounded-md border border-white/30 px-6 py-3 text-sm font-semibold hover:bg-white/10"
+              >
+                <CalendarCheck className="h-4 w-4" />
+                Book a consultation
+              </Link>
               <a
                 href={whatsappLink("main", `Hi, I'd like to talk about ${division.title}.`)}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-md border border-white/30 px-6 py-3 text-sm font-semibold hover:bg-white/10"
+                className="inline-flex items-center gap-2 px-3 py-3 text-sm font-semibold text-slate-200 underline-offset-4 hover:text-white hover:underline"
               >
                 <MessageCircle className="h-4 w-4" />
-                Book a consultation
+                WhatsApp us
               </a>
             </div>
           </div>

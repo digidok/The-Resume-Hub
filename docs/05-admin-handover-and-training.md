@@ -54,6 +54,13 @@ Every sensitive business action is recorded with who did it and when. Entries ca
 
 Do not publish these until the business owner and a legal adviser have confirmed them.
 
+## 5.8a Appointments, recruitment and staff roles
+
+- **Appointments:** Business hub > Appointments shows upcoming bookings (confirm, complete, no-show, cancel). Set weekly hours and time off under Availability. Clients book at `/book` and get a private link to cancel.
+- **Recruitment:** Business hub > Recruitment. Import candidates by CSV (only people who consented), search by skill, location or title, add them to a vacancy, move them along the pipeline, and email selected people in bulk (every email carries an unsubscribe link).
+- **Placements:** record rate paid to the worker and rate billed to the client, enter weekly timesheets, approve them. Approved totals are the inputs to payroll and invoicing.
+- **Staff roles:** Business hub > Staff. Give a colleague only the role they need (recruiter, consultant, payroll, delivery).
+
 ## 5.9 Adding another administrator
 
 Admins are users whose profile role is `admin` (Users page in the admin area). Only grant it to staff who need access to client documents and screening reports, because admins can see all client data.

@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 const LINKS = [
   { href: "/dashboard/admin/business", label: "Requests", exact: true },
   { href: "/dashboard/admin/business/enquiries", label: "Enquiries" },
+  { href: "/dashboard/admin/business/appointments", label: "Appointments" },
+  { href: "/dashboard/admin/business/recruitment", label: "Recruitment" },
   { href: "/dashboard/admin/business/screening", label: "Screening" },
   { href: "/dashboard/admin/business/tasks", label: "Tasks" },
   { href: "/dashboard/admin/business/retainers", label: "Retainers" },
@@ -13,6 +15,7 @@ const LINKS = [
   { href: "/dashboard/admin/business/pricing", label: "Pricing" },
   { href: "/dashboard/admin/business/reports", label: "Reports" },
   { href: "/dashboard/admin/business/privacy", label: "Privacy" },
+  { href: "/dashboard/admin/business/staff", label: "Staff" },
   { href: "/dashboard/admin/business/audit", label: "Audit log" },
 ];
 
