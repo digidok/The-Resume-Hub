@@ -4,6 +4,10 @@ import { BackLink } from "@/components/ui/back-link";
 import { Card } from "@/components/ui/card";
 import { BillingStatusBadge, RequestStatusBadge } from "@/components/business/badges";
 import { createClient } from "@/lib/supabase/server";
+import { getVisibleEmails } from "@/lib/business/access";
+import { MessageThread } from "@/components/business/message-thread";
+import { Button } from "@/components/ui/button";
+import { approveDelivery, leaveFeedback, sendClientMessage } from "@/lib/business/actions";
 import { signPaths } from "@/lib/business/queries";
 import {
   documentLabel,
@@ -11,6 +15,7 @@ import {
   formatZar,
   type BillingRow,
   type DeliverableRow,
+  type MessageRow,
   type StudioRequestRow,
 } from "@/lib/business/format";
 
@@ -32,12 +37,12 @@ export default async function BusinessRequestPage({ params }: PageProps<"/dashbo
     .from("studio_requests")
     .select("*")
     .eq("reference", reference)
-    .eq("email", user.email.toLowerCase())
+    .in("email", await getVisibleEmails(supabase, user.email))
     .maybeSingle();
   if (!data) notFound();
   const request = data as StudioRequestRow;
 
-  const [{ data: deliverableData }, { data: billingData }] = await Promise.all([
+  const [{ data: deliverableData }, { data: billingData }, { data: messageData }, { data: feedbackData }] = await Promise.all([
     supabase.from("business_deliverables").select("*").eq("request_id", request.id).order("created_at"),
     supabase
       .from("business_billing")
@@ -45,7 +50,11 @@ export default async function BusinessRequestPage({ params }: PageProps<"/dashbo
       .eq("request_id", request.id)
       .neq("status", "draft")
       .order("created_at"),
+    supabase.from("business_messages").select("*").eq("request_id", request.id).order("created_at"),
+    supabase.from("business_feedback").select("rating, comment").eq("request_id", request.id).maybeSingle(),
   ]);
+  const messages = (messageData ?? []) as MessageRow[];
+  const feedback = feedbackData as { rating: number; comment: string | null } | null;
   const deliverables = (deliverableData ?? []) as DeliverableRow[];
   const billing = (billingData ?? []) as BillingRow[];
 
@@ -150,6 +159,79 @@ export default async function BusinessRequestPage({ params }: PageProps<"/dashbo
           <p className="mt-2 text-xs text-slate-500">Accept or decline quotes from the main dashboard.</p>
         </Card>
       )}
+
+      {request.status === "delivered" && (
+        <Card className="mt-4 p-5">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Approve delivery</h2>
+          {request.approved_at ? (
+            <p className="mt-2 text-sm text-emerald-700">You approved this delivery on {formatDate(request.approved_at)}.</p>
+          ) : (
+            <>
+              <p className="mt-2 text-sm text-slate-600">
+                Check the delivered documents above. If they are what you asked for, approve them. If something needs
+                to change, message your contact below instead.
+              </p>
+              <form
+                className="mt-3"
+                action={async () => {
+                  "use server";
+                  await approveDelivery(request.reference);
+                }}
+              >
+                <Button type="submit">Approve delivered work</Button>
+              </form>
+            </>
+          )}
+
+          <div className="mt-5 border-t border-slate-100 pt-4">
+            <h3 className="text-sm font-semibold text-slate-900">How did we do?</h3>
+            {feedback ? (
+              <p className="mt-1 text-sm text-slate-600">
+                You rated this {feedback.rating} out of 5. Thank you.
+                {feedback.comment ? ` "${feedback.comment}"` : ""}
+              </p>
+            ) : (
+              <form
+                className="mt-2 space-y-2"
+                action={async (form: FormData) => {
+                  "use server";
+                  await leaveFeedback(request.id, form);
+                }}
+              >
+                <select name="rating" required defaultValue="" className="rounded-md border border-slate-300 px-3 py-2 text-sm">
+                  <option value="" disabled>
+                    Rating
+                  </option>
+                  {[5, 4, 3, 2, 1].map((n) => (
+                    <option key={n} value={n}>
+                      {n} out of 5
+                    </option>
+                  ))}
+                </select>
+                <textarea
+                  name="comment"
+                  rows={2}
+                  maxLength={2000}
+                  placeholder="Optional comment"
+                  className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+                />
+                <Button type="submit" size="sm" variant="outline">
+                  Send feedback
+                </Button>
+              </form>
+            )}
+          </div>
+        </Card>
+      )}
+
+      <Card className="mt-4 p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Messages with your contact</h2>
+        <MessageThread
+          messages={messages}
+          viewer="client"
+          action={sendClientMessage.bind(null, request.id, request.reference)}
+        />
+      </Card>
     </div>
   );
 }

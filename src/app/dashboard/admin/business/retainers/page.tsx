@@ -3,6 +3,7 @@ import { BackLink } from "@/components/ui/back-link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { HoursMeter } from "@/components/business/badges";
+import { BusinessAdminNav } from "@/components/business/admin-nav";
 import { createClient } from "@/lib/supabase/server";
 import { createRetainer, logTime, setRetainerActive } from "@/lib/business/actions";
 import {
@@ -37,14 +38,16 @@ export default async function AdminRetainersPage() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <BackLink href="/dashboard/admin/business" label="Business hub" />
-      <h1 className="text-3xl font-bold text-slate-900">Retainers &amp; hours</h1>
+      <BackLink href="/dashboard/admin" label="Platform overview" />
+      <h1 className="text-3xl font-bold text-slate-900">Business hub</h1>
       <p className="mt-1 text-sm text-slate-500">
         Monthly retainer plans per client. Hours you log here show on the client&apos;s dashboard. The client sees
         the plan under the email address you enter, once they sign in with it.
       </p>
 
-      <div className="mt-6 space-y-4">
+      <div className="mt-5" />
+      <BusinessAdminNav />
+      <div className="space-y-4">
         {retainers.length === 0 && <Card className="p-6 text-sm text-slate-500">No retainers yet.</Card>}
         {retainers.map((r) => {
           const mine = entries.filter((e) => e.retainer_id === r.id);
@@ -55,9 +58,12 @@ export default async function AdminRetainersPage() {
                 <div>
                   <p className="font-semibold text-slate-900">
                     {r.company_name} <span className="font-normal text-slate-500">· {r.plan_name}</span>
+                    {r.kind === "corporate_contract" && (
+                      <span className="ml-2 rounded-full bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-700">Corporate contract</span>
+                    )}
                   </p>
                   <p className="text-xs text-slate-500">
-                    {r.client_email} · {formatZar(r.monthly_fee_zar)}/month · since {formatDate(r.start_date)}
+                    {r.client_email} · {formatZar(r.monthly_fee_zar)}/month · since {formatDate(r.start_date)}{r.end_date ? ` · ends ${formatDate(r.end_date)}` : ""}
                   </p>
                 </div>
                 <form
@@ -118,6 +124,14 @@ export default async function AdminRetainersPage() {
           <input name="plan_name" required maxLength={200} placeholder="Plan, e.g. Executive support 20h" className={inputCls} />
           <input name="monthly_hours" required inputMode="decimal" placeholder="Hours per month" className={inputCls} />
           <input name="monthly_fee" required inputMode="decimal" placeholder="Monthly fee (ZAR)" className={inputCls} />
+          <select name="kind" className={inputCls} defaultValue="retainer">
+            <option value="retainer">Monthly retainer</option>
+            <option value="corporate_contract">Corporate contract</option>
+          </select>
+          <label className="text-xs text-slate-500">
+            End date (optional, for contracts)
+            <input name="end_date" type="date" className={`${inputCls} mt-1`} />
+          </label>
           <div className="flex items-end">
             <Button type="submit">Create retainer</Button>
           </div>

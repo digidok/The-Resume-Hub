@@ -20,7 +20,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { DocumentStudio } from "@/components/services/document-studio";
 import { ClientsStrip } from "@/components/clients/clients-strip";
 import { EnquiryForm } from "@/components/solutions/enquiry-form";
-import { getDivision } from "@/lib/catalog/divisions";
+import { getAnyDivisionWithOverrides } from "@/lib/catalog/overrides";
 import { whatsappLink } from "@/lib/whatsapp-contacts";
 
 export const metadata = {
@@ -252,7 +252,8 @@ function PackageGrid({
   );
 }
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const executiveDivision = (await getAnyDivisionWithOverrides("executive-board-support"))!;
   return (
     <div className="flex flex-1 flex-col bg-white">
       <SiteHeader />
@@ -431,7 +432,7 @@ export default function ServicesPage() {
               they are final.
             </p>
             <div className="mt-6">
-              <EnquiryForm division={getDivision("executive-board-support")!} />
+              <EnquiryForm division={executiveDivision} />
             </div>
           </div>
         </section>

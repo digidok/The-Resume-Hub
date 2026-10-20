@@ -21,7 +21,7 @@ const SECTIONS = [
   },
   {
     title: "4. Your rights under POPIA",
-    body: `As a South African business, Resume Hub processes personal information in line with the Protection of Personal Information Act, 2013 (POPIA). You have the right to: know what personal information we hold about you; request a copy of it; ask us to correct or delete it; object to or restrict certain processing; and withdraw consent at any time where processing is based on consent. To exercise any of these rights, contact us at info@resumehub.co.za or via WhatsApp on 069 339 1915, and we'll respond within a reasonable time. If you're not satisfied with our response, you may lodge a complaint with South Africa's Information Regulator (inforegulator.org.za).`,
+    body: `As a South African business, Resume Hub processes personal information in line with the Protection of Personal Information Act, 2013 (POPIA). You have the right to: know what personal information we hold about you; request a copy of it; ask us to correct or delete it; object to or restrict certain processing; and withdraw consent at any time where processing is based on consent. To exercise any of these rights, use the request form at resumehub.co.za/privacy-request, contact us at info@resumehub.co.za or via WhatsApp on 069 339 1915, and we'll respond within a reasonable time. If you're not satisfied with our response, you may lodge a complaint with South Africa's Information Regulator (inforegulator.org.za).`,
   },
   {
     title: "5. Data retention",

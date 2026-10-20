@@ -2,6 +2,10 @@
 // Pricing, descriptions and availability for every business division live here;
 // landing pages, the pricing page, enquiry forms, navigation and the sitemap
 // all read from this file. Change a price or service once and it updates everywhere.
+// Admins can also override prices and availability from the dashboard
+// (see src/lib/catalog/overrides.ts); the values here are the defaults.
+
+import { INTERVIEW_PACK_PACKAGES, SUBSCRIPTION_PACKAGES, WHATSAPP_ORDER_PRICING } from "@/lib/payfast/config";
 
 export type PriceModel = "once-off" | "monthly" | "quote";
 
@@ -34,6 +38,8 @@ export type Division = {
   intro: string;
   /** Route of the landing page. */
   href: string;
+  /** "individual" funnels (careers) hide the business-name field. */
+  audience?: "business" | "individual";
   /** Plain-language statement of who fulfils the work. */
   fulfilment: string;
   /** Important qualifications shown on the page. */
@@ -218,8 +224,42 @@ export const DIVISIONS: Division[] = [
   },
 ];
 
+// Career Solutions: a separate funnel for individuals. Prices that already
+// exist elsewhere on the platform come from the same source (payfast config)
+// so the catalogue cannot contradict checkout.
+export const CAREER_DIVISION: Division = {
+  slug: "career-solutions",
+  navLabel: "Career Solutions",
+  title: "Career solutions",
+  audience: "individual",
+  tagline: "CVs, job applications and career guidance for individuals.",
+  intro:
+    "Professional documents, Auto Apply and interview preparation, plus premium human support when you want it.",
+  href: "/careers",
+  fulfilment:
+    "CV, profile and consultation services are delivered by Resume Document Hub. Auto Apply, ATS scoring and interview practice are self-service tools on the platform.",
+  notices: [
+    "AI-generated scores, assessments and interview feedback are guidance, not guarantees of employment.",
+    "Auto Apply only shows an application as submitted when the destination or authorised workflow confirms it.",
+  ],
+  services: [
+    { id: "cs-cv", name: "CV and cover letter, done for you", description: "Professional CV writing or rewriting, ATS-friendly, with a cover letter.", models: ["once-off"], fromZar: WHATSAPP_ORDER_PRICING.cv_cover_letter },
+    { id: "cs-linkedin", name: "LinkedIn profile optimisation", description: "A rewritten, search-ready LinkedIn profile.", models: ["once-off"], fromZar: WHATSAPP_ORDER_PRICING.linkedin_revamp },
+    { id: "cs-exec-cv", name: "Executive CV and leadership profile", description: "A leadership-level CV and profile for senior roles.", models: ["once-off", "quote"] },
+    { id: "cs-bio", name: "Professional biography", description: "Short and long biographies for websites, speaking and boards.", models: ["once-off", "quote"] },
+    { id: "cs-portfolio", name: "Professional portfolio preparation", description: "Organising your work, qualifications and evidence into a portfolio.", models: ["once-off", "quote"] },
+    { id: "cs-website", name: "Personal career website", description: "A personalised professional website with your summary, history, achievements, projects and downloadable CV, with privacy controls.", models: ["once-off", "quote"] },
+    { id: "cs-pro", name: "Candidate Pro: Auto Apply and AI tools", description: "Job matching, tailored applications, application tracking and AI career tools.", models: ["monthly"], fromZar: SUBSCRIPTION_PACKAGES.find((p) => p.id === "candidate_pro")?.amountZar },
+    { id: "cs-interview", name: "Interview preparation", description: "Job-specific interview questions and structured STAR feedback.", models: ["once-off"], fromZar: Math.min(...INTERVIEW_PACK_PACKAGES.map((p) => p.amountZar)) },
+    { id: "cs-readiness", name: "Career readiness report and skills-gap assessment", description: "Guidance on where you stand and what to build next. Guidance only, not a guarantee.", models: ["once-off", "quote"] },
+    { id: "cs-consult", name: "Career guidance consultation", description: "A one-on-one session with a human career consultant.", models: ["once-off", "quote"] },
+  ],
+};
+
+export const ALL_DIVISIONS: Division[] = [CAREER_DIVISION, ...DIVISIONS];
+
 export function getDivision(slug: string): Division | undefined {
-  return DIVISIONS.find((d) => d.slug === slug);
+  return ALL_DIVISIONS.find((d) => d.slug === slug);
 }
 
 export function availableServices(division: Division): CatalogService[] {

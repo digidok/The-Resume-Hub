@@ -53,6 +53,9 @@ import { MotionCard } from "@/components/motion/motion-card";
 import { slideInLeft, slideInRight } from "@/components/motion/variants";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { EnquiryForm } from "@/components/solutions/enquiry-form";
+import { MODEL_LABEL, availableServices, formatPrice } from "@/lib/catalog/divisions";
+import { getAnyDivisionWithOverrides } from "@/lib/catalog/overrides";
 
 const FEATURES = [
   {
@@ -268,7 +271,8 @@ export const metadata = {
     "Build a professional CV, match with verified jobs, auto-apply and prepare for interviews with The Resume Document Hub.",
 };
 
-export default function CareersPage() {
+export default async function CareersPage() {
+  const careerDivision = (await getAnyDivisionWithOverrides("career-solutions"))!;
   return (
     <div className="flex flex-1 flex-col bg-white">
       <SiteHeader />
@@ -763,6 +767,38 @@ export default function CareersPage() {
         <Testimonials />
 
         {/* Page 8: Employers + closing CTAs */}
+        <section id="career-services" className="scroll-mt-20 bg-slate-50 py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Career services and prices</h2>
+            <p className="mt-2 max-w-2xl text-slate-600">
+              Done-for-you documents, self-service tools and one-on-one support. AI scores and assessments are guidance,
+              not guarantees of employment.
+            </p>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {availableServices(careerDivision).map((s) => (
+                <div key={s.id} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <p className="font-semibold text-slate-900">{s.name}</p>
+                  <p className="mt-1 flex-1 text-sm text-slate-600">{s.description}</p>
+                  <div className="mt-4 flex items-center justify-between gap-2">
+                    <span className="text-sm font-bold text-brand-700">{formatPrice(s)}</span>
+                    <span className="text-xs text-slate-500">{s.models.map((m) => MODEL_LABEL[m]).join(" · ")}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div id="enquiry" className="scroll-mt-20 mx-auto mt-14 max-w-3xl">
+              <h3 className="text-xl font-bold text-slate-900">Request a career consultation or quote</h3>
+              <p className="mt-2 text-sm text-slate-600">
+                Tell us what you need and we will come back with next steps and a quotation where the work is custom.
+              </p>
+              <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+                <EnquiryForm division={careerDivision} />
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section id="employers" className="bg-white py-20">
           <div className="mx-auto max-w-5xl px-4">
             <EmployerShowcase />

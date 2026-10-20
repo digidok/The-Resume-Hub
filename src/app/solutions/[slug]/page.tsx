@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { EnquiryForm } from "@/components/solutions/enquiry-form";
 import { DIVISIONS, MODEL_LABEL, availableServices, formatPrice, getDivision } from "@/lib/catalog/divisions";
+import { getAnyDivisionWithOverrides } from "@/lib/catalog/overrides";
 import { whatsappLink } from "@/lib/whatsapp-contacts";
 
 // Executive & board support has its own richer page at /services.
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: PageProps<"/solutions/[slug]"
 
 export default async function SolutionPage({ params }: PageProps<"/solutions/[slug]">) {
   const { slug } = await params;
-  const division = getDivision(slug);
+  const division = await getAnyDivisionWithOverrides(slug);
   if (!division || !SLUGS.includes(slug)) notFound();
   const services = availableServices(division);
 

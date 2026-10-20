@@ -21,6 +21,7 @@ const COMPANY_LINKS = [
   { href: "/blog", label: "Blog" },
   { href: "/student-discount", label: "Student discount" },
   { href: "/privacy", label: "Privacy policy" },
+  { href: "/privacy-request", label: "Privacy requests" },
   { href: "/terms", label: "Terms of service" },
 ];
 

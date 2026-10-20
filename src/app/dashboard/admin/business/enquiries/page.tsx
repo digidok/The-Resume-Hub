@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { BackLink } from "@/components/ui/back-link";
+import { BusinessAdminNav } from "@/components/business/admin-nav";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
@@ -37,7 +38,7 @@ type Enquiry = {
 };
 
 export default async function AdminEnquiriesPage({ searchParams }: PageProps<"/dashboard/admin/business/enquiries">) {
-  const { status } = await searchParams;
+  const { status, funnel } = await searchParams;
   const filter = STATUSES.includes(status as (typeof STATUSES)[number]) ? status : undefined;
 
   const supabase = await createClient();
@@ -50,22 +51,41 @@ export default async function AdminEnquiriesPage({ searchParams }: PageProps<"/d
 
   let query = supabase.from("business_enquiries").select("*").order("created_at", { ascending: false }).limit(200);
   if (filter) query = query.eq("status", filter);
+  if (funnel === "career") query = query.eq("division", "career-solutions");
+  if (funnel === "business") query = query.neq("division", "career-solutions");
   const { data } = await query;
   const enquiries = (data ?? []) as Enquiry[];
 
   return (
     <div className="mx-auto max-w-4xl">
-      <BackLink href="/dashboard/admin/business" label="Business hub" />
-      <h1 className="text-3xl font-bold text-slate-900">Enquiries</h1>
+      <BackLink href="/dashboard/admin" label="Platform overview" />
+      <h1 className="text-3xl font-bold text-slate-900">Business hub</h1>
       <p className="mt-1 text-sm text-slate-500">
         Leads from the division pages, with the service area already assigned. Move each one through the pipeline.
       </p>
 
-      <div className="mt-5 flex flex-wrap gap-2">
+      <div className="mt-4" />
+      <BusinessAdminNav />
+      <div className="mb-3 flex gap-4 text-sm">
+        {[
+          { v: undefined, l: "All funnels" },
+          { v: "business", l: "Business" },
+          { v: "career", l: "Career" },
+        ].map((f) => (
+          <a
+            key={f.l}
+            href={`/dashboard/admin/business/enquiries${f.v ? `?funnel=${f.v}` : ""}`}
+            className={`font-medium ${funnel === f.v ? "text-brand-700 underline" : "text-slate-500 hover:text-slate-800"}`}
+          >
+            {f.l}
+          </a>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-2">
         {[undefined, ...STATUSES].map((f) => (
           <a
             key={f ?? "all"}
-            href={f ? `/dashboard/admin/business/enquiries?status=${f}` : "/dashboard/admin/business/enquiries"}
+            href={`/dashboard/admin/business/enquiries?${[f ? `status=${f}` : "", funnel ? `funnel=${funnel}` : ""].filter(Boolean).join("&")}`}
             className={`rounded-full px-3.5 py-1.5 text-sm font-medium capitalize ${
               filter === f ? "bg-brand-900 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
             }`}

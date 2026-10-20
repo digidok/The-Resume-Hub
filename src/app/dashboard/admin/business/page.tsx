@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { BackLink } from "@/components/ui/back-link";
 import { Card } from "@/components/ui/card";
 import { RequestStatusBadge } from "@/components/business/badges";
+import { BusinessAdminNav } from "@/components/business/admin-nav";
 import { createClient } from "@/lib/supabase/server";
 import {
   REQUEST_STATUS_LABEL,
@@ -51,28 +52,14 @@ export default async function AdminBusinessPage({ searchParams }: PageProps<"/da
   return (
     <div className="mx-auto max-w-5xl">
       <BackLink href="/dashboard/admin" label="Platform overview" />
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="mr-auto">
-          <h1 className="text-3xl font-bold text-slate-900">Business hub</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Document Studio requests, quotes, invoices and retainers for all clients.
-          </p>
-        </div>
-        <Link
-          href="/dashboard/admin/business/enquiries"
-          className="rounded-md border border-brand-200 bg-white px-4 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-50"
-        >
-          Enquiries{newEnquiries ? ` (${newEnquiries})` : ""}
-        </Link>
-        <Link
-          href="/dashboard/admin/business/retainers"
-          className="rounded-md border border-brand-200 bg-white px-4 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-50"
-        >
-          Retainers &amp; hours
-        </Link>
-      </div>
+      <h1 className="text-3xl font-bold text-slate-900">Business hub</h1>
+      <p className="mb-5 mt-1 text-sm text-slate-500">
+        Document Studio requests, quotes, invoices, screening, tasks and retainers for all clients.
+        {newEnquiries ? ` ${newEnquiries} new enquir${newEnquiries === 1 ? "y" : "ies"} waiting.` : ""}
+      </p>
+      <BusinessAdminNav />
 
-      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Card className="p-4">
           <p className="text-2xl font-bold text-slate-900">{counts("new")}</p>
           <p className="text-xs text-slate-500">New requests</p>

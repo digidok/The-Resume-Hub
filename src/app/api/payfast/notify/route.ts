@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { promises as dns } from "dns";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getPayfastConfig, PAYFAST_VALID_HOSTS } from "@/lib/payfast/config";
 import { verifyItnSignature } from "@/lib/payfast/signature";
+import { BUSINESS_PAYMENT_PREFIX, settleBusinessInvoice } from "@/lib/business/payments";
 
 async function resolvePayfastIps(): Promise<Set<string>> {
   const ips = new Set<string>();
@@ -93,7 +95,28 @@ export async function POST(request: Request) {
     return new NextResponse("OK");
   }
 
-  const supabase = await createClient();
+  // Business invoices (quote-to-cash portal) are settled with the service role
+  // after the same five verification steps above.
+  if (pfData.m_payment_id.startsWith(BUSINESS_PAYMENT_PREFIX)) {
+    try {
+      await settleBusinessInvoice(pfData, grossAmount);
+    } catch (err) {
+      console.error("Payfast ITN: business invoice settlement failed", err);
+    }
+    return new NextResponse("OK");
+  }
+
+  // Payment RPCs should only ever be called from here, with the service role,
+  // so the database can refuse them to browsers (see migration
+  // 20261020180000_lock_payfast_rpcs.sql). Falls back to the old client only if
+  // the service key is missing, so a misconfiguration cannot silently stop payments.
+  let supabase;
+  try {
+    supabase = createAdminClient();
+  } catch {
+    console.error("Payfast ITN: SUPABASE_SERVICE_ROLE_KEY missing, using anon client");
+    supabase = await createClient();
+  }
 
   if (pfData.payment_status !== "COMPLETE") {
     console.error("Payfast ITN: payment_status is not COMPLETE, not fulfilling", {

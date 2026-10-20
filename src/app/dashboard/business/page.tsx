@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Briefcase, FileText, Receipt, Clock, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getVisibleEmails } from "@/lib/business/access";
+import { signPaths } from "@/lib/business/queries";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BillingStatusBadge, HoursMeter, RequestStatusBadge } from "@/components/business/badges";
@@ -12,41 +14,58 @@ import {
   formatDate,
   formatZar,
   hoursThisMonth,
+  CHECK_STATUS_LABEL,
+  CHECK_STATUS_STYLE,
   type BillingRow,
   type RetainerRow,
+  type ScreeningCaseRow,
+  type ScreeningCheckRow,
   type StudioRequestRow,
   type TimeEntryRow,
 } from "@/lib/business/format";
 
 export const metadata = { title: "Business dashboard — The Resume Document Hub" };
 
-export default async function BusinessDashboardPage() {
+export default async function BusinessDashboardPage({ searchParams }: PageProps<"/dashboard/business">) {
+  const { paid } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user?.email) redirect("/login");
   const email = user.email.toLowerCase();
+  const emails = await getVisibleEmails(supabase, email);
 
-  const [{ data: requestData }, { data: billingData }, { data: retainerData }] = await Promise.all([
+  const [{ data: requestData }, { data: billingData }, { data: retainerData }, { data: caseData }] = await Promise.all([
     supabase
       .from("studio_requests")
       .select("*")
-      .eq("email", email)
+      .in("email", emails)
       .order("created_at", { ascending: false }),
     supabase
       .from("business_billing")
       .select("*")
-      .eq("client_email", email)
+      .in("client_email", emails)
       .neq("status", "draft")
       .order("created_at", { ascending: false }),
     supabase
       .from("business_retainers")
       .select("*")
-      .eq("client_email", email)
+      .in("client_email", emails)
       .eq("active", true)
       .order("created_at", { ascending: false }),
+    supabase.from("screening_cases").select("*").in("client_email", emails).order("created_at", { ascending: false }),
   ]);
+  const screeningCases = (caseData ?? []) as ScreeningCaseRow[];
+  const { data: checkData } = screeningCases.length
+    ? await supabase.from("screening_checks").select("*").in("case_id", screeningCases.map((c) => c.id))
+    : { data: [] };
+  const screeningChecks = (checkData ?? []) as ScreeningCheckRow[];
+  const reportUrls = await signPaths(
+    supabase,
+    "screening-reports",
+    screeningCases.map((c) => c.report_path).filter((p): p is string => Boolean(p))
+  );
 
   const requests = (requestData ?? []) as StudioRequestRow[];
   const billing = (billingData ?? []) as BillingRow[];
@@ -71,7 +90,8 @@ export default async function BusinessDashboardPage() {
     0
   );
 
-  const isEmpty = requests.length === 0 && billing.length === 0 && retainers.length === 0;
+  const isEmpty =
+    requests.length === 0 && billing.length === 0 && retainers.length === 0 && screeningCases.length === 0;
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -80,6 +100,22 @@ export default async function BusinessDashboardPage() {
         Your requests, files, quotes, invoices and retainer hours with The Resume Document Hub. Showing
         everything linked to <span className="font-medium text-slate-700">{user.email}</span>.
       </p>
+
+      <div className="mt-3 flex flex-wrap gap-4 text-sm">
+        <Link href="/dashboard/business/team" className="font-medium text-brand-600 hover:text-brand-700">
+          Team access
+        </Link>
+        <Link href="/privacy-request" className="font-medium text-brand-600 hover:text-brand-700">
+          Privacy and communication preferences
+        </Link>
+      </div>
+
+      {paid && (
+        <p className="mt-5 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          Thank you. Your invoice is marked as paid once Payfast confirms the payment to us, which usually takes a
+          minute. Refresh this page to see the update.
+        </p>
+      )}
 
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Stat icon={Briefcase} label="Open requests" value={String(openRequests)} />
@@ -152,6 +188,14 @@ export default async function BusinessDashboardPage() {
                 <div className="flex items-center gap-3">
                   <span className="text-lg font-bold text-slate-900">{formatZar(b.amount_zar)}</span>
                   <BillingStatusBadge status={b.status} />
+                  {b.kind === "invoice" && b.status === "sent" && (
+                    <form action="/api/payfast/business-invoice" method="POST">
+                      <input type="hidden" name="billing_id" value={b.id} />
+                      <Button size="sm" type="submit">
+                        Pay now
+                      </Button>
+                    </form>
+                  )}
                   {b.kind === "quote" && b.status === "sent" && (
                     <div className="flex gap-2">
                       <form
@@ -187,6 +231,51 @@ export default async function BusinessDashboardPage() {
         </section>
       )}
 
+      {screeningCases.length > 0 && (
+        <section className="mt-8">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Background screening</h2>
+          <div className="space-y-4">
+            {screeningCases.map((c) => {
+              const checks = screeningChecks.filter((k) => k.case_id === c.id);
+              return (
+                <Card key={c.id} className="p-5">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <p className="font-semibold text-slate-900">
+                      {c.candidate_name}
+                      {c.role_title ? <span className="font-normal text-slate-500"> · {c.role_title}</span> : null}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {c.reference} · {formatDate(c.created_at)} · Consent{" "}
+                      {c.consent_status === "received" ? "on record" : c.consent_status}
+                    </p>
+                  </div>
+                  <ul className="mt-3 divide-y divide-slate-100 text-sm">
+                    {checks.map((k) => (
+                      <li key={k.id} className="flex items-center justify-between py-2">
+                        <span className="text-slate-700">{k.check_type}</span>
+                        <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${CHECK_STATUS_STYLE[k.status]}`}>
+                          {CHECK_STATUS_LABEL[k.status]}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  {c.report_path && reportUrls.get(c.report_path) && (
+                    <a href={reportUrls.get(c.report_path)} className="mt-3 inline-block text-sm font-medium text-brand-600 hover:text-brand-700">
+                      Download report
+                    </a>
+                  )}
+                  {c.dispute_note && <p className="mt-3 rounded-md bg-blue-50 px-3 py-2 text-sm text-blue-900">Review note: {c.dispute_note}</p>}
+                  <p className="mt-3 text-xs text-slate-500">
+                    Screening results are used to inform a decision, not make it on their own. A candidate can ask us to
+                    review or correct a result by contacting info@resumehub.co.za.
+                  </p>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {retainers.length > 0 && (
         <section className="mt-8">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Retainer &amp; hours</h2>
@@ -198,7 +287,12 @@ export default async function BusinessDashboardPage() {
               return (
                 <Card key={r.id} className="p-5">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <p className="font-semibold text-slate-900">{r.plan_name}</p>
+                    <p className="font-semibold text-slate-900">
+                      {r.plan_name}
+                      {r.kind === "corporate_contract" && (
+                        <span className="ml-2 rounded-full bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-700">Corporate contract</span>
+                      )}
+                    </p>
                     <p className="text-xs text-slate-500">
                       {formatZar(r.monthly_fee_zar)}/month · since {formatDate(r.start_date)}
                     </p>

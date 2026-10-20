@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { DIVISIONS, availableServices } from "@/lib/catalog/divisions";
+import { ALL_DIVISIONS, availableServices } from "@/lib/catalog/divisions";
+import { applyOverrides, getOverrides } from "@/lib/catalog/overrides";
 
 const NOTIFY_TO = "info@resumehub.co.za";
 const MAX_PER_HOUR = 5;
@@ -31,14 +32,15 @@ export async function POST(request: Request) {
   // Honeypot: real visitors never fill this in.
   if (clean(body.website, 100)) return NextResponse.json({ reference: "ENQ-000000" });
 
-  const division = DIVISIONS.find((d) => d.slug === clean(body.division, 60));
-  if (!division) return NextResponse.json({ error: "Unknown service area." }, { status: 400 });
+  const baseDivision = ALL_DIVISIONS.find((d) => d.slug === clean(body.division, 60));
+  if (!baseDivision) return NextResponse.json({ error: "Unknown service area." }, { status: 400 });
+  const division = applyOverrides(baseDivision, await getOverrides());
 
   const service = availableServices(division).find((s) => s.id === clean(body.service, 60));
   if (!service) return NextResponse.json({ error: "Please choose a service." }, { status: 400 });
 
-  const businessName = clean(body.businessName, 160);
   const contactName = clean(body.contactName, 120);
+  const businessName = division.audience === "individual" ? contactName : clean(body.businessName, 160);
   const email = clean(body.email, 200).toLowerCase();
   const phone = clean(body.phone, 40);
   const engagement = clean(body.engagement, 20) === "recurring" ? "recurring" : "once-off";

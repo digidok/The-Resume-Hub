@@ -11,6 +11,7 @@ export const metadata = {
 };
 import { Card } from "@/components/ui/card";
 import { DIVISIONS, MODEL_LABEL, availableServices, formatPrice } from "@/lib/catalog/divisions";
+import { getDivisionsWithOverrides } from "@/lib/catalog/overrides";
 import { SUBSCRIPTION_PACKAGES, PRO_ONCE_OFF_PACKAGE } from "@/lib/payfast/config";
 
 const candidatePro = SUBSCRIPTION_PACKAGES.find((p) => p.role === "candidate")!;
@@ -35,7 +36,8 @@ const EMPLOYER_PAID_FEATURES = [
   "Interview scheduling & induction tools",
 ];
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const divisions = await getDivisionsWithOverrides(DIVISIONS);
   return (
     <div className="flex flex-1 flex-col bg-white">
       <SiteHeader />
@@ -172,7 +174,7 @@ export default function PricingPage() {
               and custom work is quoted for your approval before it starts.
             </p>
             <div className="mt-8 space-y-6">
-              {DIVISIONS.map((d) => (
+              {divisions.map((d) => (
                 <Card key={d.slug} className="overflow-hidden">
                   <div className="flex items-center justify-between gap-3 border-b border-slate-100 bg-slate-50 px-5 py-3">
                     <h3 className="font-semibold text-slate-900">{d.title}</h3>

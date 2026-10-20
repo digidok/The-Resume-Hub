@@ -4,11 +4,15 @@ import { BackLink } from "@/components/ui/back-link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BillingStatusBadge, RequestStatusBadge } from "@/components/business/badges";
-import { DeliverableUpload } from "@/components/business/deliverable-upload";
+import { FileUpload } from "@/components/business/file-upload";
+import { MessageThread } from "@/components/business/message-thread";
+import { BusinessAdminNav } from "@/components/business/admin-nav";
 import { createClient } from "@/lib/supabase/server";
 import { signPaths } from "@/lib/business/queries";
 import {
+  addDeliverable,
   createBilling,
+  sendTeamMessage,
   removeDeliverable,
   setBillingStatus,
   setRequestStatus,
@@ -21,6 +25,7 @@ import {
   type BillingRow,
   type BillingStatus,
   type DeliverableRow,
+  type MessageRow,
   type RequestStatus,
   type StudioRequestRow,
 } from "@/lib/business/format";
@@ -68,10 +73,12 @@ export default async function AdminBusinessRequestPage({
   if (!data) notFound();
   const request = data as StudioRequestRow;
 
-  const [{ data: deliverableData }, { data: billingData }] = await Promise.all([
+  const [{ data: deliverableData }, { data: billingData }, { data: messageData }] = await Promise.all([
     supabase.from("business_deliverables").select("*").eq("request_id", request.id).order("created_at"),
     supabase.from("business_billing").select("*").eq("request_id", request.id).order("created_at"),
+    supabase.from("business_messages").select("*").eq("request_id", request.id).order("created_at"),
   ]);
+  const messages = (messageData ?? []) as MessageRow[];
   const deliverables = (deliverableData ?? []) as DeliverableRow[];
   const billing = (billingData ?? []) as BillingRow[];
 
@@ -82,7 +89,8 @@ export default async function AdminBusinessRequestPage({
 
   return (
     <div className="mx-auto max-w-3xl">
-      <BackLink href="/dashboard/admin/business" label="Business hub" />
+      <BusinessAdminNav />
+      <BackLink href="/dashboard/admin/business" label="All requests" />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">{request.company_name}</h1>
@@ -148,7 +156,12 @@ export default async function AdminBusinessRequestPage({
       <Card className="mt-4 p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Delivered files</h2>
-          <DeliverableUpload requestId={request.id} reference={request.reference} />
+          <FileUpload
+            bucket="studio-deliveries"
+            folder={request.reference}
+            label="Upload delivered file"
+            register={addDeliverable.bind(null, request.id)}
+          />
         </div>
         {deliverables.length === 0 ? (
           <p className="mt-2 text-sm text-slate-500">Nothing uploaded yet. Clients see these as soon as you add them.</p>
@@ -247,6 +260,15 @@ export default async function AdminBusinessRequestPage({
             <Button type="submit">Create as draft</Button>
           </div>
         </form>
+      </Card>
+
+      <Card className="mt-4 p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Messages with client</h2>
+        <MessageThread
+          messages={messages}
+          viewer="team"
+          action={sendTeamMessage.bind(null, request.id, request.reference, request.email)}
+        />
       </Card>
     </div>
   );

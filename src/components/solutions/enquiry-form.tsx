@@ -101,21 +101,23 @@ export function EnquiryForm({ division, defaultService }: { division: Division; 
         </select>
       </div>
 
-      <div>
-        <label className={labelCls} htmlFor="businessName">
-          Business name
-        </label>
-        <input id="businessName" name="businessName" required maxLength={160} className={inputCls} />
-      </div>
+      {division.audience !== "individual" && (
+        <div>
+          <label className={labelCls} htmlFor="businessName">
+            Business name
+          </label>
+          <input id="businessName" name="businessName" required maxLength={160} className={inputCls} />
+        </div>
+      )}
       <div>
         <label className={labelCls} htmlFor="contactName">
-          Contact person
+          {division.audience === "individual" ? "Your name" : "Contact person"}
         </label>
         <input id="contactName" name="contactName" required maxLength={120} className={inputCls} />
       </div>
       <div>
         <label className={labelCls} htmlFor="email">
-          Business email
+          {division.audience === "individual" ? "Email" : "Business email"}
         </label>
         <input id="email" name="email" type="email" required maxLength={200} className={inputCls} />
       </div>

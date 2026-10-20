@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { DIVISIONS, availableServices, formatPrice } from "@/lib/catalog/divisions";
+import { getDivisionsWithOverrides } from "@/lib/catalog/overrides";
 
 export const metadata = {
   title: "Business Solutions — The Resume Document Hub",
@@ -10,7 +11,8 @@ export const metadata = {
     "Business administration, executive and board support, HR and recruitment, data intelligence, background screening and AI automation through one central point of contact.",
 };
 
-export default function SolutionsPage() {
+export default async function SolutionsPage() {
+  const divisions = await getDivisionsWithOverrides(DIVISIONS);
   return (
     <div className="flex flex-1 flex-col bg-white">
       <SiteHeader />
@@ -30,7 +32,7 @@ export default function SolutionsPage() {
 
         <section className="mx-auto max-w-6xl px-4 py-14">
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {DIVISIONS.map((d) => {
+            {divisions.map((d) => {
               const services = availableServices(d);
               const priced = services.filter((s) => s.fromZar !== undefined);
               const cheapest = priced.length ? priced.reduce((a, b) => (a.fromZar! <= b.fromZar! ? a : b)) : null;

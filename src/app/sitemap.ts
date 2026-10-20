@@ -21,6 +21,7 @@ const STATIC_ROUTES = [
   "/blog",
   "/student-discount",
   "/privacy",
+  "/privacy-request",
   "/terms",
   "/login",
   "/signup",
