@@ -2,8 +2,9 @@ import Link from "next/link";
 import {
   ArrowRight,
   Bot,
+  BarChart3,
+  ScanSearch,
   Briefcase,
-  FileText,
   GraduationCap,
   MessageCircle,
   ShieldCheck,
@@ -11,19 +12,16 @@ import {
   Repeat,
   Users,
   HeartHandshake,
-  Zap,
 } from "lucide-react";
-import { whatsappLink } from "@/lib/whatsapp-contacts";
-
-const CONSULT_URL = whatsappLink("main", "Hi, I'd like to enquire about Resume Document Hub virtual assistant services");
 
 const SERVICES = [
-  { icon: Users, label: "Executive secretariat & board support", href: "/services#corporate" },
-  { icon: FileText, label: "Document Studio: plans, packs, minutes, HR policies", href: "/services#studio" },
-  { icon: Briefcase, label: "Business admin, HR policies & registration", href: "/services#small-business" },
-  { icon: Bot, label: "AI, automation & business systems", href: "/services#small-business" },
-  { icon: GraduationCap, label: "CV writing, ATS scoring & career tools", href: "/careers" },
-  { icon: Zap, label: "Auto-apply & job matching", href: "/dashboard/auto-apply" },
+  { icon: GraduationCap, label: "Career Solutions: CVs, Auto Apply & career tools", href: "/careers" },
+  { icon: Briefcase, label: "Business administration & virtual assistants", href: "/solutions/business-administration" },
+  { icon: Users, label: "Executive & board support", href: "/services" },
+  { icon: UserCheck, label: "HR & recruitment solutions", href: "/solutions/hr-recruitment" },
+  { icon: BarChart3, label: "Data science & business intelligence", href: "/solutions/data-intelligence" },
+  { icon: ScanSearch, label: "Background screening & verification", href: "/solutions/background-screening" },
+  { icon: Bot, label: "Digital & AI automation", href: "/solutions/ai-automation" },
 ];
 
 const HIGHLIGHTS = [
@@ -47,30 +45,34 @@ export function HubHero() {
               The Resume Document Hub · Single Point of Contact
             </p>
             <h1 className="mt-5 text-4xl font-bold tracking-tight sm:text-5xl sm:leading-[1.1]">
-              One hub for your documents, career and business.
-              <span className="block text-accent-400">One point of contact.</span>
+              One Hub.
+              <span className="block text-accent-400">Every Career. Every Business Solution.</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg text-slate-300">
-              Virtual assistants and business consultants for executives, boards and growing
-              businesses, plus board-ready documents and CV and job tools, handled by one
-              accountable contact from quote to delivery.
+              From building your career to managing your business operations, we connect individuals,
+              entrepreneurs, SMEs and established organisations with practical digital tools,
+              professional expertise and integrated support, all through one central platform.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                href={CONSULT_URL}
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                href="/solutions"
                 className="inline-flex items-center gap-2 rounded-md bg-accent-400 px-6 py-3 text-sm font-semibold text-brand-950 hover:bg-accent-50"
               >
-                <MessageCircle className="h-4 w-4" />
-                Request a consultation
-              </a>
+                Explore Business Solutions
+                <ArrowRight className="h-4 w-4" />
+              </Link>
               <Link
-                href="/services"
+                href="/careers"
                 className="inline-flex items-center gap-2 rounded-md border border-white/30 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10"
               >
-                Explore our services
-                <ArrowRight className="h-4 w-4" />
+                Explore Career Solutions
+              </Link>
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 px-3 py-3 text-sm font-semibold text-slate-200 underline-offset-4 hover:text-white hover:underline"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Request a Business Consultation
               </Link>
             </div>
           </div>

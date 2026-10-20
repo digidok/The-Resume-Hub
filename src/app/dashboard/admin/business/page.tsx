@@ -30,6 +30,11 @@ export default async function AdminBusinessPage({ searchParams }: PageProps<"/da
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
   if (profile?.role !== "admin") redirect("/dashboard");
 
+  const { count: newEnquiries } = await supabase
+    .from("business_enquiries")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "new");
+
   const [{ data: all }, { data: billingData }] = await Promise.all([
     supabase.from("studio_requests").select("*").order("created_at", { ascending: false }).limit(300),
     supabase.from("business_billing").select("*"),
@@ -46,13 +51,19 @@ export default async function AdminBusinessPage({ searchParams }: PageProps<"/da
   return (
     <div className="mx-auto max-w-5xl">
       <BackLink href="/dashboard/admin" label="Platform overview" />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="mr-auto">
           <h1 className="text-3xl font-bold text-slate-900">Business hub</h1>
           <p className="mt-1 text-sm text-slate-500">
             Document Studio requests, quotes, invoices and retainers for all clients.
           </p>
         </div>
+        <Link
+          href="/dashboard/admin/business/enquiries"
+          className="rounded-md border border-brand-200 bg-white px-4 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-50"
+        >
+          Enquiries{newEnquiries ? ` (${newEnquiries})` : ""}
+        </Link>
         <Link
           href="/dashboard/admin/business/retainers"
           className="rounded-md border border-brand-200 bg-white px-4 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-50"

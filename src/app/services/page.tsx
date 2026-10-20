@@ -19,6 +19,8 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { DocumentStudio } from "@/components/services/document-studio";
 import { ClientsStrip } from "@/components/clients/clients-strip";
+import { EnquiryForm } from "@/components/solutions/enquiry-form";
+import { getDivision } from "@/lib/catalog/divisions";
 import { whatsappLink } from "@/lib/whatsapp-contacts";
 
 export const metadata = {
@@ -417,6 +419,20 @@ export default function ServicesPage() {
                 </li>
               ))}
             </ol>
+          </div>
+        </section>
+
+        <section id="enquiry" className="scroll-mt-20 py-16 sm:py-20">
+          <div className="mx-auto max-w-3xl px-4">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Request a quote</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Share the meeting details and what you need. Verbatim transcripts, formal minutes and executive
+              summaries are different deliverables, and AI-assisted drafts are always reviewed by a person before
+              they are final.
+            </p>
+            <div className="mt-6">
+              <EnquiryForm division={getDivision("executive-board-support")!} />
+            </div>
           </div>
         </section>
 

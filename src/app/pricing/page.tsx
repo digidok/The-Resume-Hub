@@ -10,6 +10,7 @@ export const metadata = {
     "Simple, transparent pricing for candidates and employers on Resume Hub — every candidate plan unlocks full access, no free tier, no credit limits.",
 };
 import { Card } from "@/components/ui/card";
+import { DIVISIONS, MODEL_LABEL, availableServices, formatPrice } from "@/lib/catalog/divisions";
 import { SUBSCRIPTION_PACKAGES, PRO_ONCE_OFF_PACKAGE } from "@/lib/payfast/config";
 
 const candidatePro = SUBSCRIPTION_PACKAGES.find((p) => p.role === "candidate")!;
@@ -157,6 +158,41 @@ export default function PricingPage() {
                   </Button>
                 </Link>
               </Card>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-slate-200 py-16">
+          <div className="mx-auto max-w-5xl px-4">
+            <h2 className="text-center text-sm font-semibold uppercase tracking-wide text-brand-600">
+              For businesses
+            </h2>
+            <p className="mx-auto mt-2 max-w-2xl text-center text-sm text-slate-600">
+              Starting prices for business services. Final prices depend on scope, complexity and third-party costs,
+              and custom work is quoted for your approval before it starts.
+            </p>
+            <div className="mt-8 space-y-6">
+              {DIVISIONS.map((d) => (
+                <Card key={d.slug} className="overflow-hidden">
+                  <div className="flex items-center justify-between gap-3 border-b border-slate-100 bg-slate-50 px-5 py-3">
+                    <h3 className="font-semibold text-slate-900">{d.title}</h3>
+                    <Link href={d.href} className="text-sm font-medium text-brand-600 hover:text-brand-700">
+                      View
+                    </Link>
+                  </div>
+                  <ul className="divide-y divide-slate-100">
+                    {availableServices(d).map((s) => (
+                      <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 px-5 py-2.5 text-sm">
+                        <span className="text-slate-700">{s.name}</span>
+                        <span className="flex items-center gap-3">
+                          <span className="text-xs text-slate-400">{s.models.map((m) => MODEL_LABEL[m]).join(" · ")}</span>
+                          <span className="font-semibold text-slate-900">{formatPrice(s)}</span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+              ))}
             </div>
           </div>
         </section>

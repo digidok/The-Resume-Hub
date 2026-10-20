@@ -12,8 +12,11 @@ const PRODUCT_LINKS = [
 ];
 
 const COMPANY_LINKS = [
-  { href: "/services", label: "Business services" },
-  { href: "/careers", label: "Careers" },
+  { href: "/solutions", label: "Business Solutions" },
+  { href: "/services", label: "Executive & Board Support" },
+  { href: "/careers", label: "Career Solutions" },
+  { href: "/about", label: "About Us" },
+  { href: "/contact", label: "Contact" },
   { href: "/faq", label: "FAQ" },
   { href: "/blog", label: "Blog" },
   { href: "/student-discount", label: "Student discount" },

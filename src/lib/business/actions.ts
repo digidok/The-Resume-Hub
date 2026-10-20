@@ -144,3 +144,10 @@ export async function setRetainerActive(id: string, active: boolean) {
   revalidatePath("/dashboard/admin/business", "layout");
   revalidatePath("/dashboard/business", "layout");
 }
+
+export async function setEnquiryStatus(id: string, status: string) {
+  if (!["new", "contacted", "quoted", "won", "lost"].includes(status)) return;
+  const supabase = await requireAdmin();
+  await supabase.from("business_enquiries").update({ status }).eq("id", id);
+  revalidatePath("/dashboard/admin/business", "layout");
+}

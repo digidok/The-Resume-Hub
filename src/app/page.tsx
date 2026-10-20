@@ -1,4 +1,4 @@
-import { ArrowRight, Briefcase, Building2, FileText, GraduationCap, Mail, MessageCircle, Users, Wallet } from "lucide-react";
+import { ArrowRight, BarChart3, Bot, Briefcase, GraduationCap, Mail, MessageCircle, ScanSearch, UserCheck, Users, Wallet } from "lucide-react";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -16,11 +16,13 @@ import {
 const CONSULT_URL = whatsappLink("main", "Hi, I'd like to enquire about Resume Document Hub virtual assistant services");
 
 const PILLARS = [
-  { icon: Users, title: "Executive & board support", text: "Secretariat, governance documentation and board packs, delivered with discretion.", href: "/services#corporate", cta: "Explore support" },
-  { icon: FileText, title: "Document Studio", text: "Business plans, proposals, minutes and branded templates prepared to your brand.", href: "/services#studio", cta: "Start a request" },
-  { icon: Briefcase, title: "Business administration", text: "Company registration, HR policies, everyday admin and automation for growing businesses.", href: "/services#small-business", cta: "See services" },
-  { icon: GraduationCap, title: "Careers", text: "Professional CVs, ATS scoring, verified jobs, auto-apply and interview preparation.", href: "/careers", cta: "Go to Careers" },
-  { icon: Building2, title: "For employers", text: "Post jobs, review candidates, and use induction and offer letter tools.", href: "/careers#employers", cta: "For employers" },
+  { icon: GraduationCap, title: "Career Solutions", text: "Professional CVs, Auto Apply, verified jobs and interview preparation for individuals.", href: "/careers", cta: "Explore careers" },
+  { icon: Briefcase, title: "Business administration", text: "Company registration, virtual assistants and business documents, once-off or monthly.", href: "/solutions/business-administration", cta: "See services" },
+  { icon: Users, title: "Executive & board support", text: "Board packs, minutes, transcription and executive assistance, delivered with discretion.", href: "/services", cta: "Explore support" },
+  { icon: UserCheck, title: "HR & recruitment", text: "Recruitment, employment documents and HR administration you can outsource.", href: "/solutions/hr-recruitment", cta: "See HR services" },
+  { icon: BarChart3, title: "Data science & BI", text: "Reports, dashboards and HR analytics that turn business data into decisions.", href: "/solutions/data-intelligence", cta: "See analytics" },
+  { icon: ScanSearch, title: "Background screening", text: "Employment screening and verification coordinated with authorised providers.", href: "/solutions/background-screening", cta: "Request a quote" },
+  { icon: Bot, title: "Digital & AI automation", text: "WhatsApp, lead capture, reminders and reporting workflows that save time.", href: "/solutions/ai-automation", cta: "See automation" },
   { icon: Wallet, title: "Pricing", text: "Transparent plans for individuals and clear starting prices for businesses.", href: "/pricing", cta: "View pricing" },
 ];
 
@@ -66,7 +68,7 @@ export default function Home() {
                 Whether you are running a business, serving on a board or building a career.
               </p>
             </ScrollReveal>
-            <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {PILLARS.map((pillar) => (
                 <Link
                   key={pillar.title}
