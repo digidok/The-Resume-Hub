@@ -1,22 +1,20 @@
-import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
   Bot,
   Briefcase,
-  Building2,
   Check,
   FileText,
   Landmark,
   Mail,
   MessageCircle,
-  UserRound,
+  Repeat,
+  ShieldCheck,
+  UserCheck,
   Users,
 } from "lucide-react";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { ServicesHeader } from "@/components/services/services-header";
+import { ServicesFooter } from "@/components/services/services-footer";
 import { whatsappLink } from "@/lib/whatsapp-contacts";
 
 export const metadata = {
@@ -130,25 +128,62 @@ const CORPORATE_PACKAGES: Package[] = [
   { name: "Corporate Governance", price: "R20,000+", level: "Multiple governance workstreams" },
 ];
 
+const HIGHLIGHTS = [
+  { icon: UserCheck, title: "One accountable contact", text: "A single person owns your request from quote to delivery." },
+  { icon: ShieldCheck, title: "Confidential by default", text: "Professional, discreet handling of sensitive board and business documents." },
+  { icon: Repeat, title: "Once-off or retainer", text: "Pay for a single service or subscribe monthly for ongoing support." },
+  { icon: Landmark, title: "Based in Sandton", text: "Serving businesses and boards across South Africa." },
+];
+
+const STEPS = [
+  { title: "Tell us what you need", text: "Message us on WhatsApp or email. Describe the task, the deadline and who it is for." },
+  { title: "We scope and quote", text: "You receive a clear scope and price, either once-off or as a monthly package." },
+  { title: "One contact delivers", text: "Your assistant manages the work and keeps you updated until it is complete." },
+];
+
+function SectionHeading({
+  number,
+  eyebrow,
+  title,
+  intro,
+}: {
+  number: string;
+  eyebrow: string;
+  title: string;
+  intro: string;
+}) {
+  return (
+    <div className="max-w-3xl">
+      <p className="flex items-center gap-3 text-xs font-semibold uppercase tracking-widest text-accent-600">
+        <span className="font-mono">{number}</span>
+        <span className="h-px w-8 bg-accent-400" />
+        {eyebrow}
+      </p>
+      <h2 className="mt-3 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">{title}</h2>
+      <p className="mt-4 text-slate-600">{intro}</p>
+    </div>
+  );
+}
+
 function AreaCard({ area }: { area: ServiceArea }) {
   return (
-    <Card className="p-6">
+    <div className="rounded-md border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-brand-900 text-accent-400">
           <area.icon className="h-5 w-5" />
         </span>
         <h3 className="font-semibold text-slate-900">{area.title}</h3>
       </div>
-      <p className="mt-3 text-sm text-slate-600">{area.description}</p>
-      <ul className="mt-4 space-y-2.5">
+      <p className="mt-4 text-sm text-slate-600">{area.description}</p>
+      <ul className="mt-4 space-y-2.5 border-t border-slate-100 pt-4">
         {area.items.map((item) => (
           <li key={item} className="flex items-start gap-2.5 text-sm text-slate-700">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent-600" />
             {item}
           </li>
         ))}
       </ul>
-    </Card>
+    </div>
   );
 }
 
@@ -163,32 +198,35 @@ function PackageGrid({
 }) {
   return (
     <div
-      className={`mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 ${
+      className={`mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 ${
         packages.length >= 3 ? "lg:grid-cols-4" : "lg:grid-cols-3"
       }`}
     >
       {packages.map((pkg) => (
-        <Card key={pkg.name} className="p-6">
-          <p className="font-semibold text-slate-900">{pkg.name}</p>
-          <p className="mt-2 text-3xl font-bold text-slate-900">
+        <div key={pkg.name} className="rounded-md border border-slate-200 border-t-2 border-t-accent-400 bg-white p-6 shadow-sm">
+          <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">{pkg.name}</p>
+          <p className="mt-3 text-3xl font-bold text-slate-900">
             {pkg.price}
             <span className="text-base font-medium text-slate-500">/mo</span>
           </p>
           <p className="mt-3 text-sm text-slate-600">{pkg.level}</p>
-        </Card>
-      ))}
-      <Card className="flex flex-col justify-between border-0 border-t-[3px] border-accent-500 p-6">
-        <div>
-          <p className="font-semibold text-slate-900">Need something specific?</p>
-          <p className="mt-3 text-sm text-slate-600">{quoteLabel}</p>
         </div>
-        <a href={quoteUrl} target="_blank" rel="noreferrer">
-          <Button variant="secondary" className="mt-6 w-full">
-            <MessageCircle className="h-4 w-4" />
-            Request a quote
-          </Button>
+      ))}
+      <div className="flex flex-col justify-between rounded-md bg-brand-900 p-6 text-white shadow-sm">
+        <div>
+          <p className="font-semibold">Need something specific?</p>
+          <p className="mt-3 text-sm text-slate-300">{quoteLabel}</p>
+        </div>
+        <a
+          href={quoteUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-6 inline-flex items-center justify-center gap-2 rounded-md bg-accent-400 px-4 py-2.5 text-sm font-semibold text-brand-950 hover:bg-accent-50"
+        >
+          <MessageCircle className="h-4 w-4" />
+          Request a quote
         </a>
-      </Card>
+      </div>
     </div>
   );
 }
@@ -196,101 +234,96 @@ function PackageGrid({
 export default function ServicesPage() {
   return (
     <div className="flex flex-1 flex-col bg-white">
-      <SiteHeader />
+      <ServicesHeader ctaUrl={MAIN_URL} />
       <main className="flex-1">
-        <section className="mx-auto max-w-5xl px-4 py-16 text-center">
-          <p className="text-sm font-semibold uppercase tracking-wide text-brand-600">
-            Resume Document Hub
-          </p>
-          <p className="mt-2 inline-block rounded-full bg-accent-50 px-4 py-1 text-sm font-semibold text-accent-700">
-            Single Point of Contact
-          </p>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-            One team for your admin, documents and business support
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-slate-600">
-            Business registration, professional branding, virtual assistance, executive
-            documentation, board packs and corporate governance support. Tell us what you need on
-            WhatsApp and one person owns it from quote to delivery.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <a href={MAIN_URL} target="_blank" rel="noreferrer">
-              <Button size="lg">
-                <MessageCircle className="h-4 w-4" />
-                Chat to your assistant
-              </Button>
-            </a>
-            <a href="mailto:info@resumehub.co.za">
-              <Button size="lg" variant="outline">
-                <Mail className="h-4 w-4" />
-                info@resumehub.co.za
-              </Button>
-            </a>
+        <section className="relative overflow-hidden bg-brand-950 text-white">
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(184,147,63,0.18),transparent_55%)]"
+          />
+          <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+            <div>
+              <p className="inline-block rounded-sm border border-accent-400/50 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-accent-400">
+                Single Point of Contact
+              </p>
+              <h1 className="mt-5 text-3xl font-bold tracking-tight sm:text-5xl sm:leading-[1.1]">
+                One team for your admin, documents and business support
+              </h1>
+              <p className="mt-5 max-w-xl text-lg text-slate-300">
+                Virtual assistants for business registration, executive documentation, board packs
+                and corporate governance. Tell us what you need and one person owns it from quote to
+                delivery.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <a
+                  href={MAIN_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-md bg-accent-400 px-6 py-3 text-sm font-semibold text-brand-950 hover:bg-accent-50"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Request a consultation
+                </a>
+                <a
+                  href="mailto:info@resumehub.co.za"
+                  className="inline-flex items-center gap-2 rounded-md border border-white/30 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10"
+                >
+                  <Mail className="h-4 w-4" />
+                  info@resumehub.co.za
+                </a>
+              </div>
+            </div>
+            <div className="rounded-md border border-white/10 bg-white/5 p-6 backdrop-blur">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-300">What we handle</p>
+              <ul className="mt-4 divide-y divide-white/10">
+                {[
+                  { icon: FileText, label: "Company registration & compliance", href: "#small-business" },
+                  { icon: Briefcase, label: "Everyday business administration", href: "#small-business" },
+                  { icon: Bot, label: "AI, automation & business systems", href: "#small-business" },
+                  { icon: Users, label: "Executive secretariat & board support", href: "#corporate" },
+                  { icon: Landmark, label: "Governance & company secretariat", href: "#corporate" },
+                ].map((row) => (
+                  <li key={row.label}>
+                    <a href={row.href} className="group flex items-center gap-3 py-3 text-sm text-slate-100 hover:text-white">
+                      <row.icon className="h-4 w-4 shrink-0 text-accent-400" />
+                      <span className="flex-1">{row.label}</span>
+                      <ArrowRight className="h-4 w-4 text-slate-500 transition-transform group-hover:translate-x-0.5 group-hover:text-accent-400" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-5xl px-4 pb-16">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <Link href="/" className="group">
-              <Card className="h-full p-6 transition-colors group-hover:border-brand-300">
-                <UserRound className="h-6 w-6 text-brand-600" />
-                <p className="mt-3 font-semibold text-slate-900">Job seekers</p>
-                <p className="mt-1 text-sm text-slate-600">
-                  CVs, cover letters, interview prep, job matching and AI application tools.
-                </p>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-700">
-                  Go to CVs and jobs <ArrowRight className="h-4 w-4" />
-                </span>
-              </Card>
-            </Link>
-            <a href="#small-business" className="group">
-              <Card className="h-full p-6 transition-colors group-hover:border-brand-300">
-                <Building2 className="h-6 w-6 text-brand-600" />
-                <p className="mt-3 font-semibold text-slate-900">Small business</p>
-                <p className="mt-1 text-sm text-slate-600">
-                  Registration, admin, automation and monthly support for start-ups and growing
-                  businesses.
-                </p>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-700">
-                  CIPC registration R650 <ArrowRight className="h-4 w-4" />
-                </span>
-              </Card>
-            </a>
-            <a href="#corporate" className="group">
-              <Card className="h-full p-6 transition-colors group-hover:border-brand-300">
-                <Landmark className="h-6 w-6 text-brand-600" />
-                <p className="mt-3 font-semibold text-slate-900">Corporate and boards</p>
-                <p className="mt-1 text-sm text-slate-600">
-                  Executive secretariat, board packs and governance support for senior teams.
-                </p>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-700">
-                  Retainers from R7,500/mo <ArrowRight className="h-4 w-4" />
-                </span>
-              </Card>
-            </a>
+        <section className="border-b border-slate-200 bg-white">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-8 sm:grid-cols-2 lg:grid-cols-4">
+            {HIGHLIGHTS.map((item) => (
+              <div key={item.title} className="flex items-start gap-3">
+                <item.icon className="mt-0.5 h-5 w-5 shrink-0 text-accent-600" />
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">{item.title}</p>
+                  <p className="mt-1 text-sm text-slate-600">{item.text}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
-        <section id="small-business" className="scroll-mt-20 bg-slate-50 py-16">
-          <div className="mx-auto max-w-5xl px-4">
-            <p className="text-sm font-semibold uppercase tracking-wide text-brand-600">
-              Small business and start-ups
-            </p>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
-              Business administration &amp; virtual office solutions
-            </h2>
-            <p className="mt-3 max-w-2xl text-slate-600">
-              Your one-stop partner for business registration, administration, branding and ongoing
-              business support, for entrepreneurs, small businesses, consultants, freelancers and
-              start-ups across South Africa. Pay once off for a single service, or subscribe monthly
-              for ongoing support.
-            </p>
-            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 md:[&>*:last-child:nth-child(odd)]:col-span-2">
+        <section id="small-business" className="scroll-mt-20 bg-slate-50 py-16 sm:py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <SectionHeading
+              number="01"
+              eyebrow="Small business and start-ups"
+              title="Business administration & virtual office solutions"
+              intro="Your one-stop partner for business registration, administration, branding and ongoing business support, for entrepreneurs, small businesses, consultants, freelancers and start-ups across South Africa. Pay once off for a single service, or subscribe monthly for ongoing support."
+            />
+            <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 md:[&>*:last-child:nth-child(odd)]:col-span-2">
               {SMALL_BUSINESS_AREAS.map((area) => (
                 <AreaCard key={area.title} area={area} />
               ))}
             </div>
-            <h3 className="mt-12 text-sm font-semibold uppercase tracking-wide text-brand-600">
+            <h3 className="mt-14 text-xs font-semibold uppercase tracking-widest text-slate-500">
               Monthly packages
             </h3>
             <PackageGrid
@@ -301,25 +334,20 @@ export default function ServicesPage() {
           </div>
         </section>
 
-        <section id="corporate" className="scroll-mt-20 py-16">
-          <div className="mx-auto max-w-5xl px-4">
-            <p className="text-sm font-semibold uppercase tracking-wide text-brand-600">
-              Corporate and boards
-            </p>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
-              Executive secretariat, board support &amp; governance
-            </h2>
-            <p className="mt-3 max-w-2xl text-slate-600">
-              Your executive office support, delivered with precision, discretion and
-              accountability. For corporate engagements, monthly retainers and project-based
-              assignments.
-            </p>
-            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 md:[&>*:last-child:nth-child(odd)]:col-span-2">
+        <section id="corporate" className="scroll-mt-20 py-16 sm:py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <SectionHeading
+              number="02"
+              eyebrow="Corporate and boards"
+              title="Executive secretariat, board support & governance"
+              intro="Your executive office support, delivered with precision, discretion and accountability. For corporate engagements, monthly retainers and project-based assignments."
+            />
+            <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 md:[&>*:last-child:nth-child(odd)]:col-span-2">
               {CORPORATE_AREAS.map((area) => (
                 <AreaCard key={area.title} area={area} />
               ))}
             </div>
-            <h3 className="mt-12 text-sm font-semibold uppercase tracking-wide text-brand-600">
+            <h3 className="mt-14 text-xs font-semibold uppercase tracking-widest text-slate-500">
               Monthly retainers
             </h3>
             <PackageGrid
@@ -327,7 +355,7 @@ export default function ServicesPage() {
               quoteLabel="Project-based assignments and corporate retainers are scoped to your needs."
               quoteUrl={CORPORATE_URL}
             />
-            <p className="mx-auto mt-8 max-w-2xl text-center text-xs text-slate-500">
+            <p className="mt-8 max-w-3xl text-xs text-slate-500">
               Prices are indicative. Statutory fees and third-party costs are quoted separately, and
               the hours and deliverables in each package are confirmed in your service agreement.
               Formal governance appointments and regulated services are handled by appropriately
@@ -336,26 +364,59 @@ export default function ServicesPage() {
           </div>
         </section>
 
-        <section className="bg-slate-50 py-14">
-          <div className="mx-auto max-w-2xl px-4 text-center">
-            <p className="text-sm text-slate-600">
-              For corporate engagements, monthly retainers and project-based assignments, contact{" "}
+        <section id="process" className="scroll-mt-20 bg-slate-50 py-16 sm:py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <SectionHeading
+              number="03"
+              eyebrow="How it works"
+              title="From first message to finished work"
+              intro="A simple, accountable process with one point of contact throughout."
+            />
+            <ol className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+              {STEPS.map((step, i) => (
+                <li key={step.title} className="rounded-md border border-slate-200 bg-white p-6 shadow-sm">
+                  <span className="font-mono text-sm font-semibold text-accent-600">0{i + 1}</span>
+                  <p className="mt-3 font-semibold text-slate-900">{step.title}</p>
+                  <p className="mt-2 text-sm text-slate-600">{step.text}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section id="contact" className="scroll-mt-20 bg-brand-900 py-16 text-white">
+          <div className="mx-auto flex max-w-6xl flex-col items-start gap-8 px-4 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-xl">
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                Speak to one person who owns it end to end
+              </h2>
+              <p className="mt-3 text-slate-300">
+                For corporate engagements, monthly retainers and project-based assignments, reach
+                us on WhatsApp or email and we will respond with a scope and quote.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href={MAIN_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-md bg-accent-400 px-6 py-3 text-sm font-semibold text-brand-950 hover:bg-accent-50"
+              >
+                <MessageCircle className="h-4 w-4" />
+                WhatsApp us
+              </a>
               <a
                 href="mailto:info@resumehub.co.za"
-                className="font-medium text-brand-600 hover:underline"
+                className="inline-flex items-center gap-2 rounded-md border border-white/30 px-6 py-3 text-sm font-semibold hover:bg-white/10"
               >
-                info@resumehub.co.za
+                <Mail className="h-4 w-4" />
+                Email us
               </a>
-              . Looking for a CV or help finding a job?{" "}
-              <Link href="/" className="font-medium text-brand-600 hover:underline">
-                Visit the Resume Hub platform
-              </Link>
-              .
-            </p>
+            </div>
           </div>
         </section>
       </main>
-      <SiteFooter />
+      <ServicesFooter whatsappUrl={MAIN_URL} />
     </div>
   );
 }
