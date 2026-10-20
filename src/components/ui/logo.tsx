@@ -24,10 +24,10 @@ export function Logo({
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <LogoMark />
-      <span className="flex flex-col leading-tight">
-        <span className={`text-xl font-bold tracking-tight ${textColor}`}>Resume Hub</span>
+      <span className="flex flex-col whitespace-nowrap leading-tight">
+        <span className={`text-lg font-bold tracking-tight sm:text-xl ${textColor}`}>Resume Document Hub</span>
         {tagline && (
-          <span className={`text-xs font-medium ${taglineColor}`}>Helping people get hired</span>
+          <span className={`text-xs font-medium ${taglineColor}`}>Single Point of Contact</span>
         )}
       </span>
     </span>

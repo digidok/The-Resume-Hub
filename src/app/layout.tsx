@@ -17,13 +17,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.resumehub.co.za"),
-  title: "Resume Hub",
-  description: "Build, share, and improve your resume — and apply to real jobs.",
+  title: "The Resume Document Hub — Single Point of Contact",
+  description:
+    "One hub for documents, CVs, job matching and business support: executive secretariat, board packs, governance, business documents and career tools.",
   openGraph: {
-    title: "Resume Hub",
-    description: "Build, share, and improve your resume — and apply to real jobs.",
+    title: "The Resume Document Hub — Single Point of Contact",
+    description:
+      "One hub for documents, CVs, job matching and business support: executive secretariat, board packs, governance, business documents and career tools.",
     url: "https://www.resumehub.co.za",
-    siteName: "Resume Hub",
+    siteName: "The Resume Document Hub",
   },
 };
 

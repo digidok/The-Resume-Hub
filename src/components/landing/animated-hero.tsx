@@ -148,9 +148,9 @@ export function AnimatedHero({ jobCount }: { jobCount: number }) {
   const jobCountLabel = formatJobCount(jobCount);
 
   const TRUST_ITEMS = [
-    `${jobCountLabel} live jobs`,
-    "Let's Help You Apply while you rest",
-    "Verified employers & candidates",
+    "CVs, jobs & career tools",
+    "Executive & board support",
+    "Documents prepared to your brand",
     "Real human support",
   ];
 
@@ -257,20 +257,18 @@ export function AnimatedHero({ jobCount }: { jobCount: number }) {
             className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-sm border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brand-800"
           >
             <Sparkles className="h-3.5 w-3.5 shrink-0" />
-            {jobCountLabel} live jobs
-            <span className="hidden sm:inline">
-              &nbsp;· Africa&apos;s first Let&apos;s Help You Apply platform
-            </span>
+            The Resume Document Hub
+            <span className="hidden sm:inline">&nbsp;· Single Point of Contact</span>
           </motion.span>
 
-          <h1 className="mx-auto mt-6 max-w-xl text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl lg:mx-0">
+          <h1 className="mx-auto mt-6 max-w-xl text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl lg:mx-0">
             <motion.span
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: EASE, delay: 0.1 }}
               className="block"
             >
-              We apply for jobs.
+              Documents. Careers. Business.
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 16 }}
@@ -278,7 +276,7 @@ export function AnimatedHero({ jobCount }: { jobCount: number }) {
               transition={{ duration: 0.6, ease: EASE, delay: 0.25 }}
               className="block text-brand-700"
             >
-              You get on with life.
+              One point of contact.
             </motion.span>
           </h1>
 
@@ -288,9 +286,9 @@ export function AnimatedHero({ jobCount }: { jobCount: number }) {
             transition={{ duration: 0.6, ease: EASE, delay: 0.4 }}
             className="mx-auto mt-5 max-w-xl text-lg text-slate-600 lg:mx-0"
           >
-            Browse {jobCountLabel} live jobs across South Africa — Let&apos;s Help You
-            Apply submits tailored applications on your behalf while you rest, work, or
-            just get on with your day. Verified employers, verified candidates — one platform.
+            For individuals: build your CV, match with {jobCountLabel} live jobs and let us apply
+            for you. For businesses, executives and boards: secretariat, governance and
+            board-ready documents prepared to your brand. One hub, one accountable contact.
           </motion.p>
 
           <motion.div
@@ -299,12 +297,17 @@ export function AnimatedHero({ jobCount }: { jobCount: number }) {
             transition={{ duration: 0.6, ease: EASE, delay: 0.55 }}
             className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start"
           >
+            <Link href="/services">
+              <Button size="lg">Business &amp; Board Services</Button>
+            </Link>
             <Link href="/signup">
-              <Button size="lg">Build or Upload My CV</Button>
+              <Button size="lg" variant="outline">
+                Build or Upload My CV
+              </Button>
             </Link>
             <Link href="/jobs">
               <Button size="lg" variant="outline">
-                Browse {jobCountLabel} Jobs
+                Browse Jobs
               </Button>
             </Link>
           </motion.div>

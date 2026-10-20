@@ -12,7 +12,7 @@ const NAV_LINKS = [
   { href: "/jobs", label: "Jobs" },
   { href: "/#career-coach", label: "Career Coach" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/services", label: "Business Services" },
+  { href: "/services", label: "Services" },
   { href: "/#employers", label: "For Employers", accent: true },
 ];
 
@@ -49,15 +49,15 @@ export function SiteHeaderClient({ isSignedIn }: { isSignedIn: boolean }) {
         <Link href="/" onClick={() => setMenuOpen(false)}>
           <Logo tagline />
         </Link>
-        <nav className="hidden items-center gap-1 rounded-md border border-slate-200 bg-slate-50 p-1 text-sm font-semibold text-slate-700 md:flex">
+        <nav className="hidden items-center gap-0.5 rounded-md border border-slate-200 bg-slate-50 p-1 text-sm font-semibold text-slate-700 xl:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.label}
               href={link.href}
               className={
                 link.accent
-                  ? "rounded-sm px-3 py-1.5 text-accent-600 transition-colors hover:bg-white hover:text-accent-700 hover:shadow-sm"
-                  : "rounded-sm px-3 py-1.5 transition-colors hover:bg-white hover:text-brand-700 hover:shadow-sm"
+                  ? "whitespace-nowrap rounded-sm px-2.5 py-1.5 text-accent-600 transition-colors hover:bg-white hover:text-accent-700 hover:shadow-sm"
+                  : "whitespace-nowrap rounded-sm px-2.5 py-1.5 transition-colors hover:bg-white hover:text-brand-700 hover:shadow-sm"
               }
             >
               {link.label}
@@ -85,7 +85,7 @@ export function SiteHeaderClient({ isSignedIn }: { isSignedIn: boolean }) {
             onClick={() => setMenuOpen((open) => !open)}
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
-            className="-mr-1.5 flex h-9 w-9 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 md:hidden"
+            className="-mr-1.5 flex h-9 w-9 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 xl:hidden"
           >
             {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -93,7 +93,7 @@ export function SiteHeaderClient({ isSignedIn }: { isSignedIn: boolean }) {
       </div>
 
       {menuOpen && (
-        <div className="border-t border-slate-200 bg-white px-4 py-4 md:hidden">
+        <div className="border-t border-slate-200 bg-white px-4 py-4 xl:hidden">
           <nav className="flex flex-col gap-1 text-sm font-medium text-slate-700">
             {NAV_LINKS.map((link) => (
               <Link

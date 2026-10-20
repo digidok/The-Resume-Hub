@@ -28,8 +28,9 @@ export function SiteFooter() {
           <div className="col-span-2 sm:col-span-1">
             <Logo variant="inverse" tagline />
             <p className="mt-3 max-w-[16rem] text-sm text-slate-400">
-              CVs, job matching, and AI-assisted applications for candidates across South Africa,
-              the Middle East, Asia, and beyond.
+              One hub for documents, CVs, job matching and business support: executive secretariat,
+              board and governance documents, and career tools for candidates across South Africa
+              and beyond.
             </p>
           </div>
           <div>
@@ -87,7 +88,7 @@ export function SiteFooter() {
           </div>
         </div>
         <p className="mt-10 border-t border-white/10 pt-6 text-center text-sm text-slate-500">
-          © {new Date().getFullYear()} Resume Hub
+          © {new Date().getFullYear()} The Resume Document Hub
         </p>
       </div>
     </footer>
