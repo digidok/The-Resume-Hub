@@ -17,6 +17,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { whatsappLink } from "@/lib/whatsapp-contacts";
 
 export const metadata = {
   title: "Business & Executive Services — Resume Hub",
@@ -24,8 +25,15 @@ export const metadata = {
     "One point of contact for business registration, administration, branding, executive documentation, board packs, governance support and business automation.",
 };
 
-const WHATSAPP_URL =
-  "https://wa.me/27693391915?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20Resume%20Hub%20business%20services";
+const MAIN_URL = whatsappLink("main", "Hi, I'd like to enquire about Resume Hub business services");
+const SMALL_BUSINESS_URL = whatsappLink(
+  "smallBusiness",
+  "Hi, I'd like to enquire about small business services at Resume Hub",
+);
+const CORPORATE_URL = whatsappLink(
+  "corporate",
+  "Hi, I'd like to enquire about corporate and board support at Resume Hub",
+);
 
 type ServiceArea = {
   icon: LucideIcon;
@@ -144,7 +152,15 @@ function AreaCard({ area }: { area: ServiceArea }) {
   );
 }
 
-function PackageGrid({ packages, quoteLabel }: { packages: Package[]; quoteLabel: string }) {
+function PackageGrid({
+  packages,
+  quoteLabel,
+  quoteUrl,
+}: {
+  packages: Package[];
+  quoteLabel: string;
+  quoteUrl: string;
+}) {
   return (
     <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {packages.map((pkg) => (
@@ -162,7 +178,7 @@ function PackageGrid({ packages, quoteLabel }: { packages: Package[]; quoteLabel
           <p className="font-semibold text-slate-900">Need something specific?</p>
           <p className="mt-3 text-sm text-slate-600">{quoteLabel}</p>
         </div>
-        <a href={WHATSAPP_URL} target="_blank" rel="noreferrer">
+        <a href={quoteUrl} target="_blank" rel="noreferrer">
           <Button variant="secondary" className="mt-6 w-full">
             <MessageCircle className="h-4 w-4" />
             Request a quote
@@ -191,7 +207,7 @@ export default function ServicesPage() {
             WhatsApp and one person owns it from quote to delivery.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer">
+            <a href={MAIN_URL} target="_blank" rel="noreferrer">
               <Button size="lg">
                 <MessageCircle className="h-4 w-4" />
                 Chat to your assistant
@@ -273,6 +289,7 @@ export default function ServicesPage() {
             <PackageGrid
               packages={SMALL_BUSINESS_PACKAGES}
               quoteLabel="Tell us what you need and we'll scope a once-off service or a custom monthly plan."
+              quoteUrl={SMALL_BUSINESS_URL}
             />
           </div>
         </section>
@@ -301,6 +318,7 @@ export default function ServicesPage() {
             <PackageGrid
               packages={CORPORATE_PACKAGES}
               quoteLabel="Project-based assignments and corporate retainers are scoped to your needs."
+              quoteUrl={CORPORATE_URL}
             />
             <p className="mx-auto mt-8 max-w-2xl text-center text-xs text-slate-500">
               Prices are indicative. Statutory fees and third-party costs are quoted separately, and
