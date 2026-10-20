@@ -46,6 +46,16 @@ export function ServicesFooter({ whatsappUrl }: { whatsappUrl: string }) {
                   How it works
                 </a>
               </li>
+              <li>
+                <Link href="/dashboard/resumes" className="hover:text-white">
+                  CVs (sign in)
+                </Link>
+              </li>
+              <li>
+                <Link href="/jobs" className="hover:text-white">
+                  Jobs
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
