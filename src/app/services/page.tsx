@@ -162,7 +162,11 @@ function PackageGrid({
   quoteUrl: string;
 }) {
   return (
-    <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div
+      className={`mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 ${
+        packages.length >= 3 ? "lg:grid-cols-4" : "lg:grid-cols-3"
+      }`}
+    >
       {packages.map((pkg) => (
         <Card key={pkg.name} className="p-6">
           <p className="font-semibold text-slate-900">{pkg.name}</p>
@@ -278,7 +282,7 @@ export default function ServicesPage() {
               start-ups across South Africa. Pay once off for a single service, or subscribe monthly
               for ongoing support.
             </p>
-            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 md:[&>*:last-child:nth-child(odd)]:col-span-2">
               {SMALL_BUSINESS_AREAS.map((area) => (
                 <AreaCard key={area.title} area={area} />
               ))}
@@ -307,7 +311,7 @@ export default function ServicesPage() {
               accountability. For corporate engagements, monthly retainers and project-based
               assignments.
             </p>
-            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 md:[&>*:last-child:nth-child(odd)]:col-span-2">
               {CORPORATE_AREAS.map((area) => (
                 <AreaCard key={area.title} area={area} />
               ))}
