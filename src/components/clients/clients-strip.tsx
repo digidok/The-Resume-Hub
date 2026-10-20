@@ -3,9 +3,9 @@ import { ClientLogo } from "@/components/clients/client-logo";
 const CLIENTS = [
   { slug: "mtn", name: "MTN" },
   { slug: "vodacom", name: "Vodacom" },
-  { slug: "sishen-iron-ore-development-trust", name: "Sishen Iron Ore Development Trust" },
+  { slug: "sishen-iron-ore-development-trust", name: "SIOC Community Development Trust" },
   { slug: "south-african-weather-service", name: "South African Weather Service" },
-  { slug: "jindal-mining", name: "Jindal Mining" },
+  { slug: "jindal-mining", name: "Jindal Africa" },
   { slug: "eskom", name: "Eskom" },
 ];
 
