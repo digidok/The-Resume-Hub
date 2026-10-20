@@ -45,7 +45,7 @@ const FAQ_GROUPS = [
       },
       {
         q: "Does AI ever apply for jobs without checking with me first?",
-        a: "Only if you turn on scheduled auto-apply and set your keywords. It then applies daily to new matching open jobs using the resume you chose, and emails you every time it does. You can turn it off at any time.",
+        a: "Only if you turn on scheduled auto-apply and set your keywords. Each day it applies to new matching jobs posted directly on Resume Hub using the resume you chose. For matching jobs on employers' own sites it prepares a tailored CV and cover letter for you to review and submit yourself; nothing is sent to those employers for you. You are emailed whenever either happens. You can turn it off at any time.",
       },
     ],
   },

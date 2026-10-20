@@ -123,24 +123,41 @@ export function AiGeneratorPanel({
   resumes,
   initialMatch,
   creditsRemaining,
+  initialGeneration,
 }: {
   job: Job;
   resumes: ResumeOption[];
   initialMatch: JobMatch | null;
   creditsRemaining: number;
+  initialGeneration?: (GenerationResult & { checklist: Checklist }) | null;
 }) {
   const [resumeId, setResumeId] = useState(resumes[0]?.id ?? "");
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [generation, setGeneration] = useState<GenerationResult | null>(null);
-  const [checklist, setChecklist] = useState<Checklist>({
-    resume_reviewed: false,
-    cover_letter_reviewed: false,
-    contact_confirmed: false,
-    work_auth_confirmed: false,
-    salary_confirmed: false,
-    questions_done: false,
-  });
+  const [generation, setGeneration] = useState<GenerationResult | null>(
+    initialGeneration
+      ? {
+          generationId: initialGeneration.generationId,
+          tailoredResumeId: initialGeneration.tailoredResumeId,
+          coverLetterId: initialGeneration.coverLetterId,
+          matchedSkills: initialGeneration.matchedSkills,
+          skillsToAddress: initialGeneration.skillsToAddress,
+          profileMatchPct: initialGeneration.profileMatchPct,
+          tailoredContent: initialGeneration.tailoredContent,
+          coverLetterContent: initialGeneration.coverLetterContent,
+        }
+      : null
+  );
+  const [checklist, setChecklist] = useState<Checklist>(
+    initialGeneration?.checklist ?? {
+      resume_reviewed: false,
+      cover_letter_reviewed: false,
+      contact_confirmed: false,
+      work_auth_confirmed: false,
+      salary_confirmed: false,
+      questions_done: false,
+    }
+  );
   const [docTab, setDocTab] = useState<"resume" | "cover_letter">("resume");
   const [viewMode, setViewMode] = useState<"tailored" | "original" | "compare">("tailored");
   const [submitError, setSubmitError] = useState<string | null>(null);

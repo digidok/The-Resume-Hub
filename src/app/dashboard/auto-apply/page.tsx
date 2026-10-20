@@ -9,7 +9,7 @@ import { UpgradePrompt } from "@/components/subscription/upgrade-prompt";
 
 const TIPS = [
   "Keywords should match how the role is actually titled — \"React Developer\" not just \"Developer\".",
-  "We only apply to jobs already open on the Resume Hub board.",
+  "We apply for you only on jobs posted directly on Resume Hub. For roles on an employer's own site, we prepare a tailored CV and cover letter for you to review and submit yourself. We never claim to have applied when we haven't.",
   "We skip jobs whose posted salary is below your Career Passport's minimum, so we never auto-apply you to something that can't meet your ask.",
   "Turn on the daily scheduled run to keep applying automatically, or run it on demand any time.",
 ];
@@ -31,7 +31,7 @@ export default async function AutoApplyPage() {
     return (
       <UpgradePrompt
         feature="Auto-Apply"
-        description="Automatically apply to open Resume Hub jobs that match your keywords, on demand or on a daily schedule — unlocked with Resume Hub Pro."
+        description="Apply automatically to matching jobs posted on Resume Hub, and get tailored application kits prepared for jobs on employers' own sites, on demand or daily — unlocked with Resume Hub Pro."
       />
     );
   }
@@ -65,9 +65,10 @@ export default async function AutoApplyPage() {
       <BackLink href="/dashboard" label="Dashboard" />
       <h1 className="mb-1 text-3xl font-bold text-slate-900">Auto-apply</h1>
       <p className="mb-6 text-sm text-slate-500">
-        Automatically apply to open Resume Hub jobs that match your keywords — run it now, or
-        turn on the daily scheduled run and we&apos;ll keep applying for you and email you when we
-        do.
+        Applies for you on matching jobs posted directly on Resume Hub, and prepares a tailored
+        CV and cover letter for matching jobs on employers&apos; own sites, which you review and
+        submit yourself. Run it now, or turn on the daily run and we&apos;ll email you when
+        something happens.
       </p>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">

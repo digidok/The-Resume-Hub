@@ -23,6 +23,26 @@ export async function sendReferenceRequestEmail(
   }
 }
 
+export async function sendPreparedKitsEmail(to: string, kitCount: number) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM_EMAIL;
+  if (!apiKey || !from) return;
+
+  const word = kitCount === 1 ? "job" : "jobs";
+  const resend = new Resend(apiKey);
+
+  try {
+    await resend.emails.send({
+      from,
+      to,
+      subject: `${kitCount} application ${kitCount === 1 ? "kit is" : "kits are"} ready for you to review`,
+      html: `<p>Resume Hub prepared a tailored CV and cover letter for ${kitCount} ${word} that match your profile.</p><p><strong>Nothing has been sent to any employer.</strong> These roles are on the employer's own site, so you review the documents and apply there yourself.</p><p><a href="https://www.resumehub.co.za/dashboard/applications">Open your applications</a> to see your prepared kits.</p>`,
+    });
+  } catch (err) {
+    console.error("Prepared kits email send failed", err);
+  }
+}
+
 export async function sendAutoApplyEmail(to: string, appliedCount: number) {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM_EMAIL;
