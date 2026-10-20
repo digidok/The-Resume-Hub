@@ -53,6 +53,13 @@ const MONTHLY_PACKAGES = [
 
 const SERVICE_AREAS = [
   {
+    icon: FileText,
+    title: "Company registration & compliance",
+    description:
+      "For start-ups and entrepreneurs getting a business off the ground across South Africa.",
+    items: ["CIPC company registration assistance — R650"],
+  },
+  {
     icon: Briefcase,
     title: "Everyday business administration",
     description:
@@ -143,6 +150,20 @@ export default function ServicesPage() {
                 info@resumehub.co.za
               </Button>
             </a>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-5xl px-4 pb-10">
+          <div className="rounded-2xl bg-brand-50 p-6 text-center sm:p-8">
+            <h2 className="text-xl font-bold text-slate-900">
+              Business administration &amp; virtual office solutions
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-600">
+              Your one-stop partner for business registration, administration, branding and ongoing
+              business support. We work with entrepreneurs, small businesses, consultants,
+              freelancers and start-ups across South Africa, with individual services, affordable
+              packages and monthly subscriptions to suit how you work.
+            </p>
           </div>
         </section>
 
