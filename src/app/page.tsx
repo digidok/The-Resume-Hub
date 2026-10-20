@@ -33,9 +33,8 @@ import {
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { createClient } from "@/lib/supabase/server";
 import { MatchShowcase } from "@/components/landing/match-showcase";
-import { AnimatedHero } from "@/components/landing/animated-hero";
+import { HubHero } from "@/components/landing/hub-hero";
 import { OpenPositions } from "@/components/landing/open-positions";
 import { AfricaShowcase } from "@/components/landing/africa-showcase";
 import { TemplateCarousel } from "@/components/landing/template-carousel";
@@ -264,18 +263,12 @@ const CAREER_RESOURCES = [
   },
 ];
 
-export default async function Home() {
-  const supabase = await createClient();
-  const { count: jobCount } = await supabase
-    .from("jobs")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "open");
-
+export default function Home() {
   return (
     <div className="flex flex-1 flex-col bg-white">
       <SiteHeader />
       <main className="flex-1">
-        <AnimatedHero jobCount={jobCount ?? 0} />
+        <HubHero />
 
         {/* One hub, two paths */}
         <section id="hub" className="py-16">
@@ -293,30 +286,6 @@ export default async function Home() {
               </p>
             </ScrollReveal>
             <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="flex flex-col rounded-md border border-slate-200 bg-white p-7 shadow-sm">
-                <GraduationCap className="h-7 w-7 text-brand-700" />
-                <h3 className="mt-4 text-xl font-semibold text-slate-900">Individuals &amp; job seekers</h3>
-                <p className="mt-2 text-sm text-slate-600">
-                  Professional CVs, ATS scoring, job matching and scheduled auto-apply, with real
-                  human support.
-                </p>
-                <ul className="mt-5 space-y-2 text-sm text-slate-700">
-                  {["CV builder with 100+ templates", "ATS and keyword checker", "Verified job board and auto-apply", "Cover letters and interview prep"].map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-6 flex flex-wrap gap-3 pt-2">
-                  <Link href="/signup">
-                    <Button>Build or Upload My CV</Button>
-                  </Link>
-                  <Link href="/jobs">
-                    <Button variant="outline">Browse jobs</Button>
-                  </Link>
-                </div>
-              </div>
               <div className="flex flex-col rounded-md bg-brand-950 p-7 text-white shadow-sm">
                 <Building2 className="h-7 w-7 text-accent-400" />
                 <h3 className="mt-4 text-xl font-semibold">Businesses, executives &amp; boards</h3>
@@ -345,6 +314,30 @@ export default async function Home() {
                     className="inline-flex items-center gap-2 rounded-md border border-white/30 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
                   >
                     Start a document request
+                  </Link>
+                </div>
+              </div>
+              <div className="flex flex-col rounded-md border border-slate-200 bg-white p-7 shadow-sm">
+                <GraduationCap className="h-7 w-7 text-brand-700" />
+                <h3 className="mt-4 text-xl font-semibold text-slate-900">Individuals &amp; job seekers</h3>
+                <p className="mt-2 text-sm text-slate-600">
+                  Professional CVs, ATS scoring, job matching and scheduled auto-apply, with real
+                  human support.
+                </p>
+                <ul className="mt-5 space-y-2 text-sm text-slate-700">
+                  {["CV builder with 100+ templates", "ATS and keyword checker", "Verified job board and auto-apply", "Cover letters and interview prep"].map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-6 flex flex-wrap gap-3 pt-2">
+                  <Link href="/signup">
+                    <Button>Build or Upload My CV</Button>
+                  </Link>
+                  <Link href="/jobs">
+                    <Button variant="outline">Browse jobs</Button>
                   </Link>
                 </div>
               </div>
