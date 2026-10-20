@@ -8,15 +8,16 @@ import { Logo } from "@/components/ui/logo";
 import { AskElsButton } from "@/components/ask-els/ask-els-button";
 
 const CAREERS_LINKS = [
+  { href: "/careers", label: "Careers overview", note: "CVs, jobs and career tools" },
   { href: "/signup", label: "Build My CV", note: "Build or upload your CV" },
   { href: "/jobs", label: "Jobs", note: "Verified roles and auto-apply" },
-  { href: "/#career-coach", label: "Career Coach", note: "Interview prep and guidance" },
+  { href: "/careers#career-coach", label: "Career Coach", note: "Interview prep and guidance" },
 ];
 
 const NAV_LINKS = [
   { href: "/pricing", label: "Pricing" },
   { href: "/services", label: "Services" },
-  { href: "/#employers", label: "For Employers", accent: true },
+  { href: "/careers#employers", label: "For Employers", accent: true },
 ];
 
 export function SiteHeaderClient({ isSignedIn }: { isSignedIn: boolean }) {

@@ -1,0 +1,814 @@
+import Link from "next/link";
+import {
+  FileText,
+  Share2,
+  Briefcase,
+  Sparkles,
+  Users,
+  Building2,
+  Check,
+  ArrowRight,
+  ScanSearch,
+  Zap,
+  BellRing,
+  Mail,
+  ShieldCheck,
+  Ban,
+  Clock,
+  Target,
+  ListChecks,
+  Flag,
+  Upload,
+  GraduationCap,
+  LayoutTemplate,
+  TrendingUp,
+  MessageSquare,
+  IdCard,
+  HelpCircle,
+  Crosshair,
+  BarChart3,
+  PenLine,
+  Wand2,
+  RefreshCw,
+} from "lucide-react";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { MatchShowcase } from "@/components/landing/match-showcase";
+import { OpenPositions } from "@/components/landing/open-positions";
+import { AfricaShowcase } from "@/components/landing/africa-showcase";
+import { TemplateCarousel } from "@/components/landing/template-carousel";
+import { Testimonials } from "@/components/landing/testimonials";
+import { JobMatchDemo } from "@/components/landing/job-match-demo";
+import { ApplicationKitDemo } from "@/components/landing/application-kit-demo";
+import { ApplicationPipeline } from "@/components/landing/application-pipeline";
+import { CareerPassportPreview } from "@/components/landing/career-passport-preview";
+import { CareerCoachDemo } from "@/components/landing/career-coach-demo";
+import { HumanSupport } from "@/components/landing/human-support";
+import { EmployerShowcase } from "@/components/landing/employer-showcase";
+import { EmployerFeaturesGrid } from "@/components/landing/employer-features-grid";
+import { SaveJobBookmarklet } from "@/components/landing/save-job-bookmarklet";
+import { JobTrackerTable } from "@/components/landing/job-tracker-table";
+import { ScrollReveal, ScrollStagger } from "@/components/motion/scroll-reveal";
+import { MotionCard } from "@/components/motion/motion-card";
+import { slideInLeft, slideInRight } from "@/components/motion/variants";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
+const FEATURES = [
+  {
+    icon: FileText,
+    title: "Resume builder",
+    description:
+      "Build a polished resume with a live preview, multiple templates, and one-click PDF export.",
+  },
+  {
+    icon: Share2,
+    title: "Shareable profile",
+    description: "Publish a public link to your resume you can drop in any application or DM.",
+  },
+  {
+    icon: Briefcase,
+    title: "Job board",
+    description: "Browse open roles and apply directly with a resume from your Resume Hub library.",
+  },
+  {
+    icon: Sparkles,
+    title: "AI resume review",
+    description:
+      "Get an ATS-style score and concrete feedback, optionally tailored to a specific job description.",
+  },
+  {
+    icon: Zap,
+    title: "Scheduled auto-apply",
+    description:
+      "Set your keywords once and we'll keep applying to new matching jobs every day — and email you when we do.",
+  },
+];
+
+const AUTO_APPLY_POINTS = [
+  "Save your keywords, location, and resume once",
+  "We check for new matching jobs every day — no manual searching",
+  "Get an email the moment we apply for you",
+];
+
+const STEPS = [
+  {
+    icon: Upload,
+    title: "Upload or build your CV",
+    description: "Import an existing CV or build one from scratch with our AI-powered editor.",
+  },
+  {
+    icon: Target,
+    title: "Match with jobs",
+    description: "Our AI scores your fit for every open role — real percentages, not guesswork.",
+  },
+  {
+    icon: Zap,
+    title: "Auto-apply for you",
+    description: "Turn on scheduled auto-apply and let Resume Hub keep applying on your behalf.",
+  },
+];
+
+const TRUST_POINTS = [
+  {
+    icon: ShieldCheck,
+    title: "We avoid scams and junk",
+    description: "We verify 100% of the job listings on our board before candidates ever see them.",
+  },
+  {
+    icon: Ban,
+    title: "High-quality listings, no ads",
+    description: "No sponsored clutter or filler posts — just real, verified roles worth applying to.",
+  },
+  {
+    icon: Clock,
+    title: "Save time and hassle",
+    description: "Auto-apply handles the repetitive searching and applying so you don't have to.",
+  },
+  {
+    icon: Target,
+    title: "Jobs that actually align",
+    description: "Matching is based on your real skills and experience, not just keyword stuffing.",
+  },
+  {
+    icon: ListChecks,
+    title: "Personalised application tracking",
+    description: "See exactly where every application stands, from submitted to hired.",
+  },
+  {
+    icon: Flag,
+    title: "The first of its kind in Africa",
+    description: "Resume Hub is the first scheduled auto-apply service built for the African job market.",
+  },
+];
+
+const CAREER_PASSPORT_POINTS = [
+  {
+    icon: IdCard,
+    title: "One profile, every application",
+    description: "Skills, target roles, qualifications, and links — captured once.",
+  },
+  {
+    icon: Target,
+    title: "Powers your real match score",
+    description: "Job matching and \"Am I qualified?\" checks are based on your actual profile.",
+  },
+  {
+    icon: FileText,
+    title: "Auto-fills your CV and cover letters",
+    description: "Start every new document from your Career Passport instead of a blank page.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Update once, stay in sync",
+    description: "Change your profile and every document that references it stays current.",
+  },
+];
+
+const AI_TOOLS = [
+  {
+    icon: Crosshair,
+    title: "Tailor CV to the Job",
+    description: "Quickly match and align your existing CV to any job description.",
+    href: "/dashboard/resumes",
+  },
+  {
+    icon: BarChart3,
+    title: "ATS & Keyword Checker",
+    description: "Check your CV score and keyword coverage against the job you want.",
+    href: "/dashboard/ats-scanner",
+  },
+  {
+    icon: PenLine,
+    title: "AI Bullet Point Generator",
+    description: "Generate metric-focused bullet points for your biggest achievements.",
+    href: "/dashboard/resumes",
+  },
+  {
+    icon: Wand2,
+    title: "AI Summary Generator",
+    description: "Turn your experience into a tailored, attention-grabbing summary.",
+    href: "/dashboard/resumes",
+  },
+];
+
+const APPLYING_STEPS = [
+  "Get a referral if you can — it's the fastest way to stand out",
+  "Customize your CV for this specific role",
+  "Write a tailored cover letter — Resume Hub drafts one for you",
+  "Prep for the interview with AI-suggested talking points",
+];
+
+const REVIEW_CHECKS = [
+  "ATS keyword coverage against the job description",
+  "Clear, quantified impact statements",
+  "Formatting and structure that pass automated screens",
+];
+
+const CAREER_RESOURCES = [
+  {
+    icon: GraduationCap,
+    title: "Career Blog",
+    description: "Job search strategies, CV tips, and career advice from our team.",
+    href: "/blog",
+  },
+  {
+    icon: Briefcase,
+    title: "Job Board",
+    description: "Browse verified, scam-free job listings across South Africa.",
+    href: "/jobs",
+  },
+  {
+    icon: LayoutTemplate,
+    title: "Resume Templates",
+    description: "10+ professionally designed templates for every industry and role.",
+    href: "/signup",
+  },
+  {
+    icon: Mail,
+    title: "Cover Letter Builder",
+    description: "AI-tailored cover letters generated for the exact job you're applying to.",
+    href: "/signup",
+  },
+  {
+    icon: ScanSearch,
+    title: "ATS Score Checker",
+    description: "See exactly how applicant tracking systems read your CV before you apply.",
+    href: "/dashboard/ats-scanner",
+  },
+  {
+    icon: TrendingUp,
+    title: "Salary Insights",
+    description: "AI-estimated salary ranges by role, industry, and location.",
+    href: "/dashboard/salary-insights",
+  },
+  {
+    icon: MessageSquare,
+    title: "Mock Interview Practice",
+    description: "Practice real interview questions with an AI-driven mock interview.",
+    href: "/dashboard/mock-interview",
+  },
+  {
+    icon: IdCard,
+    title: "Career Passport",
+    description: "Build your career profile once — reuse it across every application.",
+    href: "/dashboard/career-passport",
+  },
+  {
+    icon: HelpCircle,
+    title: "Help Center",
+    description: "Answers to common questions about using Resume Hub.",
+    href: "/faq",
+  },
+];
+
+export const metadata = {
+  title: "Careers — CVs, Jobs and Career Tools — The Resume Document Hub",
+  description:
+    "Build a professional CV, match with verified jobs, auto-apply and prepare for interviews with The Resume Document Hub.",
+};
+
+export default function CareersPage() {
+  return (
+    <div className="flex flex-1 flex-col bg-white">
+      <SiteHeader />
+      <main className="flex-1">
+        <section className="bg-slate-50 py-16 text-center">
+          <div className="mx-auto max-w-3xl px-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-accent-600">Careers</p>
+            <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+              CVs, jobs and career tools
+            </h1>
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
+              Build a professional CV, match with verified jobs and let us help you apply. Part of
+              The Resume Document Hub.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link href="/signup">
+                <Button size="lg">Build or Upload My CV</Button>
+              </Link>
+              <Link href="/jobs">
+                <Button size="lg" variant="outline">
+                  Browse Jobs
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Every tool, front and centre */}
+        <section className="border-y border-slate-200 bg-slate-50 py-16">
+          <div className="mx-auto max-w-5xl px-4">
+            <ScrollReveal className="mx-auto max-w-2xl text-center">
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                Everything you need for the job search, in one place.
+              </h2>
+              <p className="mt-2 text-slate-600">
+                CV builder, ATS scoring, mock interviews, salary insights, and more.
+              </p>
+            </ScrollReveal>
+            <ScrollStagger className="mt-10 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+              {CAREER_RESOURCES.map((resource) => (
+                <MotionCard key={resource.title}>
+                  <Link href={resource.href} className="group flex items-start gap-3">
+                    <resource.icon className="mt-0.5 h-5 w-5 shrink-0 text-brand-600" />
+                    <div>
+                      <h3 className="text-base font-semibold text-slate-900 group-hover:text-brand-700">
+                        {resource.title}
+                      </h3>
+                      <p className="mt-1 text-sm text-slate-600">{resource.description}</p>
+                    </div>
+                  </Link>
+                </MotionCard>
+              ))}
+            </ScrollStagger>
+          </div>
+        </section>
+
+        {/* Interactive template picker */}
+        <section className="py-16">
+          <div className="mx-auto max-w-5xl px-4">
+            <ScrollReveal className="mx-auto max-w-2xl text-center">
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                Pick a template that gets you noticed.
+              </h2>
+              <p className="mt-2 text-slate-600">
+                100+ professionally designed templates. Browse a few, or see the full library.
+              </p>
+            </ScrollReveal>
+            <div className="mt-10">
+              <TemplateCarousel />
+            </div>
+          </div>
+        </section>
+
+        <OpenPositions />
+
+        <AfricaShowcase />
+
+        {/* Page 2: Application tracking */}
+        <section id="pipeline" className="mx-auto max-w-5xl px-4 pb-20 pt-24 sm:pt-28">
+          <ScrollReveal className="mx-auto max-w-2xl text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              Never lose track of an opportunity.
+            </h2>
+            <p className="mt-2 text-slate-600">
+              Every application, tracked from saved to hired.
+            </p>
+          </ScrollReveal>
+          <div className="mt-14">
+            <ApplicationPipeline />
+          </div>
+          <ScrollReveal delay={0.15} className="mt-14">
+            <p className="mx-auto max-w-2xl text-center text-sm text-slate-600">
+              What that looks like on your dashboard — organised, with reminders built in.
+            </p>
+            <div className="mt-8">
+              <JobTrackerTable />
+            </div>
+          </ScrollReveal>
+        </section>
+
+        {/* Page 3: Trust, save-anywhere, how it works */}
+        <section className="border-y border-slate-200 bg-slate-50 py-20">
+          <div className="mx-auto max-w-5xl px-4">
+            <ScrollReveal className="mx-auto max-w-2xl text-center">
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                Why job seekers trust Resume Hub
+              </h2>
+              <p className="mt-2 text-slate-600">
+                Built to save you time and protect you from the scams and noise on other job boards.
+              </p>
+            </ScrollReveal>
+            <ScrollStagger className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {TRUST_POINTS.map((point) => (
+                <MotionCard key={point.title}>
+                  <Card className="border-0 border-l-[3px] border-brand-400 bg-gradient-to-br from-white to-brand-50/50 p-6 shadow-sm">
+                    <div className="flex items-center gap-2.5">
+                      <point.icon className="h-5 w-5 shrink-0 text-brand-600" />
+                      <h3 className="text-base font-semibold text-slate-900">{point.title}</h3>
+                    </div>
+                    <p className="mt-2 text-sm text-slate-600">{point.description}</p>
+                  </Card>
+                </MotionCard>
+              ))}
+            </ScrollStagger>
+
+            <div className="mt-16 border-t border-slate-200 pt-16">
+              <SaveJobBookmarklet />
+            </div>
+
+            <div className="mt-16 border-t border-slate-200 pt-16">
+              <ScrollReveal className="mx-auto max-w-2xl text-center">
+                <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                  How It Works
+                </h2>
+                <p className="mt-2 text-slate-600">
+                  Three simple steps to revolutionise your job search.
+                </p>
+              </ScrollReveal>
+              <ScrollStagger className="mt-12 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-3">
+                {STEPS.map((step, i) => (
+                  <MotionCard key={step.title}>
+                    <div>
+                      <div className="flex items-baseline gap-3">
+                        <span className="text-4xl font-bold text-brand-200">0{i + 1}</span>
+                        <step.icon className="h-5 w-5 text-brand-600" />
+                      </div>
+                      <h3 className="mt-3 text-base font-semibold text-slate-900">{step.title}</h3>
+                      <p className="mt-1.5 text-sm text-slate-600">{step.description}</p>
+                    </div>
+                  </MotionCard>
+                ))}
+              </ScrollStagger>
+            </div>
+          </div>
+        </section>
+
+        {/* Page 4: Job match, ATS review, auto-apply */}
+        <section id="job-match" className="mx-auto max-w-5xl px-4 py-20">
+          <ScrollReveal className="mx-auto max-w-2xl text-center">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              Stop applying blindly.
+            </h2>
+            <p className="mt-2 text-slate-600">Know how well you match before you apply.</p>
+          </ScrollReveal>
+          <div className="mt-12">
+            <JobMatchDemo />
+          </div>
+
+          <div className="mt-20 grid grid-cols-1 items-center gap-12 border-t border-slate-200 pt-16 lg:grid-cols-2">
+            <ScrollReveal variants={slideInLeft}>
+              <ScanSearch className="h-7 w-7 text-brand-600" />
+              <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">
+                Know exactly where your resume stands
+              </h2>
+              <p className="mt-2 text-slate-600">
+                Run it through Resume Hub&apos;s AI review before you hit submit. It checks the
+                things applicant tracking systems actually look for.
+              </p>
+              <ul className="mt-5 space-y-2.5">
+                {REVIEW_CHECKS.map((check) => (
+                  <li key={check} className="flex items-start gap-2.5 text-sm text-slate-700">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
+                    {check}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/signup">
+                <Button className="mt-6">
+                  Try the AI review
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </ScrollReveal>
+            <ScrollReveal variants={slideInRight} delay={0.15}>
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold text-slate-900">ATS review</p>
+                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                    87 / 100
+                  </span>
+                </div>
+                <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                  <div className="h-2 w-[87%] rounded-full bg-brand-600" />
+                </div>
+                <div className="mt-5 space-y-3 text-sm">
+                  <div className="flex items-start gap-2 rounded-lg bg-emerald-50 p-3 text-emerald-800">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0" />
+                    Strong quantified achievements in your last two roles
+                  </div>
+                  <div className="flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-amber-800">
+                    <Sparkles className="mt-0.5 h-4 w-4 shrink-0" />
+                    Add 3-4 more keywords from the job description
+                  </div>
+                </div>
+              </Card>
+            </ScrollReveal>
+          </div>
+
+          <div className="mt-20 grid grid-cols-1 items-center gap-12 border-t border-slate-200 pt-16 lg:grid-cols-2">
+            <ScrollReveal variants={slideInLeft} className="order-2 lg:order-1">
+              <Card className="p-6">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-500 text-white">
+                    <BellRing className="h-4 w-4" />
+                  </span>
+                  <span className="text-xs font-medium text-slate-400">Just now</span>
+                </div>
+                <p className="mt-3 text-sm font-semibold text-slate-900">
+                  Auto-apply found new matches
+                </p>
+                <p className="mt-1 text-sm text-slate-600">
+                  Resume Hub auto-applied to 3 new jobs for you.
+                </p>
+                <div className="mt-4 space-y-2">
+                  {[
+                    ["Frontend Engineer", "Acme Robotics"],
+                    ["Product Designer", "Northwind Labs"],
+                    ["React Developer", "Globex Software"],
+                  ].map(([role, company]) => (
+                    <div
+                      key={role}
+                      className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-xs"
+                    >
+                      <span className="font-medium text-slate-700">{role}</span>
+                      <span className="text-slate-400">{company}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 flex items-center gap-1.5 text-xs font-medium text-brand-700">
+                  <Mail className="h-3.5 w-3.5" />
+                  Emailed to you
+                </div>
+              </Card>
+            </ScrollReveal>
+            <ScrollReveal variants={slideInRight} delay={0.15} className="order-1 lg:order-2">
+              <Zap className="h-7 w-7 text-brand-600" />
+              <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">
+                Let auto-apply do the searching for you
+              </h2>
+              <p className="mt-2 text-slate-600">
+                Turn on scheduled auto-apply once, and Resume Hub keeps applying to new
+                matching jobs on your behalf — even when you&apos;re not looking.
+              </p>
+              <ul className="mt-5 space-y-2.5">
+                {AUTO_APPLY_POINTS.map((point) => (
+                  <li key={point} className="flex items-start gap-2.5 text-sm text-slate-700">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/signup">
+                <Button variant="secondary" className="mt-6">
+                  Turn on auto-apply
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </ScrollReveal>
+          </div>
+        </section>
+
+        {/* Page 5: Application kit + career coach (dark) */}
+        <section id="application-kit" className="bg-brand-950 py-20">
+          <div className="mx-auto max-w-5xl px-4">
+            <ScrollReveal className="mx-auto max-w-2xl text-center">
+              <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                One job.
+                <br />
+                One complete application.
+              </h2>
+              <p className="mt-2 text-white/70">
+                Tailored CV, cover letter, recruiter message and interview prep — built together.
+              </p>
+            </ScrollReveal>
+            <div className="mt-12">
+              <ApplicationKitDemo />
+            </div>
+            <ScrollReveal className="mx-auto mt-14 max-w-2xl">
+              <p className="text-center text-xs font-semibold uppercase tracking-wide text-white/50">
+                Applying steps
+              </p>
+              <ul className="mt-4 space-y-2.5">
+                {APPLYING_STEPS.map((step) => (
+                  <li key={step} className="flex items-start gap-2.5 text-sm text-white/80">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-400" />
+                    {step}
+                  </li>
+                ))}
+              </ul>
+            </ScrollReveal>
+
+            <div id="career-coach" className="mt-20 border-t border-white/10 pt-16">
+              <ScrollReveal className="mx-auto max-w-2xl text-center">
+                <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                  Meet your career coach.
+                </h2>
+                <p className="mt-2 text-white/70">
+                  Straight answers about your CV, your search, and your next move.
+                </p>
+              </ScrollReveal>
+              <div className="mt-12">
+                <CareerCoachDemo />
+              </div>
+              <ScrollStagger className="mx-auto mt-14 grid max-w-3xl grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+                {AI_TOOLS.map((tool) => (
+                  <MotionCard key={tool.title}>
+                    <Link href={tool.href} className="group flex items-start gap-3">
+                      <tool.icon className="mt-0.5 h-5 w-5 shrink-0 text-brand-400" />
+                      <div>
+                        <h3 className="text-sm font-semibold text-white group-hover:text-brand-300">
+                          {tool.title}
+                        </h3>
+                        <p className="mt-1 text-sm text-white/70">{tool.description}</p>
+                      </div>
+                    </Link>
+                  </MotionCard>
+                ))}
+              </ScrollStagger>
+            </div>
+          </div>
+        </section>
+
+        {/* Page 6: Career Passport, features, resources */}
+        <section id="features" className="border-y border-slate-200 bg-slate-50 py-20">
+          <div className="mx-auto max-w-5xl px-4">
+            <ScrollReveal className="mx-auto max-w-2xl text-center">
+              <span className="inline-block rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+                Career Passport
+              </span>
+              <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                Your career should never start from zero.
+              </h2>
+              <p className="mt-2 text-slate-600">
+                Build your Career Passport once — Resume Hub uses it everywhere else.
+              </p>
+            </ScrollReveal>
+            <div className="mt-12 grid grid-cols-1 gap-10 lg:grid-cols-5 lg:items-center">
+              <ScrollReveal variants={slideInLeft} className="lg:col-span-2">
+                <ul className="space-y-5">
+                  {CAREER_PASSPORT_POINTS.map((point) => (
+                    <li key={point.title} className="flex items-start gap-3">
+                      <point.icon className="mt-0.5 h-5 w-5 shrink-0 text-brand-600" />
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">{point.title}</p>
+                        <p className="mt-0.5 text-sm text-slate-600">{point.description}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/dashboard/career-passport">
+                  <Button className="mt-6">Build your Career Passport</Button>
+                </Link>
+              </ScrollReveal>
+              <ScrollReveal variants={slideInRight} delay={0.15} className="lg:col-span-3">
+                <CareerPassportPreview />
+              </ScrollReveal>
+            </div>
+
+            <div className="mt-16 border-t border-slate-200 pt-16">
+              <ScrollReveal className="mx-auto max-w-2xl text-center">
+                <span className="inline-block rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+                  Powerful Features
+                </span>
+                <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                  Everything you need to{" "}
+                  <span className="text-brand-600">move from job seeker to job offer</span>.
+                </h2>
+                <p className="mt-2 text-slate-600">
+                  One place to build your resume, share it, and put it in front of real employers.
+                </p>
+              </ScrollReveal>
+              <ScrollStagger className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {FEATURES.map((feature) => (
+                  <MotionCard key={feature.title}>
+                    <Card className="border-0 border-t-[3px] border-brand-500 bg-gradient-to-br from-white to-brand-50/40 p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-brand-500/10">
+                      <feature.icon className="h-6 w-6 text-brand-600" />
+                      <h3 className="mt-3 text-lg font-semibold text-slate-900">{feature.title}</h3>
+                      <p className="mt-2 text-sm text-slate-600">{feature.description}</p>
+                    </Card>
+                  </MotionCard>
+                ))}
+              </ScrollStagger>
+            </div>
+          </div>
+        </section>
+
+        {/* Page 7: Human support, candidate experience, who it's for */}
+        <section className="border-y border-slate-200 bg-brand-50 py-20">
+          <div className="mx-auto max-w-5xl px-4">
+            <ScrollReveal className="mx-auto max-w-2xl text-center">
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                AI when you want it.
+                <br />
+                Humans when you need them.
+              </h2>
+              <p className="mt-2 text-slate-600">
+                Resume Hub pairs always-on AI with real Resume Specialists on WhatsApp.
+              </p>
+            </ScrollReveal>
+            <div className="mt-12">
+              <HumanSupport />
+            </div>
+
+            <div className="mt-16 border-t border-brand-200/60 pt-16">
+              <ScrollReveal className="mx-auto max-w-2xl text-center">
+                <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                  Explore the candidate experience
+                </h2>
+                <p className="mt-2 text-slate-600">
+                  From match score to interview to offer — click through what candidates actually see.
+                </p>
+              </ScrollReveal>
+              <div className="mt-12">
+                <MatchShowcase />
+              </div>
+            </div>
+
+            <ScrollStagger
+              className="mt-16 grid grid-cols-1 gap-6 border-t border-brand-200/60 pt-16 sm:grid-cols-2"
+              staggerChildren={0.15}
+            >
+              <MotionCard>
+                <Card className="border-0 border-b-[3px] border-brand-500 bg-gradient-to-br from-white to-brand-50/40 p-6">
+                  <div className="flex items-center gap-2.5">
+                    <Users className="h-5 w-5 text-brand-600" />
+                    <h3 className="text-lg font-semibold text-slate-900">For candidates</h3>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-600">
+                    Build a standout resume, get AI feedback tailored to the job you want, and apply
+                    without leaving the platform.
+                  </p>
+                  <Link
+                    href="/signup"
+                    className="mt-4 inline-block text-sm font-medium text-brand-700 hover:text-brand-600"
+                  >
+                    Get started as a candidate →
+                  </Link>
+                </Card>
+              </MotionCard>
+              <MotionCard>
+                <Card className="border-0 border-b-[3px] border-accent-500 bg-gradient-to-br from-white to-accent-50/40 p-6">
+                  <div className="flex items-center gap-2.5">
+                    <Building2 className="h-5 w-5 text-accent-600" />
+                    <h3 className="text-lg font-semibold text-slate-900">For employers</h3>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-600">
+                    Post roles, review applicants with structured scorecards, and manage the full
+                    hiring pipeline from one dashboard.
+                  </p>
+                  <Link
+                    href="/signup"
+                    className="mt-4 inline-block text-sm font-medium text-brand-700 hover:text-brand-600"
+                  >
+                    Get started as an employer →
+                  </Link>
+                </Card>
+              </MotionCard>
+            </ScrollStagger>
+          </div>
+        </section>
+
+        <Testimonials />
+
+        {/* Page 8: Employers + closing CTAs */}
+        <section id="employers" className="bg-white py-20">
+          <div className="mx-auto max-w-5xl px-4">
+            <EmployerShowcase />
+            <div className="mt-16">
+              <EmployerFeaturesGrid />
+            </div>
+
+            <div className="mt-16 border-t border-slate-200 pt-16">
+              <ScrollReveal className="mx-auto max-w-3xl rounded-3xl bg-gradient-to-br from-brand-50 to-accent-50/60 p-8 text-center shadow-sm sm:p-10">
+                <h2 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+                  Ready to find your next great hire?
+                </h2>
+                <p className="mx-auto mt-2 max-w-xl text-sm text-slate-600">
+                  Post your first job and start connecting with candidates actively building their
+                  careers on Resume Hub.
+                </p>
+                <Link href="/signup">
+                  <Button className="mt-5">Post Your First Job — Free</Button>
+                </Link>
+              </ScrollReveal>
+            </div>
+          </div>
+
+          <div className="relative mt-16 overflow-hidden bg-gradient-to-br from-brand-800 via-brand-900 to-brand-950 py-20">
+            <div
+              className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-brand-400/20 blur-3xl"
+              aria-hidden="true"
+            />
+            <div
+              className="absolute -top-16 right-0 h-64 w-64 rounded-full bg-accent-500/20 blur-3xl"
+              aria-hidden="true"
+            />
+            <ScrollReveal className="relative mx-auto max-w-3xl px-4 text-center">
+              <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                Your next opportunity starts here.
+              </h2>
+              <p className="mx-auto mt-3 max-w-xl text-white/80">
+                Plans from R99/month — build your CV and start applying today.
+              </p>
+              <Link href="/signup">
+                <Button size="lg" variant="solidInverse" className="mt-6">
+                  Build My CV
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <p className="mt-4 text-sm text-white/70">
+                Not ready for a full CV yet?{" "}
+                <Link href="/interview-ready?utm_source=rh_homepage" className="font-medium text-white underline underline-offset-2 hover:text-white/90">
+                  Get your free interview prep plan
+                </Link>
+              </p>
+            </ScrollReveal>
+          </div>
+        </section>
+      </main>
+      <SiteFooter />
+    </div>
+  );
+}

@@ -24,7 +24,7 @@ export function SiteFooter() {
   return (
     <footer className="bg-brand-950 py-14 text-slate-400">
       <div className="mx-auto max-w-5xl px-4">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-[1.7fr_1fr_1fr_1.3fr]">
           <div className="col-span-2 sm:col-span-1">
             <Logo variant="inverse" tagline />
             <p className="mt-3 max-w-[16rem] text-sm text-slate-400">
