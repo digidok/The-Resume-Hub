@@ -4,7 +4,7 @@ import { SidebarShell } from "@/components/dashboard/sidebar-shell";
 import { SidebarPlanCard } from "@/components/dashboard/sidebar-plan-card";
 import { SidebarFooter } from "@/components/dashboard/sidebar-footer";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
-import { DashboardNav, type NavGroup } from "@/components/dashboard/nav";
+import { DashboardNav, type NavGroup, type NavItem } from "@/components/dashboard/nav";
 import { hasUnlimitedCredits } from "@/lib/credits";
 
 export default async function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
@@ -62,6 +62,28 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
     pendingWhatsAppReviewCount = count ?? 0;
   }
 
+  // Business dashboard: team sees the hub; clients see "Business" once anything is linked to their email.
+  let newBusinessRequests = 0;
+  let hasBusinessData = false;
+  const userEmail = user.email?.toLowerCase();
+  if (role === "admin") {
+    const { count } = await supabase
+      .from("studio_requests")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "new");
+    newBusinessRequests = count ?? 0;
+  }
+  if (userEmail) {
+    const [{ count: reqCount }, { count: retCount }] = await Promise.all([
+      supabase.from("studio_requests").select("id", { count: "exact", head: true }).eq("email", userEmail),
+      supabase.from("business_retainers").select("id", { count: "exact", head: true }).eq("client_email", userEmail),
+    ]);
+    hasBusinessData = (reqCount ?? 0) + (retCount ?? 0) > 0;
+  }
+  const businessNavItem: NavItem[] = hasBusinessData
+    ? [{ href: "/dashboard/business", label: "My business", icon: "Briefcase" }]
+    : [];
+
   let hasLinkedInCopyPack = false;
   if (role === "candidate" || role === "admin") {
     const { count } = await supabase
@@ -89,6 +111,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       label: "Main",
       items: [
         { href: "/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
+        ...businessNavItem,
         { href: "/dashboard/connections", label: "Connections", icon: "UserPlus", badge: pendingConnectionsCount ?? 0 },
         { href: "/jobs", label: "Find jobs", icon: "Search" },
         { href: "/dashboard/applications", label: "Applications", icon: "ClipboardList", badge: candidateBadges.applications },
@@ -134,6 +157,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       label: "Main",
       items: [
         { href: "/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
+        ...businessNavItem,
         { href: "/dashboard/connections", label: "Connections", icon: "UserPlus", badge: pendingConnectionsCount ?? 0 },
         { href: "/dashboard/jobs", label: "My job posts", icon: "Briefcase" },
         { href: "/dashboard/jobs/new", label: "Post a job", icon: "PlusSquare" },
@@ -163,6 +187,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       label: "Platform",
       items: [
         { href: "/dashboard/admin", label: "Platform overview", icon: "LayoutDashboard" },
+        { href: "/dashboard/admin/business", label: "Business hub", icon: "Building2", badge: newBusinessRequests },
         { href: "/dashboard/admin/whatsapp-orders", label: "WhatsApp orders", icon: "MessageCircle", badge: pendingWhatsAppReviewCount ?? 0 },
         { href: "/dashboard/admin/users", label: "Users", icon: "Users" },
         { href: "/dashboard/admin/jobs", label: "Jobs", icon: "Briefcase" },

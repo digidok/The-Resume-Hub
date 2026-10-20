@@ -31,6 +31,7 @@ import {
   Newspaper,
   UserPlus,
   Receipt,
+  Building2,
 } from "lucide-react";
 import { useSidebarCollapsed } from "@/components/dashboard/sidebar-context";
 
@@ -67,6 +68,7 @@ const ICONS = {
   Newspaper,
   UserPlus,
   Receipt,
+  Building2,
 } as const;
 
 export type NavIconName = keyof typeof ICONS;
