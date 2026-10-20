@@ -273,24 +273,34 @@ export default function CareersPage() {
     <div className="flex flex-1 flex-col bg-white">
       <SiteHeader />
       <main className="flex-1">
-        <section className="bg-slate-50 py-16 text-center">
-          <div className="mx-auto max-w-3xl px-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-accent-600">Careers</p>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+        <section className="relative overflow-hidden bg-brand-950 py-16 text-center text-white sm:py-20">
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(184,147,63,0.18),transparent_55%)]"
+          />
+          <div className="relative mx-auto max-w-3xl px-4">
+            <p className="inline-block rounded-sm border border-accent-400/50 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-accent-400">
+              Careers
+            </p>
+            <h1 className="mt-5 text-3xl font-bold tracking-tight sm:text-5xl">
               CVs, jobs and career tools
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-300">
               Build a professional CV, match with verified jobs and let us help you apply. Part of
               The Resume Document Hub.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link href="/signup">
-                <Button size="lg">Build or Upload My CV</Button>
+              <Link
+                href="/signup"
+                className="inline-flex items-center gap-2 rounded-md bg-accent-400 px-6 py-3 text-sm font-semibold text-brand-950 hover:bg-accent-50"
+              >
+                Build or Upload My CV
               </Link>
-              <Link href="/jobs">
-                <Button size="lg" variant="outline">
-                  Browse Jobs
-                </Button>
+              <Link
+                href="/jobs"
+                className="inline-flex items-center gap-2 rounded-md border border-white/30 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10"
+              >
+                Browse Jobs
               </Link>
             </div>
           </div>

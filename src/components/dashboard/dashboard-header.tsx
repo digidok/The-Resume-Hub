@@ -1,4 +1,5 @@
 import { Sparkles } from "lucide-react";
+import { BackButton } from "@/components/back-button";
 import { CommandSearch } from "@/components/dashboard/command-search";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { AvatarMenu } from "@/components/dashboard/avatar-menu";
@@ -29,6 +30,7 @@ export function DashboardHeader({
 
   return (
     <header className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3 sm:px-6">
+      <BackButton className="shrink-0" />
       <div className="flex-1">
         <CommandSearch />
       </div>

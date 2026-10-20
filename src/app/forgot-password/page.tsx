@@ -16,7 +16,7 @@ export default async function ForgotPasswordPage({
       <div className="w-full max-w-sm">
         <div className="mb-6 text-center">
           <Link href="/" className="text-xl font-bold text-slate-900">
-            Resume Hub
+            The Resume Document Hub
           </Link>
           <h1 className="mt-2 text-2xl font-semibold text-slate-900">Reset your password</h1>
           <p className="mt-1 text-sm text-slate-500">

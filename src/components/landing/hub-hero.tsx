@@ -11,6 +11,7 @@ import {
   Repeat,
   Users,
   HeartHandshake,
+  Zap,
 } from "lucide-react";
 import { whatsappLink } from "@/lib/whatsapp-contacts";
 
@@ -18,10 +19,11 @@ const CONSULT_URL = whatsappLink("main", "Hi, I'd like to enquire about Resume D
 
 const SERVICES = [
   { icon: Users, label: "Executive secretariat & board support", href: "/services#corporate" },
-  { icon: FileText, label: "Document Studio: plans, packs, minutes, templates", href: "/services#studio" },
-  { icon: Briefcase, label: "Business administration & registration", href: "/services#small-business" },
+  { icon: FileText, label: "Document Studio: plans, packs, minutes, HR policies", href: "/services#studio" },
+  { icon: Briefcase, label: "Business admin, HR policies & registration", href: "/services#small-business" },
   { icon: Bot, label: "AI, automation & business systems", href: "/services#small-business" },
-  { icon: GraduationCap, label: "CVs, jobs & career tools", href: "/careers" },
+  { icon: GraduationCap, label: "CV writing, ATS scoring & career tools", href: "/careers" },
+  { icon: Zap, label: "Auto-apply & job matching", href: "/dashboard/auto-apply" },
 ];
 
 const HIGHLIGHTS = [
@@ -49,8 +51,9 @@ export function HubHero() {
               <span className="block text-accent-400">One point of contact.</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg text-slate-300">
-              Virtual assistants for executives and boards, board-ready business documents, and CV
-              and job tools, handled by one accountable contact from quote to delivery.
+              Virtual assistants and business consultants for executives, boards and growing
+              businesses, plus board-ready documents and CV and job tools, handled by one
+              accountable contact from quote to delivery.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a

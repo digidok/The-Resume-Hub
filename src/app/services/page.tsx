@@ -4,7 +4,9 @@ import {
   Bot,
   Briefcase,
   Check,
+  ClipboardList,
   FileText,
+  GraduationCap,
   Landmark,
   Mail,
   MessageCircle,
@@ -13,15 +15,16 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
-import { ServicesHeader } from "@/components/services/services-header";
-import { ServicesFooter } from "@/components/services/services-footer";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { DocumentStudio } from "@/components/services/document-studio";
+import { ClientsStrip } from "@/components/clients/clients-strip";
 import { whatsappLink } from "@/lib/whatsapp-contacts";
 
 export const metadata = {
   title: "Resume Document Hub — Single Point of Contact Business Services",
   description:
-    "One point of contact for business registration, administration, branding, executive documentation, board packs, governance support and business automation.",
+    "Virtual assistants and business consultants: one point of contact for business registration, administration, HR policies, executive documentation, board packs, governance support and business automation.",
 };
 
 const MAIN_URL = whatsappLink("main", "Hi, I'd like to enquire about Resume Document Hub business services");
@@ -80,6 +83,21 @@ const SMALL_BUSINESS_AREAS: ServiceArea[] = [
     ],
   },
 ];
+
+const HR_AREA: ServiceArea = {
+  icon: ClipboardList,
+  title: "HR policies & people documentation",
+  description:
+    "Clear, consistent HR documents for growing teams, prepared to your structure and brand.",
+  items: [
+    "HR policies and procedures",
+    "Employee handbooks",
+    "Leave, conduct and disciplinary policy templates",
+    "Job descriptions",
+    "Offer letter and employment documentation templates",
+    "Induction packs for new employees",
+  ],
+};
 
 const SMALL_BUSINESS_PACKAGES: Package[] = [
   { name: "Small Business Admin", price: "R1,499", level: "5 hours of administration" },
@@ -235,7 +253,7 @@ function PackageGrid({
 export default function ServicesPage() {
   return (
     <div className="flex flex-1 flex-col bg-white">
-      <ServicesHeader ctaUrl={MAIN_URL} />
+      <SiteHeader />
       <main className="flex-1">
         <section className="relative overflow-hidden bg-brand-950 text-white">
           <div
@@ -251,9 +269,9 @@ export default function ServicesPage() {
                 Executive office and board support, delivered with discretion
               </h1>
               <p className="mt-5 max-w-xl text-lg text-slate-300">
-                Virtual assistants for boards, executive committees and senior teams: secretariat,
-                governance documentation, board packs and business documents prepared to your brand.
-                One accountable contact from quote to delivery.
+                Virtual assistants and business consultants for boards, executive committees and senior
+                teams: secretariat, governance documentation, board packs and business documents
+                prepared to your brand. One accountable contact from quote to delivery.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
@@ -280,9 +298,10 @@ export default function ServicesPage() {
                 {[
                   { icon: Users, label: "Executive secretariat & board support", href: "#corporate" },
                   { icon: Landmark, label: "Governance & company secretariat", href: "#corporate" },
-                  { icon: FileText, label: "Document Studio: plans, packs, minutes, templates", href: "#studio" },
+                  { icon: FileText, label: "Document Studio: plans, packs, minutes, HR policies", href: "#studio" },
                   { icon: Briefcase, label: "Business administration & registration", href: "#small-business" },
                   { icon: Bot, label: "AI, automation & business systems", href: "#small-business" },
+                  { icon: GraduationCap, label: "CV writing, ATS scoring & auto-apply", href: "/careers" },
                 ].map((row) => (
                   <li key={row.label}>
                     <a href={row.href} className="group flex items-center gap-3 py-3 text-sm text-slate-100 hover:text-white">
@@ -310,6 +329,8 @@ export default function ServicesPage() {
             ))}
           </div>
         </section>
+
+        <ClientsStrip />
 
         <section id="corporate" className="scroll-mt-20 py-16 sm:py-20">
           <div className="mx-auto max-w-6xl px-4">
@@ -364,7 +385,7 @@ export default function ServicesPage() {
               intro="Your one-stop partner for business registration, administration, branding and ongoing business support, for entrepreneurs, small businesses, consultants, freelancers and start-ups across South Africa. Pay once off for a single service, or subscribe monthly for ongoing support."
             />
             <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 md:[&>*:last-child:nth-child(odd)]:col-span-2">
-              {SMALL_BUSINESS_AREAS.map((area) => (
+              {[...SMALL_BUSINESS_AREAS, HR_AREA].map((area) => (
                 <AreaCard key={area.title} area={area} />
               ))}
             </div>
@@ -431,7 +452,7 @@ export default function ServicesPage() {
           </div>
         </section>
       </main>
-      <ServicesFooter whatsappUrl={MAIN_URL} />
+      <SiteFooter />
     </div>
   );
 }

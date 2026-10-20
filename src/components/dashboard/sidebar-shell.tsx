@@ -36,7 +36,7 @@ export function SidebarShell({ children }: { children: ReactNode }) {
     >
       <div className="mb-6 flex items-center justify-between">
         <Link href="/" aria-label="Resume Hub home">
-          {collapsed ? <LogoMark className="h-8 w-8" /> : <Logo />}
+          {collapsed ? <LogoMark className="h-8 w-10" /> : <Logo />}
         </Link>
         <button
           type="button"

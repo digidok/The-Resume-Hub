@@ -24,11 +24,13 @@ export const DOCUMENT_GROUPS: DocumentGroup[] = [
   },
   {
     id: "governance",
-    label: "Policies & SOPs",
+    label: "Policies, HR & SOPs",
     options: [
       { id: "policy", label: "Governance policy", description: "Policies formatted and aligned to your structure." },
       { id: "sop", label: "Standard operating procedure", description: "Clear, repeatable procedures for your teams." },
       { id: "register", label: "Governance register", description: "Director, interests and resolution registers." },
+      { id: "hr-policy", label: "HR policies & employee handbook", description: "Leave, conduct, disciplinary and workplace policies in one handbook." },
+      { id: "hr-templates", label: "Job descriptions & HR templates", description: "Job descriptions, offer letters and induction packs." },
     ],
   },
   {

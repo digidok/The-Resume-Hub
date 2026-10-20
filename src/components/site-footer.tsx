@@ -13,6 +13,7 @@ const PRODUCT_LINKS = [
 
 const COMPANY_LINKS = [
   { href: "/services", label: "Business services" },
+  { href: "/careers", label: "Careers" },
   { href: "/faq", label: "FAQ" },
   { href: "/blog", label: "Blog" },
   { href: "/student-discount", label: "Student discount" },
@@ -28,9 +29,9 @@ export function SiteFooter() {
           <div className="col-span-2 sm:col-span-1">
             <Logo variant="inverse" tagline />
             <p className="mt-3 max-w-[16rem] text-sm text-slate-400">
-              One hub for documents, CVs, job matching and business support: executive secretariat,
-              board and governance documents, and career tools for candidates across South Africa
-              and beyond.
+              Virtual assistants and business consultants: executive secretariat, board and
+              governance documents, business support, and career tools for candidates across South
+              Africa and beyond.
             </p>
           </div>
           <div>

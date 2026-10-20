@@ -20,7 +20,7 @@ export default async function ReferenceSubmitPage({
       <div className="w-full max-w-lg">
         <div className="mb-6 text-center">
           <Link href="/" className="text-xl font-bold text-slate-900">
-            Resume Hub
+            The Resume Document Hub
           </Link>
         </div>
         <Card className="space-y-4 p-6">

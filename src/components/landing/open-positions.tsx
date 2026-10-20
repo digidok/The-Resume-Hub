@@ -9,7 +9,7 @@ import { ScrollReveal, ScrollStagger } from "@/components/motion/scroll-reveal";
 import { MotionCard } from "@/components/motion/motion-card";
 import type { Job } from "@/types/database";
 
-const HOMEPAGE_JOB_COUNT = 6;
+const DEFAULT_JOB_COUNT = 6;
 
 const EMPLOYMENT_LABELS: Record<string, string> = {
   full_time: "Full-time",
@@ -32,7 +32,7 @@ function isRecentlyPosted(iso: string) {
 
 /** Public homepage teaser of live listings — South African roles surfaced first,
  * then newest overall. Full detail is gated behind sign-up on the job page itself. */
-export async function OpenPositions() {
+export async function OpenPositions({ count = DEFAULT_JOB_COUNT }: { count?: number } = {}) {
   const supabase = await createClient();
   const { data: jobsData } = await supabase
     .from("jobs")
@@ -51,12 +51,19 @@ export async function OpenPositions() {
       if (aSA !== bSA) return aSA - bSA;
       return new Date(b.posted_at).getTime() - new Date(a.posted_at).getTime();
     })
-    .slice(0, HOMEPAGE_JOB_COUNT);
+    .slice(0, count);
 
   return (
     <section id="open-positions" className="mx-auto max-w-5xl px-4 pb-20 pt-24 sm:pt-28">
       <ScrollReveal className="mx-auto max-w-2xl text-center">
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+        <p className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-brand-700">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+          </span>
+          Live roles
+        </p>
+        <h2 className="mt-3 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
           Open positions, right now.
         </h2>
         <p className="mt-2 text-slate-600">

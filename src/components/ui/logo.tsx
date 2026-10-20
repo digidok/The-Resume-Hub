@@ -1,10 +1,10 @@
-export function LogoMark({ className = "h-9 w-9" }: { className?: string }) {
+export function LogoMark({ className = "h-9 w-11" }: { className?: string }) {
   return (
     <span
-      className={`inline-flex items-center justify-center rounded-md bg-brand-700 text-lg font-black leading-none text-white ${className}`}
+      className={`inline-flex items-center justify-center rounded-md border-b-2 border-accent-400 bg-brand-900 text-[11px] font-bold leading-none tracking-wider text-white ${className}`}
       aria-hidden="true"
     >
-      R
+      RDH
     </span>
   );
 }
