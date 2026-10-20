@@ -20,19 +20,19 @@ import { Card } from "@/components/ui/card";
 import { whatsappLink } from "@/lib/whatsapp-contacts";
 
 export const metadata = {
-  title: "Business & Executive Services — Resume Hub",
+  title: "Resume Document Hub — Business & Executive Services",
   description:
     "One point of contact for business registration, administration, branding, executive documentation, board packs, governance support and business automation.",
 };
 
-const MAIN_URL = whatsappLink("main", "Hi, I'd like to enquire about Resume Hub business services");
+const MAIN_URL = whatsappLink("main", "Hi, I'd like to enquire about Resume Document Hub business services");
 const SMALL_BUSINESS_URL = whatsappLink(
   "smallBusiness",
-  "Hi, I'd like to enquire about small business services at Resume Hub",
+  "Hi, I'd like to enquire about small business services at Resume Document Hub",
 );
 const CORPORATE_URL = whatsappLink(
   "corporate",
-  "Hi, I'd like to enquire about corporate and board support at Resume Hub",
+  "Hi, I'd like to enquire about corporate and board support at Resume Document Hub",
 );
 
 type ServiceArea = {
@@ -200,7 +200,7 @@ export default function ServicesPage() {
       <main className="flex-1">
         <section className="mx-auto max-w-5xl px-4 py-16 text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-brand-600">
-            Single point of contact virtual assistants
+            Resume Document Hub · Single point of contact virtual assistants
           </p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             One team for your admin, documents and business support
