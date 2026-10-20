@@ -4,7 +4,8 @@ import { Check, Info, MessageCircle } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { EnquiryForm } from "@/components/solutions/enquiry-form";
-import { DIVISIONS, MODEL_LABEL, availableServices, formatPrice, getDivision } from "@/lib/catalog/divisions";
+import { DIVISIONS, availableServices, getDivision } from "@/lib/catalog/divisions";
+import { ServiceCard } from "@/components/solutions/service-card";
 import { getAnyDivisionWithOverrides } from "@/lib/catalog/overrides";
 import { whatsappLink } from "@/lib/whatsapp-contacts";
 
@@ -65,14 +66,7 @@ export default async function SolutionPage({ params }: PageProps<"/solutions/[sl
           <h2 className="text-2xl font-bold tracking-tight text-slate-900">Services</h2>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((s) => (
-              <div key={s.id} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <p className="font-semibold text-slate-900">{s.name}</p>
-                <p className="mt-1 flex-1 text-sm text-slate-600">{s.description}</p>
-                <div className="mt-4 flex items-center justify-between gap-2">
-                  <span className="text-sm font-bold text-brand-700">{formatPrice(s)}</span>
-                  <span className="text-xs text-slate-500">{s.models.map((m) => MODEL_LABEL[m]).join(" · ")}</span>
-                </div>
-              </div>
+              <ServiceCard key={s.id} service={s} />
             ))}
           </div>
         </section>
