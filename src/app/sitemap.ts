@@ -12,6 +12,7 @@ const STATIC_ROUTES = [
   "/solutions",
   "/solutions/business-administration",
   "/solutions/hr-recruitment",
+  "/solutions/labour-broking",
   "/solutions/data-intelligence",
   "/solutions/background-screening",
   "/solutions/ai-automation",

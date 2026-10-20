@@ -12,6 +12,7 @@ import {
   Repeat,
   Users,
   HeartHandshake,
+  HardHat,
 } from "lucide-react";
 
 const SERVICES = [
@@ -19,6 +20,7 @@ const SERVICES = [
   { icon: Briefcase, label: "Business administration & virtual assistants", href: "/solutions/business-administration" },
   { icon: Users, label: "Executive & board support", href: "/services" },
   { icon: UserCheck, label: "HR & recruitment solutions", href: "/solutions/hr-recruitment" },
+  { icon: HardHat, label: "Labour broking: staff employed and paid by us", href: "/solutions/labour-broking" },
   { icon: BarChart3, label: "Data science & business intelligence", href: "/solutions/data-intelligence" },
   { icon: ScanSearch, label: "Background screening & verification", href: "/solutions/background-screening" },
   { icon: Bot, label: "Digital & AI automation", href: "/solutions/ai-automation" },
@@ -38,6 +40,18 @@ export function HubHero() {
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(184,147,63,0.18),transparent_55%)]"
+        />
+        <div
+          aria-hidden="true"
+          className="animate-drift-a absolute -left-24 top-10 h-72 w-72 rounded-full bg-brand-500/30 blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="animate-drift-b absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-accent-400/20 blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 opacity-[0.07] [background-image:linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] [background-size:48px_48px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]"
         />
         <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:py-24 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
           <div>
@@ -77,16 +91,18 @@ export function HubHero() {
             </div>
           </div>
 
-          <div className="rounded-md border border-white/10 bg-white/5 p-6">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/20 backdrop-blur-sm">
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-300">What we handle</p>
             <ul className="mt-4 divide-y divide-white/10">
               {SERVICES.map((row) => (
                 <li key={row.label}>
                   <Link
                     href={row.href}
-                    className="group flex items-center gap-3 py-3 text-sm text-slate-100 hover:text-white"
+                    className="group flex items-center gap-3 py-2.5 text-sm text-slate-100 transition-transform duration-300 hover:translate-x-1 hover:text-white"
                   >
-                    <row.icon className="h-4 w-4 shrink-0 text-accent-400" />
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10 text-accent-400 ring-1 ring-white/10 transition-transform duration-300 group-hover:scale-110 group-hover:bg-accent-400/20">
+                      <row.icon className="h-4 w-4" />
+                    </span>
                     <span className="flex-1">{row.label}</span>
                     <ArrowRight className="h-4 w-4 text-slate-500 group-hover:text-accent-400" />
                   </Link>

@@ -9,7 +9,7 @@ export function ServiceCard({ service, enquiryHref = "#enquiry" }: { service: Ca
   const steps = detail?.steps ?? processSteps(service.models);
 
   return (
-    <details className="group flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm open:border-brand-300 open:shadow-md">
+    <details className="group flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md open:border-brand-300 open:shadow-md">
       <summary className="flex cursor-pointer list-none flex-col p-5 [&::-webkit-details-marker]:hidden">
         <div className="flex items-start justify-between gap-2">
           <p className="font-semibold text-slate-900">{service.name}</p>

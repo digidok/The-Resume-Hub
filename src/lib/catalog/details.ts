@@ -143,6 +143,28 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
     needs: ["The matter and documents involved", "Your disciplinary and grievance procedures", "Dates and people involved"],
   },
 
+  // Labour broking (temporary employment services)
+  "lb-temp": {
+    includes: ["Candidates shortlisted from our job-seeker database", "The worker is employed and paid by us", "A written agreement setting out the placement and our fees"],
+    needs: ["The role, number of people and skills required", "Start date and expected duration", "Where and when they will work"],
+  },
+  "lb-fixed": {
+    includes: ["Candidates shortlisted and presented to you", "Employment contracts, payroll and employment administration handled by us", "A written agreement before anyone starts"],
+    needs: ["The role, number of people and contract length", "The working conditions and the pay range", "Start date and work location"],
+  },
+  "lb-project": {
+    includes: ["A team assembled and employed by us for your project or season", "Salaries and administration handled by us", "A written agreement before anyone starts"],
+    needs: ["The project scope, dates and number of people", "The skills and shifts required", "Where the work takes place"],
+  },
+  "lb-payroll": {
+    includes: ["Salaries paid and payslips issued for the staff placed with you", "Leave and attendance administered", "Regular reports on hours and cost"],
+    needs: ["Hours worked or attendance records for each pay period", "Your pay cut-off dates", "A contact for approvals"],
+  },
+  "lb-managed": {
+    includes: ["A standing pool of staff for your ongoing needs", "All employment, payroll and administration handled by us", "Regular updates on who worked and when"],
+    needs: ["Your usual staffing pattern and volumes", "Roles, shifts and locations", "A contact on your side for approvals"],
+  },
+
   // Data science and BI
   "da-review": {
     includes: ["Your spreadsheet or dataset cleaned and checked", "Errors, duplicates and gaps listed", "A short data quality assessment"],

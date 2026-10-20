@@ -10,6 +10,9 @@
 7. Confirm client names in the clients strip, get permission to show them, and add the logo files to `public/clients/`.
 8. Get owner and legal sign-off on the cancellation and refund wording (guide, 5.8) and on any claim made about screening and POPIA.
 
+9. **Labour broking.** The site now offers labour broking / temporary employment services (we employ and pay placed staff and run payroll). Before it is promoted, confirm the business's legal registrations and obligations for this service, and have the written placement agreement reviewed by a labour-law adviser. The page makes no claim about registrations.
+10. **"100,000+ CVs" claim.** The figure is supplied by the business and is set in `src/lib/site-constants.ts`. The Resume Hub platform database itself holds far fewer resumes, so confirm where the 100,000 CVs are held and that they may be used for placement matching (POPIA consent) before publishing.
+
 ## Limitations of what is built
 - Business-portal staff are administrators. There are no separate "service delivery staff" or "external provider" roles yet.
 - Team members see everything linked to the owner's email. There is no per-document restriction.

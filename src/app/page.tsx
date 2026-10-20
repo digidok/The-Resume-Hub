@@ -1,8 +1,9 @@
-import { ArrowRight, BarChart3, Bot, Briefcase, GraduationCap, Mail, MessageCircle, ScanSearch, UserCheck, Users, Wallet } from "lucide-react";
+import { ArrowRight, BarChart3, Bot, Briefcase, GraduationCap, HardHat, Mail, MessageCircle, ScanSearch, UserCheck, Users } from "lucide-react";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { HubHero } from "@/components/landing/hub-hero";
+import { HubStats } from "@/components/landing/hub-stats";
 import { ClientsStrip } from "@/components/clients/clients-strip";
 import { OpenPositions } from "@/components/landing/open-positions";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
@@ -23,7 +24,7 @@ const PILLARS = [
   { icon: BarChart3, title: "Data science & BI", text: "Reports, dashboards and HR analytics that turn business data into decisions.", href: "/solutions/data-intelligence", cta: "See analytics" },
   { icon: ScanSearch, title: "Background screening", text: "Employment screening and verification coordinated with authorised providers.", href: "/solutions/background-screening", cta: "Request a quote" },
   { icon: Bot, title: "Digital & AI automation", text: "WhatsApp, lead capture, reminders and reporting workflows that save time.", href: "/solutions/ai-automation", cta: "See automation" },
-  { icon: Wallet, title: "Pricing", text: "Transparent plans for individuals and clear starting prices for businesses.", href: "/pricing", cta: "View pricing" },
+  { icon: HardHat, title: "Labour broking", text: "Staff placed with you, employed and paid by us. We run the payroll and administration.", href: "/solutions/labour-broking", cta: "See staffing" },
 ];
 
 const BUSINESS_PRICE_POINTS = [
@@ -52,10 +53,11 @@ export default function Home() {
       <SiteHeader />
       <main className="flex-1">
         <HubHero />
+        <HubStats />
         <ClientsStrip />
 
         {/* What we do */}
-        <section id="hub" className="py-16">
+        <section id="hub" className="bg-gradient-to-b from-white via-brand-50/60 to-white py-20">
           <div className="mx-auto max-w-6xl px-4">
             <ScrollReveal className="mx-auto max-w-2xl text-center">
               <p className="text-xs font-semibold uppercase tracking-widest text-accent-600">
@@ -69,22 +71,27 @@ export default function Home() {
               </p>
             </ScrollReveal>
             <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {PILLARS.map((pillar) => (
-                <Link
-                  key={pillar.title}
-                  href={pillar.href}
-                  className="group flex flex-col rounded-md border border-slate-200 bg-white p-6 shadow-sm transition-colors hover:border-brand-300"
-                >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-900 text-accent-400">
-                    <pillar.icon className="h-5 w-5" />
-                  </span>
-                  <h3 className="mt-4 font-semibold text-slate-900">{pillar.title}</h3>
-                  <p className="mt-2 flex-1 text-sm text-slate-600">{pillar.text}</p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand-700">
-                    {pillar.cta}
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </span>
-                </Link>
+              {PILLARS.map((pillar, i) => (
+                <ScrollReveal key={pillar.title} delay={(i % 4) * 0.07} className="h-full">
+                  <Link
+                    href={pillar.href}
+                    className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand-300 hover:shadow-xl hover:shadow-brand-950/10"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-accent-400 to-brand-500 transition-transform duration-500 group-hover:scale-x-100"
+                    />
+                    <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-700 to-brand-900 text-accent-400 shadow-inner transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3">
+                      <pillar.icon className="h-6 w-6" />
+                    </span>
+                    <h3 className="mt-5 text-lg font-semibold text-slate-900">{pillar.title}</h3>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{pillar.text}</p>
+                    <span className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-brand-700">
+                      {pillar.cta}
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </span>
+                  </Link>
+                </ScrollReveal>
               ))}
             </div>
           </div>

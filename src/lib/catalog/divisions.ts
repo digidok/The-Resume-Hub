@@ -5,6 +5,7 @@
 // Admins can also override prices and availability from the dashboard
 // (see src/lib/catalog/overrides.ts); the values here are the defaults.
 
+import { JOB_SEEKER_CVS_LABEL } from "@/lib/site-constants";
 import { INTERVIEW_PACK_PACKAGES, SUBSCRIPTION_PACKAGES, WHATSAPP_ORDER_PRICING } from "@/lib/payfast/config";
 
 export type PriceModel = "once-off" | "monthly" | "quote";
@@ -140,6 +141,35 @@ export const DIVISIONS: Division[] = [
       { id: "hr-training", name: "Training and skills-development administration", description: "Training records and skills-development paperwork.", models: ["monthly"] },
       { id: "hr-planning", name: "Workforce planning support", description: "Headcount and capacity planning support.", models: ["quote"] },
       { id: "hr-lr", name: "Labour-relations document preparation", description: "Document preparation and meeting administration.", models: ["quote"] },
+    ],
+  },
+  {
+    slug: "labour-broking",
+    navLabel: "Labour Broking",
+    title: "Labour broking & temporary employment services",
+    tagline: "Staff placed with you, employed and paid by us. We run the payroll and the administration.",
+    intro: `Tell us the roles and numbers you need. We find suitable people from our job-seeker database of ${JOB_SEEKER_CVS_LABEL} CVs, employ them, pay their salaries and handle their employment administration, while you direct their day-to-day work.`,
+    href: "/solutions/labour-broking",
+    fulfilment:
+      "Placed workers are employed by Resume Document Hub, which runs their payroll, pays their salaries and handles their employment administration. You direct the daily work at your site. The arrangement, the placement length and our fees are set out in a written agreement before anyone starts.",
+    notices: [
+      "Placements follow South African labour law, including the rules that apply to temporary employment services. We confirm the legal basis of every placement in writing before it starts.",
+      "Fees are quoted for each request. We do not publish fixed prices.",
+      "Candidates are put forward and checked only with their consent. Background screening is available as an optional extra.",
+    ],
+    services: [
+      { id: "lb-temp", name: "Temporary placements", description: "Short-term cover for absences, peak periods and urgent vacancies. We employ and pay the worker.", models: ["quote"] },
+      { id: "lb-fixed", name: "Fixed-term and contract placements", description: "Staff placed for an agreed period, with contracts, payroll and employment administration handled by us.", models: ["quote"] },
+      { id: "lb-project", name: "Project and seasonal staffing", description: "A team assembled and employed by us for your project, campaign or seasonal peak.", models: ["quote"] },
+      { id: "lb-payroll", name: "Payroll and salary administration", description: "Salaries paid, payslips issued, and leave and attendance administered for the staff we place with you.", models: ["quote", "monthly"] },
+      { id: "lb-managed", name: "Managed workforce", description: "A standing pool of staff for ongoing needs, fully employed and administered by us.", models: ["quote", "monthly"] },
+    ],
+    extraFields: [
+      { name: "roles", label: "Roles and how many people you need", type: "textarea", required: true },
+      { name: "duration", label: "Expected duration of the placement", type: "text" },
+      { name: "start", label: "Start date", type: "text" },
+      { name: "location", label: "Work location", type: "text" },
+      { name: "extras", label: "Optional extras", type: "checkboxes", options: ["Background screening", "Onboarding administration", "Attendance reporting"] },
     ],
   },
   {
