@@ -33,18 +33,19 @@ const BUSINESS_PRICE_POINTS = [
   { label: "Executive office support, from", price: "R7,500/mo" },
 ];
 
+// Lowest price first. `amount` is only used for ordering.
 const CAREER_PRICE_POINTS = [
-  { label: "CV & cover letter, done for you", price: `R${WHATSAPP_ORDER_PRICING.cv_cover_letter}` },
-  { label: "LinkedIn profile revamp", price: `R${WHATSAPP_ORDER_PRICING.linkedin_revamp}` },
   {
     label: "Candidate Pro, auto-apply & AI tools",
-    price: `R${SUBSCRIPTION_PACKAGES.find((p) => p.id === "candidate_pro")?.amountZar ?? 99}/mo`,
+    amount: SUBSCRIPTION_PACKAGES.find((p) => p.id === "candidate_pro")?.amountZar ?? 99,
+    suffix: "/mo",
   },
-  {
-    label: "Interview preparation, from",
-    price: `R${Math.min(...INTERVIEW_PACK_PACKAGES.map((p) => p.amountZar))}`,
-  },
-];
+  { label: "CV & cover letter, done for you", amount: WHATSAPP_ORDER_PRICING.cv_cover_letter, suffix: "" },
+  { label: "Interview preparation, from", amount: Math.min(...INTERVIEW_PACK_PACKAGES.map((p) => p.amountZar)), suffix: "" },
+  { label: "LinkedIn profile revamp", amount: WHATSAPP_ORDER_PRICING.linkedin_revamp, suffix: "" },
+]
+  .sort((x, y) => x.amount - y.amount)
+  .map((p) => ({ label: p.label, price: `R${p.amount}${p.suffix}` }));
 
 
 export default function Home() {
@@ -133,10 +134,15 @@ export default function Home() {
             </h3>
             <dl className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-3">
               {BUSINESS_PRICE_POINTS.map((item) => (
-                <div key={item.label} className="rounded-md border border-white/10 bg-white/5 p-5">
+                <Link
+                  key={item.label}
+                  href="/pricing#business-pricing"
+                  className="rounded-md border border-white/10 bg-white/5 p-5 transition hover:border-accent-400/60 hover:bg-white/10"
+                >
                   <dt className="text-sm text-slate-300">{item.label}</dt>
                   <dd className="mt-1 text-2xl font-bold text-white">{item.price}</dd>
-                </div>
+                  <span className="mt-2 inline-block text-xs font-medium text-accent-400">What&apos;s included →</span>
+                </Link>
               ))}
             </dl>
             <h3 className="mt-8 text-xs font-semibold uppercase tracking-widest text-slate-300">
@@ -144,10 +150,15 @@ export default function Home() {
             </h3>
             <dl className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {CAREER_PRICE_POINTS.map((item) => (
-                <div key={item.label} className="rounded-md border border-white/10 bg-white/5 p-5">
+                <Link
+                  key={item.label}
+                  href="/careers#career-services"
+                  className="rounded-md border border-white/10 bg-white/5 p-5 transition hover:border-accent-400/60 hover:bg-white/10"
+                >
                   <dt className="text-sm text-slate-300">{item.label}</dt>
                   <dd className="mt-1 text-2xl font-bold text-white">{item.price}</dd>
-                </div>
+                  <span className="mt-2 inline-block text-xs font-medium text-accent-400">What&apos;s included →</span>
+                </Link>
               ))}
             </dl>
           </div>

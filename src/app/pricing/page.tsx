@@ -10,7 +10,8 @@ export const metadata = {
     "Simple, transparent pricing for candidates and employers on Resume Hub — every candidate plan unlocks full access, no free tier, no credit limits.",
 };
 import { Card } from "@/components/ui/card";
-import { DIVISIONS, MODEL_LABEL, availableServices, formatPrice } from "@/lib/catalog/divisions";
+import { DIVISIONS, availableServices } from "@/lib/catalog/divisions";
+import { PriceRow } from "@/components/solutions/price-row";
 import { getDivisionsWithOverrides } from "@/lib/catalog/overrides";
 import { SUBSCRIPTION_PACKAGES, PRO_ONCE_OFF_PACKAGE } from "@/lib/payfast/config";
 
@@ -57,28 +58,6 @@ export default async function PricingPage() {
             For job seekers
           </h2>
           <div className="mx-auto mt-6 grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-2">
-            <Card className="p-6">
-              <p className="font-semibold text-slate-900">{PRO_ONCE_OFF_PACKAGE.label}</p>
-              <p className="mt-2 text-3xl font-bold text-slate-900">
-                R{PRO_ONCE_OFF_PACKAGE.amountZar}
-                <span className="text-base font-medium text-slate-500"> once-off</span>
-              </p>
-              <p className="mt-1 text-xs text-slate-500">No recurring billing — full access for 30 days.</p>
-              <ul className="mt-5 space-y-2.5">
-                {CANDIDATE_PLAN_FEATURES.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm text-slate-700">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/signup">
-                <Button variant="outline" className="mt-6 w-full">
-                  Get the 30-Day Pass
-                </Button>
-              </Link>
-            </Card>
-
             <Card className="border-0 border-t-[3px] border-brand-500 p-6">
               <p className="font-semibold text-slate-900">{candidatePro.label}</p>
               <p className="mt-2 text-3xl font-bold text-slate-900">
@@ -102,6 +81,28 @@ export default async function PricingPage() {
                   see student discount
                 </Link>
               </p>
+            </Card>
+
+            <Card className="p-6">
+              <p className="font-semibold text-slate-900">{PRO_ONCE_OFF_PACKAGE.label}</p>
+              <p className="mt-2 text-3xl font-bold text-slate-900">
+                R{PRO_ONCE_OFF_PACKAGE.amountZar}
+                <span className="text-base font-medium text-slate-500"> once-off</span>
+              </p>
+              <p className="mt-1 text-xs text-slate-500">No recurring billing — full access for 30 days.</p>
+              <ul className="mt-5 space-y-2.5">
+                {CANDIDATE_PLAN_FEATURES.map((f) => (
+                  <li key={f} className="flex items-start gap-2.5 text-sm text-slate-700">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/signup">
+                <Button variant="outline" className="mt-6 w-full">
+                  Get the 30-Day Pass
+                </Button>
+              </Link>
             </Card>
           </div>
         </section>
@@ -164,13 +165,13 @@ export default async function PricingPage() {
           </div>
         </section>
 
-        <section className="border-t border-slate-200 py-16">
+        <section id="business-pricing" className="scroll-mt-20 border-t border-slate-200 py-16">
           <div className="mx-auto max-w-5xl px-4">
             <h2 className="text-center text-sm font-semibold uppercase tracking-wide text-brand-600">
               For businesses
             </h2>
             <p className="mx-auto mt-2 max-w-2xl text-center text-sm text-slate-600">
-              Starting prices for business services. Final prices depend on scope, complexity and third-party costs,
+              Starting prices for business services, cheapest first. Click any price to see what it covers. Final prices depend on scope, complexity and third-party costs,
               and custom work is quoted for your approval before it starts.
             </p>
             <div className="mt-8 space-y-6">
@@ -184,13 +185,7 @@ export default async function PricingPage() {
                   </div>
                   <ul className="divide-y divide-slate-100">
                     {availableServices(d).map((s) => (
-                      <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 px-5 py-2.5 text-sm">
-                        <span className="text-slate-700">{s.name}</span>
-                        <span className="flex items-center gap-3">
-                          <span className="text-xs text-slate-400">{s.models.map((m) => MODEL_LABEL[m]).join(" · ")}</span>
-                          <span className="font-semibold text-slate-900">{formatPrice(s)}</span>
-                        </span>
-                      </li>
+                      <PriceRow key={s.id} service={s} enquiryHref={`${d.href}#enquiry`} />
                     ))}
                   </ul>
                 </Card>

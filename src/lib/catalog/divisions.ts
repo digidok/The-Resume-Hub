@@ -292,8 +292,17 @@ export function getDivision(slug: string): Division | undefined {
   return ALL_DIVISIONS.find((d) => d.slug === slug);
 }
 
+/** Available services, cheapest first. Services without a published price (quote only) come last. */
 export function availableServices(division: Division): CatalogService[] {
-  return division.services.filter((s) => s.available !== false);
+  return division.services
+    .filter((s) => s.available !== false)
+    .map((s, i) => ({ s, i }))
+    .sort((a, b) => {
+      const pa = a.s.fromZar ?? Number.POSITIVE_INFINITY;
+      const pb = b.s.fromZar ?? Number.POSITIVE_INFINITY;
+      return pa === pb ? a.i - b.i : pa - pb;
+    })
+    .map(({ s }) => s);
 }
 
 export function formatPrice(service: CatalogService): string {
