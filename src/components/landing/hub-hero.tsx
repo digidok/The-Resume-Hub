@@ -4,7 +4,7 @@ import {
   Bot,
   Briefcase,
   FileText,
-  Landmark,
+  GraduationCap,
   MessageCircle,
   ShieldCheck,
   UserCheck,
@@ -18,10 +18,10 @@ const CONSULT_URL = whatsappLink("main", "Hi, I'd like to enquire about Resume D
 
 const SERVICES = [
   { icon: Users, label: "Executive secretariat & board support", href: "/services#corporate" },
-  { icon: Landmark, label: "Governance & company secretariat", href: "/services#corporate" },
   { icon: FileText, label: "Document Studio: plans, packs, minutes, templates", href: "/services#studio" },
   { icon: Briefcase, label: "Business administration & registration", href: "/services#small-business" },
   { icon: Bot, label: "AI, automation & business systems", href: "/services#small-business" },
+  { icon: GraduationCap, label: "CVs, jobs & career tools", href: "/careers" },
 ];
 
 const HIGHLIGHTS = [
@@ -44,13 +44,13 @@ export function HubHero() {
             <p className="inline-block rounded-sm border border-accent-400/50 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-accent-400">
               The Resume Document Hub · Single Point of Contact
             </p>
-            <h1 className="mt-5 text-4xl font-bold tracking-tight sm:text-6xl sm:leading-[1.05]">
-              Your virtual assistants.
+            <h1 className="mt-5 text-4xl font-bold tracking-tight sm:text-5xl sm:leading-[1.1]">
+              One hub for your documents, career and business.
               <span className="block text-accent-400">One point of contact.</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg text-slate-300">
-              Executive and board support, business administration and board-ready documents,
-              handled by one accountable contact from quote to delivery.
+              Virtual assistants for executives and boards, board-ready business documents, and CV
+              and job tools, handled by one accountable contact from quote to delivery.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a
@@ -70,17 +70,6 @@ export function HubHero() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
-            <p className="mt-6 text-sm text-slate-400">
-              Looking for a CV or a job?{" "}
-              <Link href="/signup" className="font-medium text-slate-200 underline-offset-2 hover:underline">
-                Build my CV
-              </Link>{" "}
-              or{" "}
-              <Link href="/jobs" className="font-medium text-slate-200 underline-offset-2 hover:underline">
-                browse jobs
-              </Link>
-              .
-            </p>
           </div>
 
           <div className="rounded-md border border-white/10 bg-white/5 p-6">

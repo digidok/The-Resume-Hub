@@ -1,13 +1,27 @@
-import { ArrowRight, Building2, Check, GraduationCap, Mail, MessageCircle } from "lucide-react";
+import { ArrowRight, Briefcase, Building2, FileText, GraduationCap, Mail, MessageCircle, Users, Wallet } from "lucide-react";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { HubHero } from "@/components/landing/hub-hero";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
-import { Button } from "@/components/ui/button";
 import { whatsappLink } from "@/lib/whatsapp-contacts";
 
 const CONSULT_URL = whatsappLink("main", "Hi, I'd like to enquire about Resume Document Hub virtual assistant services");
+
+const PILLARS = [
+  { icon: Users, title: "Executive & board support", text: "Secretariat, governance documentation and board packs, delivered with discretion.", href: "/services#corporate", cta: "Explore support" },
+  { icon: FileText, title: "Document Studio", text: "Business plans, proposals, minutes and branded templates prepared to your brand.", href: "/services#studio", cta: "Start a request" },
+  { icon: Briefcase, title: "Business administration", text: "Company registration, everyday admin and automation for growing businesses.", href: "/services#small-business", cta: "See services" },
+  { icon: GraduationCap, title: "Careers", text: "Professional CVs, verified jobs, ATS scoring and interview preparation.", href: "/careers", cta: "Go to Careers" },
+  { icon: Building2, title: "For employers", text: "Post jobs, review candidates, and use induction and offer letter tools.", href: "/careers#employers", cta: "For employers" },
+  { icon: Wallet, title: "Pricing", text: "Transparent plans for individuals and clear starting prices for businesses.", href: "/pricing", cta: "View pricing" },
+];
+
+const PRICE_POINTS = [
+  { label: "CIPC company registration", price: "R650" },
+  { label: "Small business admin, from", price: "R1,499/mo" },
+  { label: "Executive office support, from", price: "R7,500/mo" },
+];
 
 const STEPS = [
   { title: "Tell us what you need", text: "Message us on WhatsApp or email with the task, the deadline and who it is for." },
@@ -22,78 +36,79 @@ export default function Home() {
       <main className="flex-1">
         <HubHero />
 
-        {/* One hub, two paths */}
+        {/* What we do */}
         <section id="hub" className="py-16">
-          <div className="mx-auto max-w-5xl px-4">
+          <div className="mx-auto max-w-6xl px-4">
             <ScrollReveal className="mx-auto max-w-2xl text-center">
               <p className="text-xs font-semibold uppercase tracking-widest text-accent-600">
-                The Resume Document Hub
+                What we do
               </p>
               <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-                One hub. Two ways we help.
+                Everything handled through one accountable contact
               </h2>
               <p className="mt-2 text-slate-600">
-                Whether you are building a career or running a business, one accountable contact
-                takes it from request to delivery.
+                Whether you are running a business, serving on a board or building a career.
               </p>
             </ScrollReveal>
-            <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="flex flex-col rounded-md bg-brand-950 p-7 text-white shadow-sm">
-                <Building2 className="h-7 w-7 text-accent-400" />
-                <h3 className="mt-4 text-xl font-semibold">Businesses, executives &amp; boards</h3>
-                <p className="mt-2 text-sm text-slate-300">
-                  Virtual assistants and document support for senior teams: delivered with
-                  precision, discretion and accountability.
+            <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {PILLARS.map((pillar) => (
+                <Link
+                  key={pillar.title}
+                  href={pillar.href}
+                  className="group flex flex-col rounded-md border border-slate-200 bg-white p-6 shadow-sm transition-colors hover:border-brand-300"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-900 text-accent-400">
+                    <pillar.icon className="h-5 w-5" />
+                  </span>
+                  <h3 className="mt-4 font-semibold text-slate-900">{pillar.title}</h3>
+                  <p className="mt-2 flex-1 text-sm text-slate-600">{pillar.text}</p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand-700">
+                    {pillar.cta}
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing teaser */}
+        <section className="bg-brand-950 py-14 text-white">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+              <div className="max-w-xl">
+                <p className="text-xs font-semibold uppercase tracking-widest text-accent-400">Pricing</p>
+                <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
+                  Clear pricing, once-off or monthly
+                </h2>
+                <p className="mt-2 text-slate-300">
+                  Indicative starting prices. Every request is scoped and quoted before work begins.
                 </p>
-                <ul className="mt-5 space-y-2 text-sm text-slate-200">
-                  {["Executive secretariat and board support", "Board packs, minutes and governance registers", "Document Studio: plans, proposals, templates", "Company registration and business admin"].map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent-400" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-6 flex flex-wrap gap-3 pt-2">
-                  <Link
-                    href="/services"
-                    className="inline-flex items-center gap-2 rounded-md bg-accent-400 px-5 py-2.5 text-sm font-semibold text-brand-950 hover:bg-accent-50"
-                  >
-                    Explore business services
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                  <Link
-                    href="/services#studio"
-                    className="inline-flex items-center gap-2 rounded-md border border-white/30 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
-                  >
-                    Start a document request
-                  </Link>
-                </div>
               </div>
-              <div className="flex flex-col rounded-md border border-slate-200 bg-white p-7 shadow-sm">
-                <GraduationCap className="h-7 w-7 text-brand-700" />
-                <h3 className="mt-4 text-xl font-semibold text-slate-900">Individuals &amp; job seekers</h3>
-                <p className="mt-2 text-sm text-slate-600">
-                  Professional CVs, ATS scoring, job matching and scheduled auto-apply, with real
-                  human support.
-                </p>
-                <ul className="mt-5 space-y-2 text-sm text-slate-700">
-                  {["CV builder with 100+ templates", "ATS and keyword checker", "Verified job board and auto-apply", "Cover letters and interview prep"].map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-6 flex flex-wrap gap-3 pt-2">
-                  <Link href="/signup">
-                    <Button>Build or Upload My CV</Button>
-                  </Link>
-                  <Link href="/jobs">
-                    <Button variant="outline">Browse jobs</Button>
-                  </Link>
-                </div>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/services#small-business"
+                  className="inline-flex items-center gap-2 rounded-md bg-accent-400 px-5 py-2.5 text-sm font-semibold text-brand-950 hover:bg-accent-50"
+                >
+                  Business pricing
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center gap-2 rounded-md border border-white/30 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
+                >
+                  CV &amp; career plans
+                </Link>
               </div>
             </div>
+            <dl className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {PRICE_POINTS.map((item) => (
+                <div key={item.label} className="rounded-md border border-white/10 bg-white/5 p-5">
+                  <dt className="text-sm text-slate-300">{item.label}</dt>
+                  <dd className="mt-1 text-2xl font-bold text-white">{item.price}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </section>
 
