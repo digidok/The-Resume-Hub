@@ -15,11 +15,12 @@
 
 ## Added in the "best platform" round (all need their migrations applied first)
 
-Apply in this order after `20261020170000` and `20261020180000`: `20261020190000_security_hardening.sql`, `20261020200000_staff_roles.sql`, `20261020210000_appointments.sql`, `20261020220000_recruitment_workspace.sql`. Local database tests are in `supabase/tests` (27 checks); unit tests run with `npm test` and in CI.
+Apply in this order after `20261020170000` and `20261020180000`: `20261020190000_security_hardening.sql`, `20261020200000_staff_roles.sql`, `20261020210000_appointments.sql`, `20261020220000_recruitment_workspace.sql`, `20261021100000_business_targets.sql`. Local database tests are in `supabase/tests` (27 checks); unit tests run with `npm test` and in CI.
 
 - **Appointments:** public booking at `/book`, self-service cancel by private link, double-booking prevented by the database, daily reminder cron. Availability is set under Business hub > Appointments > Availability. Reminders run once a day on the current Vercel plan.
 - **Staff roles:** recruiter, consultant, payroll, delivery. Added under Business hub > Staff. Admins can do everything.
 - **Recruitment workspace:** CSV import with consent flag, searchable talent pool, vacancies with a pipeline board, bulk email with unsubscribe link, placements with timesheets and margin. It prepares payroll inputs only; it does not run payroll or file statutory returns.
+- **Business tracker:** Business hub > Tracker. A needs-action list, a board from enquiry to paid, weekly targets with a required written report for every miss, and a recruitment snapshot. The board reads the existing request, quote, invoice and enquiry tables. Targets are admin-only for now. The 24-hour report rule is shown as a warning, not enforced by the database.
 - Only import people who have consented to be contacted. The 100,000 CV figure shown on the site must be confirmed against a real, consented source.
 
 ## Limitations of what is built

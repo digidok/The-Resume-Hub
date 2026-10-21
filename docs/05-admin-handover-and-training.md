@@ -61,6 +61,15 @@ Do not publish these until the business owner and a legal adviser have confirmed
 - **Placements:** record rate paid to the worker and rate billed to the client, enter weekly timesheets, approve them. Approved totals are the inputs to payroll and invoicing.
 - **Staff roles:** Business hub > Staff. Give a colleague only the role they need (recruiter, consultant, payroll, delivery).
 
+## 5.8b Business tracker
+
+Business hub > **Tracker** is the page to open first each day.
+
+1. **Needs action:** anything overdue. A new enquiry with no reply after a day, a quote sent 3 days ago with no answer, accepted work not started, work past its deadline, delivered work not invoiced, an overdue invoice. Open each and fix it.
+2. **From enquiry to paid:** a board with seven stages. Cards with an amber outline need action. Oldest items are at the top of each column.
+3. **Weekly targets:** add each target once (area, measure, owner, number). Every Friday press **Record a result** for each. If the result is below target, a red miss report form appears: write the main cause, what changes this week and the new date. It must be completed within 24 hours or it shows as overdue.
+4. **Two misses in a row** show a warning to review the plan with the owner. **Three** show a warning to reset or reassign the target. To change a target, give a reason. Past results keep the target they were judged against.
+
 ## 5.9 Adding another administrator
 
 Admins are users whose profile role is `admin` (Users page in the admin area). Only grant it to staff who need access to client documents and screening reports, because admins can see all client data.
